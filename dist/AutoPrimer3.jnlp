@@ -11,7 +11,7 @@
   </resources>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="AutoPrimer3.jar" size="749476" download="eager" />
+    <jar href="AutoPrimer3.jar" size="1005300" download="eager" />
     <jar href="lib/controlsfx-8.0.5.jar" size="754696" download="eager" />
     <jar href="lib/dom4j-1.6.1.jar" size="313898" download="eager" />
     <jar href="lib/dom4j-2.0.0-ALPHA-2-javadoc.jar" size="1219146" download="eager" />
@@ -22,6 +22,6 @@
   <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="AutoPrimer3" >
     <param name="requiredFXVersion" value="2.2+"/>
   </applet-desc>
-  <jfx:javafx-desc  width="800" height="600" main-class="net.sf.autoprimer3.AutoPrimer3"  name="AutoPrimer3" />
+  <jfx:javafx-desc  width="800" height="600" main-class="com.github.autoprimer3.AutoPrimer3"  name="AutoPrimer3" />
   <update check="always"/>
 </jnlp>

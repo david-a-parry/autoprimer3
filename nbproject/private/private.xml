@@ -3,18 +3,8 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/david/NetBeansProjects/AutoPrimer3/src/net/sf/autoprimer3/GeneTableReader.java</file>
-            <file>file:/home/david/NetBeansProjects/AutoPrimer3/src/net/sf/autoprimer3/GetEnsemblGeneCoordinates.java</file>
-            <file>file:/home/david/NetBeansProjects/AutoPrimer3/src/net/sf/autoprimer3/GeneDetails.java</file>
-            <file>file:/home/david/NetBeansProjects/AutoPrimer3/src/net/sf/autoprimer3/ReverseComplementDNA.java</file>
-            <file>file:/home/david/NetBeansProjects/AutoPrimer3/src/net/sf/autoprimer3/GetGeneCoordinates.java</file>
-            <file>file:/home/david/NetBeansProjects/AutoPrimer3/src/net/sf/autoprimer3/ChromComparator.java</file>
-            <file>file:/home/david/NetBeansProjects/AutoPrimer3/src/net/sf/autoprimer3/AutoPrimer3.java</file>
-            <file>file:/home/david/NetBeansProjects/AutoPrimer3/src/net/sf/autoprimer3/GetUcscBuildsAndTables.java</file>
-            <file>file:/home/david/NetBeansProjects/AutoPrimer3/src/net/sf/autoprimer3/GetUcscGeneCoordinates.java</file>
-            <file>file:/home/david/NetBeansProjects/AutoPrimer3/src/net/sf/autoprimer3/SequenceFromDasUcsc.java</file>
-            <file>file:/home/david/NetBeansProjects/AutoPrimer3/src/net/sf/autoprimer3/GetSequenceFromFasta.java</file>
-            <file>file:/home/david/NetBeansProjects/AutoPrimer3/src/net/sf/autoprimer3/GenomicRegionSummary.java</file>
+            <file>file:/Users/david/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/AutoPrimer3.fxml</file>
+            <file>file:/Users/david/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/AutoPrimer3.java</file>
         </group>
     </open-files>
 </project-private>
