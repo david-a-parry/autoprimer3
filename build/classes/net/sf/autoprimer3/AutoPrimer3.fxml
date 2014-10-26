@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" minHeight="207.0" prefHeight="270.0" prefWidth="639.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml" fx:controller="net.sf.autoprimer3.AutoPrimer3">
+  <children>
+    <MenuBar focusTraversable="true" prefWidth="600.0" style="" useSystemMenuBar="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <menus>
+        <Menu mnemonicParsing="false" text="File">
+          <items>
+            <MenuItem mnemonicParsing="false" text="Close" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Edit">
+          <items>
+            <MenuItem mnemonicParsing="false" text="Delete" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Help">
+          <items>
+            <MenuItem mnemonicParsing="false" text="About" />
+          </items>
+        </Menu>
+      </menus>
+    </MenuBar>
+    <TabPane prefHeight="183.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="24.0">
+      <tabs>
+        <Tab text="Genes">
+          <content>
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="226.0" prefWidth="635.0" style="">
+              <children>
+                <HBox id="HBox" alignment="CENTER_LEFT" prefWidth="578.0" spacing="15.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="83.0">
+                  <children>
+                    <TextField fx:id="minDistanceTextField" prefWidth="112.0" promptText="Min distance between primer and target" text="50" HBox.hgrow="SOMETIMES" />
+                    <TextField fx:id="flankingRegionsTextField" prefWidth="131.0" promptText="Distance from exon to design to" text="500" HBox.hgrow="SOMETIMES" />
+                    <TextField fx:id="genesTextField" prefWidth="210.0" promptText="Gene symbols/Gene IDs separated with spaces" HBox.hgrow="ALWAYS" />
+                  </children>
+                </HBox>
+                <HBox id="HBox" alignment="CENTER_LEFT" prefWidth="495.0" spacing="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="86.0" AnchorPane.topAnchor="59.0">
+                  <children>
+                    <Label prefWidth="112.0" text="Min distance (bp)" />
+                    <Label prefWidth="131.0" text="Flanking region (bp)" />
+                    <Label prefWidth="200.0" text="Gene(s)" />
+                  </children>
+                </HBox>
+                <HBox id="HBox" alignment="CENTER_LEFT" spacing="15.0" AnchorPane.bottomAnchor="29.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="4.0">
+                  <children>
+                    <ProgressIndicator fx:id="progressIndicator" disable="false" opacity="1.0" progress="0.0" style="-fx-fill: null" visible="true" />
+                    <Label text="" />
+                    <Separator prefWidth="383.0" HBox.hgrow="SOMETIMES" />
+                    <Button fx:id="refreshButton" mnemonicParsing="false" text="Refresh/Reconnect" />
+                  </children>
+                </HBox>
+                <HBox id="HBox" alignment="CENTER_LEFT" spacing="25.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="31.0" AnchorPane.topAnchor="27.0">
+                  <children>
+                    <ChoiceBox fx:id="genomeChoiceBox" prefWidth="117.0" HBox.hgrow="ALWAYS">
+                      <items>
+                        <FXCollections fx:factory="observableArrayList">
+                          <String fx:value="Awaiting Information" />
+                        </FXCollections>
+                      </items>
+                    </ChoiceBox>
+                    <ChoiceBox fx:id="databaseChoiceBox" prefWidth="117.0" HBox.hgrow="ALWAYS">
+                      <items>
+                        <FXCollections fx:factory="observableArrayList">
+                          <String fx:value="Awaiting Information" />
+                        </FXCollections>
+                      </items>
+                    </ChoiceBox>
+                    <ChoiceBox fx:id="snpsChoiceBox" prefWidth="139.0" HBox.hgrow="ALWAYS">
+                      <items>
+                        <FXCollections fx:factory="observableArrayList">
+                          <String fx:value="Awaiting Information" />
+                        </FXCollections>
+                      </items>
+                    </ChoiceBox>
+                    <ChoiceBox fx:id="designToChoiceBox" prefWidth="161.0" HBox.hgrow="ALWAYS">
+                      <items>
+                        <FXCollections fx:factory="observableArrayList">
+                          <String fx:value="Coding regions" />
+                          <String fx:value="All exons" />
+                        </FXCollections>
+                      </items>
+                    </ChoiceBox>
+                  </children>
+                </HBox>
+                <HBox id="HBox" alignment="CENTER_LEFT" spacing="25.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="31.0" AnchorPane.topAnchor="6.0">
+                  <children>
+                    <Label prefWidth="112.0" text="Genome" />
+                    <Label prefWidth="112.0" text="Database" />
+                    <Label prefWidth="131.0" text="Avoid SNPs?" />
+                    <Label prefWidth="107.0" text="Design to..." />
+                  </children>
+                </HBox>
+                <Label fx:id="progressLabel" layoutX="15.0" layoutY="182.0" text="" />
+                <HBox alignment="CENTER_RIGHT" layoutX="12.0" layoutY="175.0" prefHeight="26.0" prefWidth="619.0000915527344" spacing="15.0">
+                  <children>
+                    <Button fx:id="runButton" defaultButton="true" mnemonicParsing="false" onAction="#designPrimersToGene" style="&#10;" text="Design" textAlignment="LEFT" />
+                    <Button fx:id="cancelButton" disable="false" mnemonicParsing="false" prefWidth="66.0" text="Cancel" />
+                  </children>
+                </HBox>
+              </children>
+            </AnchorPane>
+          </content>
+        </Tab>
+        <Tab text="Coordinates">
+          <content>
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+          </content>
+        </Tab>
+        <Tab text="Primer3 Settings">
+          <content>
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+          </content>
+        </Tab>
+      </tabs>
+    </TabPane>
+  </children>
+  <stylesheets>
+    <URL value="@autoprimer3.css" />
+  </stylesheets>
+</AnchorPane>

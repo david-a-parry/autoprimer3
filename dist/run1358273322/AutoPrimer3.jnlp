@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="AutoPrimer3.jnlp">
+  <information>
+    <title>AutoPrimer3</title>
+    <vendor>david</vendor>
+    <description>null</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <jfx:javafx-runtime version="2.2+" href="http://javadl.sun.com/webapps/download/GetFile/javafx-latest/windows-i586/javafx2.jnlp"/>
+  </resources>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="AutoPrimer3.jar" size="443117" download="eager" />
+    <jar href="lib/controlsfx-8.0.5.jar" size="754696" download="eager" />
+    <jar href="lib/dom4j-1.6.1.jar" size="313898" download="eager" />
+    <jar href="lib/dom4j-2.0.0-ALPHA-2-javadoc.jar" size="1219146" download="eager" />
+    <jar href="lib/mysql-connector-java-5.1.25-bin.jar" size="848401" download="eager" />
+    <jar href="lib/picard-1.92.jar" size="1658826" download="eager" />
+    <jar href="lib/sam-1.92.jar" size="620304" download="eager" />
+  </resources>
+  <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="AutoPrimer3" >
+    <param name="requiredFXVersion" value="2.2+"/>
+  </applet-desc>
+  <jfx:javafx-desc  width="800" height="600" main-class="net.sf.autoprimer3.AutoPrimer3"  name="AutoPrimer3" />
+  <update check="always"/>
+</jnlp>
