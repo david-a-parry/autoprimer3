@@ -5,6 +5,9 @@
         <group>
             <file>file:/Users/david/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/AutoPrimer3.fxml</file>
             <file>file:/Users/david/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/AutoPrimer3.java</file>
+            <file>file:/Users/david/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/Primer3Result.java</file>
+            <file>file:/Users/david/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/GenomicRegionSummary.java</file>
+            <file>file:/Users/david/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/PrimerResultController.java</file>
         </group>
     </open-files>
 </project-private>
