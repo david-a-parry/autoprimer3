@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -336,6 +337,7 @@ public class AutoPrimer3 extends Application implements Initializable{
         if (!genesTextField.getText().matches(".*\\w.*")){
             return;//TO DO show ERROR dialog maybe
         }
+        Integer pair = 0;
         int flanks = Integer.valueOf(flankingRegionsTextField.getText());
         int designBuffer = Integer.valueOf(minDistanceTextField.getText());
         //get our transcript targets using databaseChoiceBox and genesTextField
@@ -416,8 +418,8 @@ public class AutoPrimer3 extends Application implements Initializable{
         GenomicRegionSummary merger = new GenomicRegionSummary();
         merger.mergeRegionsByPosition(genomicRegions);
         
-        LinkedHashMap<String, ArrayList<String>> primers = 
-                new LinkedHashMap<String, ArrayList<String>>();
+        HashMap<String, HashMap<String, String>> primers = 
+                new HashMap<String, HashMap<String, String>>();
         ArrayList<String> designs = new ArrayList<>();
         //get FASTA sequence
         for (GenomicRegionSummary r : genomicRegions){
@@ -493,9 +495,9 @@ public class AutoPrimer3 extends Application implements Initializable{
                 ArrayList<String> result = designPrimers(seqid, 
                         dnaTarget.toString(), target);
                 designs.add(String.join("\n", result));
-            
+                
                 //parse primer3 output and write our output
-                primers.put(seqid, parsePrimer3Output(result));
+                primers.put(String.valueOf(pair), parsePrimer3Output(result));
                 
             }
             
@@ -504,10 +506,11 @@ public class AutoPrimer3 extends Application implements Initializable{
     }
     
     //get left and right primer from Primer3 output
-    private ArrayList<String> parsePrimer3Output(ArrayList<String> output){
-        ArrayList<String> primers = new ArrayList<>();
-        String left = new String();
-        String right = new String();
+    private HashMap<String, String> parsePrimer3Output(ArrayList<String> output){
+        HashMap<String, String> primers = new HashMap<>();
+        String left = "NOT FOUND";
+        String right = "NOT FOUND";
+        String productSize = "0";
         for (String res: output){
             if (res.startsWith("LEFT PRIMER")){
                 List<String> split = Arrays.asList(res.split(" "));
@@ -515,13 +518,16 @@ public class AutoPrimer3 extends Application implements Initializable{
             }else if (res.startsWith("RIGHT PRIMER")){
                 List<String> split = Arrays.asList(res.split(" "));
                 right = split.get(split.size() -1);
-            }
-            if (! left.isEmpty() && ! right.isEmpty()){
+            }else if (res.startsWith("PRODUCT SIZE:")){
+                List<String> split = Arrays.asList(res.split(" "));
+                productSize = split.get(3);
                 break;
             }
         }
-        primers.add(left);
-        primers.add(right);
+        
+        primers.put("LEFT", left);
+        primers.put("RIGHT", right);
+        primers.put("SIZE", productSize);
         return primers;
     }
     
