@@ -1,6 +1,5 @@
 /*
- * Snp Viewer - a program for viewing SNP data and identifying regions of homozygosity
- * Copyright (C) 2013 David A. Parry
+* Copyright (C) 2013 David A. Parry
  * d.a.parry@leeds.ac.uk
  * https://sourceforge.net/projects/snpviewer/
  * 
