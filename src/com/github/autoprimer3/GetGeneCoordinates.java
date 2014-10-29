@@ -16,7 +16,6 @@
  */
 package com.github.autoprimer3;
 
-import com.sun.deploy.util.StringUtils;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;

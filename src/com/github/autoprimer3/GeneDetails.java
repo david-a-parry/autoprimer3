@@ -129,11 +129,11 @@ public class GeneDetails {
     
     public ArrayList<Exon> getCodingRegions(){
         ArrayList<Exon> codingExons = new ArrayList<>();
-        int coding = 0;
         for (Iterator<Exon> it = exons.iterator(); it.hasNext();) {            
             Exon exon = it.next();
-            if (exon.getEnd() < cdsStart){//whole exon before cds, skip
-                continue;
+            if (exon.getEnd() < cdsStart){
+                //whole exon before cds, skip
+                //whole exon before cds, skip
             }else if (exon.getStart() < cdsStart){//cds start is in this exon
                 if (exon.getEnd() <= cdsEnd){
                     codingExons.add(new Exon(cdsStart, exon.getEnd(), 
@@ -149,8 +149,9 @@ public class GeneDetails {
                     codingExons.add(new Exon(exon.getStart(), exon.getEnd(),
                     exon.getOrder()));
                 }
-            }else{//outside CDS
-                continue;
+            }else{
+                //outside CDS
+                //outside CDS
             }
         }
         return codingExons;
@@ -160,11 +161,7 @@ public class GeneDetails {
         if (cdsStart == null || cdsEnd == null){
             return false;
         }
-        if (cdsStart < cdsEnd){
-            return true;
-        }else{
-            return false;
-        }
+        return cdsStart < cdsEnd;
     }
 
     
@@ -172,7 +169,6 @@ public class GeneDetails {
         private Integer start;
         private Integer end;
         private Integer order;
-        
         
         Exon(){
             this(null, null, null);
@@ -211,6 +207,38 @@ public class GeneDetails {
                 return null;
             }
         }
+        
+        public boolean isCodingExon(){
+            if (! isCoding()){
+                return false;
+            }
+            return start <= cdsEnd && end >= cdsStart;
+        }
+        
+        public Exon getExonCodingRegion(){
+            if (! isCodingExon()){
+                return null;
+            }
+            if (end < cdsStart){
+                return null;
+            }else if (start < cdsStart){//cds start is in this exon
+                if (end <= cdsEnd){
+                    return new Exon(cdsStart, end, order);
+                }else{
+                    return new Exon(cdsStart, cdsEnd, order);
+                }
+            }else if (start < cdsEnd){//within cds
+                if (end > cdsEnd){
+                    return new Exon(start, cdsEnd, order); 
+                }else{
+                    return new Exon(start, end, order);
+                }
+            }else{//outside CDS
+                return null;
+            }
+        }
+        
+        
     }
     
     public class GeneExonsException extends Exception{

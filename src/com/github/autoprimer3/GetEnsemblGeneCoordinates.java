@@ -21,7 +21,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import static com.github.autoprimer3.GetGeneCoordinates.conn;
 
 /**
@@ -39,14 +38,59 @@ public class GetEnsemblGeneCoordinates extends GetUcscGeneCoordinates {
         String fieldsToRetrieve = String.join(", ", fields);
         stmt = conn.createStatement();
         Statement stmt2 = conn.createStatement();
-        ResultSet rs2 = stmt2.executeQuery("SELECT name, value FROM "
-                + build + ".ensemblToGeneName WHERE " + "value='" + symbol +"'");
+        Statement stmt3 = conn.createStatement();
+        ResultSet rs2 = stmt2.executeQuery("SELECT COUNT(*) FROM "
+                + "information_schema.tables  WHERE table_schema = '" + build +
+                "' AND table_name = 'ensemblToGeneName';");
+        ResultSet rs3; 
         while (rs2.next()){
-            ResultSet rs = stmt.executeQuery("SELECT " + fieldsToRetrieve + 
-                " FROM " + build + "." + db +" WHERE name='"+ rs2.getString("name") + "'");
-            transcripts.addAll(getTranscriptsFromResultSet(rs, symbol));
+            if (rs2.getInt("COUNT(*)") < 1){
+                ResultSet rs4 = stmt2.executeQuery("SELECT COUNT(*) FROM "
+                + "information_schema.tables  WHERE table_schema = '"+ build +"' "
+                        + "AND table_name = 'knownToEnsembl';");
+                while (rs4.next()){
+                    if (rs4.getInt("COUNT(*)") > 0){
+                        ArrayList<String> kgids = new ArrayList<>();
+                        Statement stmt4 = conn.createStatement();
+                        System.out.println("SELECT kgID, "
+                                + "geneSymbol FROM " + build + ".kgXref WHERE "
+                                + "geneSymbol='" + symbol +"';");
+                        ResultSet rs5 = stmt4.executeQuery("SELECT kgID, "
+                                + "geneSymbol FROM " + build + ".kgXref WHERE "
+                                + "geneSymbol='" + symbol +"';");
+                        while(rs5.next()){
+                            kgids.add(rs5.getString("kgID"));
+                        }
+                        rs3 = stmt.executeQuery("Select value FROM '" + build 
+                                + ".knownToEnsembl' WHERE name='" + 
+                                String.join(" or name=", kgids) + "';");
+                        while (rs3.next()){
+                            ResultSet rs = stmt.executeQuery("SELECT " + fieldsToRetrieve + 
+                                " FROM " + build + "." + db +" WHERE name='"+ rs3.getString("value") + "'");
+                            transcripts.addAll(getTranscriptsFromResultSet(rs, symbol));
+                        }
+                        return transcripts;
+                    }else{
+                        //TO DO!
+                        //can't find ensemblToGene or knownToEnsembl - thrown an error!
+                        return  null;
+                    }
+                }
+            }else{
+                System.out.println("SELECT name, value FROM '"
+                + build + ".ensemblToGeneName' WHERE value='" + symbol +"';");
+                rs3 = stmt2.executeQuery("SELECT name, value FROM "
+                + build + ".ensemblToGeneName WHERE value='" + symbol +"';");
+                while (rs3.next()){
+                    ResultSet rs = stmt.executeQuery("SELECT " + fieldsToRetrieve + 
+                        " FROM " + build + "." + db +" WHERE name='"+ rs3.getString("name") + "'");
+                    transcripts.addAll(getTranscriptsFromResultSet(rs, symbol));
+                }
+                return transcripts;
+            }
+            break;
         }
-        return transcripts;
+        return null;
     }
     
     

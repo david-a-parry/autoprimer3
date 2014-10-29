@@ -447,8 +447,7 @@ public class AutoPrimer3 extends Application implements Initializable{
             String dna = seqFromDas.retrieveSequence(
                     genome, r.getChromosome(), r.getStartPos(), r.getEndPos());
             //System.out.println(dna);//debug only
-            //get SNPs using mysql query like:
-            //select name,chrom,chromStart,chromEnd,observed from hg19.snp141Common where chrom='chr1' and chromEND >= 93992837 and chromStart < 94121149 ;
+            
             ArrayList<GenomicRegionSummary> exonRegions = new ArrayList<>();
             int minus_strand = 0;
             int plus_strand = 0;
@@ -464,25 +463,27 @@ public class AutoPrimer3 extends Application implements Initializable{
                 if (end < r.getStartPos()){
                     continue;
                 }
-                ArrayList<Exon> exons = new ArrayList<>();
-                if (designToChoiceBox.getSelectionModel().getSelectedItem()
-                        .equals("Coding regions")){
-                    exons = t.getCodingRegions();
-                }else{
-                    exons = t.getExons();
-                }
+                ArrayList<Exon> exons = t.getExons();
+                
                 if (t.getStrand().equals("-")){
                     minus_strand++;
                 }else{
                     plus_strand++;
                 }
                 for (Exon e : exons){
+                    if (designToChoiceBox.getSelectionModel().getSelectedItem()
+                        .equals("Coding regions")){
+                        if (! e.isCodingExon()){
+                            continue;
+                        }
+                    }
                     String id = t.getId().concat("_ex").
                             concat(Integer.toString(e.getOrder()));
                     String name = t.getSymbol();
+                    Exon ce = e.getExonCodingRegion();
                     GenomicRegionSummary ex = new GenomicRegionSummary(
-                            r.getChromosome(), e.getStart(), 
-                            e.getEnd(), null, null, id, name);
+                            r.getChromosome(), ce.getStart(), 
+                            ce.getEnd(), null, null, id, name);
                     exonRegions.add(ex);
                 }
             }
@@ -496,6 +497,9 @@ public class AutoPrimer3 extends Application implements Initializable{
                 geneExon++;
                 int tStart = er.getStartPos() - r.getStartPos();
                 int tEnd = 1 + er.getEndPos() - r.getStartPos();
+                //TO DO
+                //get SNPs using mysql query like:
+                //select name,chrom,chromStart,chromEnd,observed from hg19.snp141Common where chrom='chr1' and chromEND >= 93992837 and chromStart < 94121149 ;
                 StringBuilder dnaTarget = new StringBuilder(
                         dna.substring(tStart - flanks, tStart).toLowerCase());
                 dnaTarget.append(dna.substring(tStart, tEnd-1)
@@ -538,10 +542,11 @@ public class AutoPrimer3 extends Application implements Initializable{
                 Stage tableStage = new Stage();
                 tableStage.setScene(tableScene);
                 tableScene.getStylesheets().add(AutoPrimer3.class
-    .getResource("autoprimer3.css").toExternalForm());
+                        .getResource("autoprimer3.css").toExternalForm());
                 resultView.displayData(primers, designs);
                 tableStage.setTitle("AutoPrimer3 Results");
-                //tableStage.getIcons().add(new Image(this.getClass().getResourceAsStream("icon.png")));
+                tableStage.getIcons().add(new Image(this.getClass()
+                        .getResourceAsStream("icon.png")));
                 tableStage.initModality(Modality.NONE);
                 tableStage.show();
            }catch (Exception ex){
