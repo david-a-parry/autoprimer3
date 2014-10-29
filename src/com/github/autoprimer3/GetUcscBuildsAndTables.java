@@ -21,7 +21,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -45,8 +44,8 @@ public class GetUcscBuildsAndTables {
     public void connectToUcsc(){
         try{
             SAXReader reader = new SAXReader();
-            //URL url = new URL("http://genome.ucsc.edu/cgi-bin/das/dsn");
-            URL url = new URL("http://genome-euro.ucsc.edu/cgi-bin/das/dsn");    
+            URL url = new URL("http://genome.ucsc.edu/cgi-bin/das/dsn");
+            //URL url = new URL("http://genome-euro.ucsc.edu/cgi-bin/das/dsn");    
             Document dasXml;
             dasXml  = reader.read(url);
             Element root = dasXml.getRootElement();

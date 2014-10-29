@@ -16,9 +16,9 @@
                         <TableView fx:id="primerTable" layoutX="55.0" layoutY="35.0" prefHeight="326.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                           <columns>
                               <TableColumn fx:id="indexCol" prefWidth="59.0" text="#" />
-                            <TableColumn fx:id="nameCol" prefWidth="103.0" text="Name" />
-                              <TableColumn fx:id="idCol" prefWidth="174.0" text="Other IDs" />
-                            <TableColumn fx:id="leftPrimerCol" prefWidth="252.0" text="Left Primer" />
+                            <TableColumn fx:id="nameCol" prefWidth="147.0" text="Name" />
+                              <TableColumn fx:id="idCol" prefWidth="160.0" text="Other IDs" />
+                            <TableColumn fx:id="leftPrimerCol" prefWidth="222.0" text="Left Primer" />
                               <TableColumn fx:id="rightPrimerCol" prefWidth="241.0" text="Right Primer" />
                               <TableColumn fx:id="productSizeCol" prefWidth="112.0" text="Product Size" />
                               <TableColumn fx:id="chromCol" prefWidth="101.0" text="Chromosome" />
