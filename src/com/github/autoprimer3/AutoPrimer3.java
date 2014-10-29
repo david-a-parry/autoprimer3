@@ -480,10 +480,18 @@ public class AutoPrimer3 extends Application implements Initializable{
                     String id = t.getId().concat("_ex").
                             concat(Integer.toString(e.getOrder()));
                     String name = t.getSymbol();
-                    Exon ce = e.getExonCodingRegion();
-                    GenomicRegionSummary ex = new GenomicRegionSummary(
-                            r.getChromosome(), ce.getStart(), 
-                            ce.getEnd(), null, null, id, name);
+                    GenomicRegionSummary ex = new GenomicRegionSummary();
+                    if (designToChoiceBox.getSelectionModel().getSelectedItem()
+                        .equals("Coding regions")){
+                        Exon ce = e.getExonCodingRegion();
+                        ex = new GenomicRegionSummary(
+                                r.getChromosome(), ce.getStart(), 
+                                ce.getEnd(), null, null, id, name);
+                    }else{
+                        ex = new GenomicRegionSummary(
+                                r.getChromosome(), e.getStart(), 
+                                e.getEnd(), null, null, id, name);
+                    }
                     exonRegions.add(ex);
                 }
             }
@@ -595,8 +603,13 @@ public class AutoPrimer3 extends Application implements Initializable{
         res.setIndex(index);
         res.setChromosome(chrom);
         res.setProductSize(Integer.valueOf(productSize));
-        res.setLeftPosition(baseCoordinate + leftStart);
-        res.setRightPosition(baseCoordinate + rightStart);
+        if (Integer.valueOf(productSize) > 0){
+            res.setLeftPosition(baseCoordinate + leftStart);
+            res.setRightPosition(baseCoordinate + rightStart);
+        }else{
+            res.setLeftPosition(0);
+            res.setRightPosition(0);
+        }
         return res;
     }
     
@@ -740,7 +753,7 @@ public class AutoPrimer3 extends Application implements Initializable{
             }
         }else if (databaseChoiceBox.getSelectionModel().getSelectedItem().equals("ensGene")){
             GetEnsemblGeneCoordinates geneSearcher = new GetEnsemblGeneCoordinates();
-            if (searchString.equals("ENST\\d{11}")){
+            if (searchString.matches("ENS\\w*T\\d{11}.*\\d*")){
                 //is accession
                 try{
                     genes.addAll(geneSearcher.getGeneFromId(searchString, 
