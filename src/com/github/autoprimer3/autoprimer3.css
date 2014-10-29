@@ -214,48 +214,42 @@ linear-gradient(#eeeeee 0%, #cdcdcd 25%, #bebfbe 75%, #ffffff 100%),
 
 .scroll-bar{
     -fx-background-color:
-        linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
-        linear-gradient(#020b02, #3a3a3a),
-        linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #643564 80%, #242424 100%),
-        linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #646564 80%, #262626 100%),
-        linear-gradient(#777777 0%, #555555 30%, #40404a 51%, #2a2b2a 100%);
+        linear-gradient(#eeeeee 0%, #cdcdcd 25%, #bebfbe 75%, #ffffff 100%),
+        linear-gradient(#cdcdcd, #dfdfdf);
     -fx-border-color: #000000;
 }
 
 .scroll-bar *.track{
-    -fx-background-color: black
+    -fx-background-color: white
 }
 
 .scroll-bar *.thumb{
     -fx-background-color:
-        linear-gradient(#c8c8c8 0%, #838783 25%, #979897 75%, #d5d5d5 100%),
-        linear-gradient(#020b02, #3a3a3a),
-        linear-gradient(#ffffff 0%, #cbcacb 20%, #c495c4 80%, #848484 100%),
-        linear-gradient(#eaeaea 0%, #cbcacb 20%, #c4c5c4 80%, #868686 100%),
-        linear-gradient(#dddddd 0%, #bbbbbb 30%, #a0a0aa 51%, #8a8b8a 100%);
-    -fx-border-color: black;
+        linear-gradient(#eeeeee 0%, #cdcdcd 25%, #bebfbe 75%, #ffffff 100%),
+        linear-gradient(#cdcdcd, #dfdfdf);
+    -fx-border-color: transparent;
     -fx-background-radius: 5px;
     -fx-background-insets: 3;
 }
 
 .scroll-bar *.decrement-button{
-    -fx-background-color: black
+    -fx-background-color: white
 }
 
 .scroll-bar *.increment-button{
-    -fx-background-color: black
+    -fx-background-color: white
 }
 
 .scroll-bar *.decrement-button *.decrement-arrow{
-    -fx-background-color: white
+    -fx-background-color: black
 }
 
 .scroll-bar *.increment-button *.increment-arrow{
-    -fx-background-color: white
+    -fx-background-color: black
 }
 
 .corner{
-    -fx-background-color: black
+    -fx-background-color: white
 }
 
 .titled-pane *.title {

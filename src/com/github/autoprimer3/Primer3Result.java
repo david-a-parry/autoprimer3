@@ -12,6 +12,7 @@ package com.github.autoprimer3;
 public class Primer3Result {
     private Integer index;
     private String name;
+    private String transcripts;
     private String leftPrimer;
     private String rightPrimer;
     private Integer productSize;
@@ -19,15 +20,16 @@ public class Primer3Result {
     private Integer leftPosition;
     private Integer rightPosition;
     Primer3Result(){
-        this(0, null, null, null, 0, null, 0, 0);
+        this(0, null, null, null, null, 0, null, 0, 0);
     }
-    Primer3Result(Integer i, String id, String l, String r, Integer size){
-        this(i, id, l, r, size, null, 0, 0);
+    Primer3Result(Integer i, String id, String tr, String l, String r, Integer size){
+        this(i, id, tr, l, r, size, null, 0, 0);
     }
-    Primer3Result(Integer i, String id, String l, String r, Integer size, 
+    Primer3Result(Integer i, String id, String tr, String l, String r, Integer size, 
             String chr, Integer lPos, Integer rPos){
         index = i;
         name = id;
+        transcripts = tr;
         leftPrimer = l;
         rightPrimer = r;
         productSize = size;
@@ -40,6 +42,9 @@ public class Primer3Result {
     }
     public void setName(String id){
         name = id;
+    }
+    public void setTranscripts(String tr){
+        transcripts = tr;
     }
     public void setLeftPrimer(String seq){
         leftPrimer = seq;
@@ -64,6 +69,9 @@ public class Primer3Result {
     }
     public String getName(){
         return name;
+    }
+    public String getTranscripts(){
+        return transcripts;
     }
     public String getLeftPrimer(){
         return leftPrimer;
