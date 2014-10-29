@@ -43,6 +43,9 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 
 /**
@@ -50,12 +53,16 @@ import javafx.stage.Stage;
  *
  * @author david
  */
-public class PrimerResultController implements Initializable {
+public class Primer3ResultViewController implements Initializable {
 
    @FXML
    TableView<Primer3Result> primerTable;
    @FXML
    TableColumn indexCol;
+   @FXML
+   TableColumn nameCol;
+   @FXML
+   TableColumn idCol;
    @FXML
    TableColumn leftPrimerCol;
    @FXML
@@ -70,11 +77,11 @@ public class PrimerResultController implements Initializable {
    TableColumn rightPosCol;
    
    @FXML
-   Button okButton;
+   Button closeButton;
    @FXML 
    Label summaryLabel;
    @FXML
-   TextArea snpTextSummary;
+   TextArea designTextSummary;
    
    NumberFormat nf = NumberFormat.getNumberInstance();
    ChromComparator chromCompare = new ChromComparator();
@@ -87,6 +94,10 @@ public class PrimerResultController implements Initializable {
                 PropertyValueFactory<Primer3Result, Integer>("index"));
         leftPrimerCol.setCellValueFactory(new 
                 PropertyValueFactory<Primer3Result, String>("leftPrimer"));
+        nameCol.setCellValueFactory(new
+                PropertyValueFactory<Primer3Result, String>("name"));
+        idCol.setCellValueFactory(new
+                PropertyValueFactory<Primer3Result, String>("transcripts"));
         rightPrimerCol.setCellValueFactory(new 
                 PropertyValueFactory<Primer3Result, String>("rightPrimer"));
         productSizeCol.setCellValueFactory(new 
@@ -113,13 +124,13 @@ public class PrimerResultController implements Initializable {
         item.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                ObservableList<TablePosition> posList = snpTable.getSelectionModel().getSelectedCells();
+                ObservableList<TablePosition> posList = primerTable.getSelectionModel().getSelectedCells();
                 int old_r = -1;
                 StringBuilder clipboardString = new StringBuilder();
                 for (TablePosition p : posList) {
                     int r = p.getRow();
                     int c = p.getColumn();
-                    Object cell = snpTable.getColumns().get(c).getCellData(r);
+                    Object cell = primerTable.getColumns().get(c).getCellData(r);
                     if (cell == null)
                         cell = "";
                     if (old_r == r)
@@ -128,6 +139,7 @@ public class PrimerResultController implements Initializable {
                         clipboardString.append('\n');
                     clipboardString.append(cell);
                     old_r = r;
+                    
                 }
                 final ClipboardContent content = new ClipboardContent();
                 content.putString(clipboardString.toString());
@@ -136,16 +148,17 @@ public class PrimerResultController implements Initializable {
         });
         ContextMenu menu = new ContextMenu();
         menu.getItems().add(item);
-        snpTable.setContextMenu(menu);
+        item.setAccelerator(new KeyCodeCombination(KeyCode.C, KeyCombination.SHORTCUT_DOWN));
+        primerTable.setContextMenu(menu);
         
         
-        okButton.setOnAction(new EventHandler<ActionEvent>(){
+        closeButton.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent e){
                 Platform.runLater(new Runnable(){
                     @Override
                     public void run(){
-                        Stage stage = (Stage) okButton.getScene().getWindow();
+                        Stage stage = (Stage) closeButton.getScene().getWindow();
                         stage.close();
                     }
                 });
@@ -154,29 +167,18 @@ public class PrimerResultController implements Initializable {
         
     }
     
-    public void displayData(ArrayList<RegionSummary> regions){
-        int totalRegions = 0;
-        double totalLength = 0;
-        StringBuilder summaryString = new StringBuilder();
-        for (RegionSummary r: regions){
-            StringBuilder tempString = new StringBuilder();
+    public void displayData(ArrayList<Primer3Result> regions, ArrayList<String> design){
+        int totalPairs = 0;
+        StringBuilder designString = new StringBuilder();
+        for (Primer3Result r: regions){
             data.add(r);
-            snpTable.setItems(data);
-            tempString.append("chr").append(r.getCoordinateString());
-            while (tempString.length() < 30){
-                tempString.append(" ");
-            }
-            tempString.append("(").append(r.getIdLine()).append(")");
-            while (tempString.length() < 55){
-                tempString.append(" ");
-            }
-            tempString.append(nf.format(r.getLength())).append(" bp\n");
-            summaryString.append(tempString);
-            totalRegions++;         
-            totalLength += r.getLength();
+            primerTable.setItems(data);
+            totalPairs++;
         }
-        snpTextSummary.setText(summaryString.toString());
-        totalLength /= 1000000;
-        summaryLabel.setText(totalRegions + " regions/" + nf.format(totalLength) + " Mb");
+        for (String s: design){
+            designString.append(s).append("\n");
+        }
+        designTextSummary.setText(designString.toString());
+        summaryLabel.setText(totalPairs + " primer pairs designed");
     }
 }

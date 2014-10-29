@@ -47,7 +47,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
@@ -347,6 +350,9 @@ public class AutoPrimer3 extends Application implements Initializable{
         LinkedHashSet<String> nonCodingTargets = new LinkedHashSet<>();
         LinkedHashSet<GeneDetails> targets = new LinkedHashSet<>();
         for (String s : searchStrings){
+            if (! s.matches(".*\\w.*")){
+                continue;
+            }
             ArrayList<GeneDetails> found = getGeneDetails(s);
             if (found.isEmpty()){
                 notFound.add(s);
@@ -382,7 +388,7 @@ public class AutoPrimer3 extends Application implements Initializable{
             Dialogs noTargetsError = Dialogs.create().title("No Genes Found").
                     masthead("No targets found.").
                     message(message)
-                    .nativeTitleBar();
+                    .styleClass(Dialog.STYLE_CLASS_NATIVE);
             noTargetsError.showError();
             return;
         }else if (! notFound.isEmpty()){
@@ -398,10 +404,11 @@ public class AutoPrimer3 extends Application implements Initializable{
             Action response = Dialogs.create().title("").
                     masthead("Could Not Find Some Genes").
                     message(message.toString()).
-                    actions(Dialog.Actions.YES, Dialog.Actions.NO).
-                    nativeTitleBar().
+                    actions(Dialog.ACTION_YES, Dialog.ACTION_NO).
+                    styleClass(Dialog.STYLE_CLASS_NATIVE).
                     showConfirm();
-            if (response == Dialog.Actions.NO){
+            
+            if (response == Dialog.ACTION_NO){
                 return;
             }
         }
@@ -418,8 +425,8 @@ public class AutoPrimer3 extends Application implements Initializable{
         GenomicRegionSummary merger = new GenomicRegionSummary();
         merger.mergeRegionsByPosition(genomicRegions);
         
-        HashMap<String, HashMap<String, String>> primers = 
-                new HashMap<String, HashMap<String, String>>();
+        ArrayList<Primer3Result> primers = 
+                new ArrayList<Primer3Result>();
         ArrayList<String> designs = new ArrayList<>();
         //get FASTA sequence
         for (GenomicRegionSummary r : genomicRegions){
@@ -431,7 +438,7 @@ public class AutoPrimer3 extends Application implements Initializable{
             ArrayList<GenomicRegionSummary> exonRegions = new ArrayList<>();
             int minus_strand = 0;
             int plus_strand = 0;
-            for (GeneDetails t : targets){
+           for (GeneDetails t : targets){
                 if (! t.getChromosome().equals(r.getChromosome())){
                     continue;
                 }
@@ -470,7 +477,9 @@ public class AutoPrimer3 extends Application implements Initializable{
                 Collections.reverse(exonRegions);
             }
             //get substring for each exon and design primers using primer3
+            int geneExon = 0;
             for (GenomicRegionSummary er: exonRegions){
+                geneExon++;
                 int tStart = er.getStartPos() - r.getStartPos();
                 int tEnd = 1 + er.getEndPos() - r.getStartPos();
                 StringBuilder dnaTarget = new StringBuilder(
@@ -491,44 +500,85 @@ public class AutoPrimer3 extends Application implements Initializable{
                 
                 String target =  Integer.toString(flanks - designBuffer) + 
                         "," + Integer.toString(tEnd - tStart + (designBuffer * 2));
-                String seqid = (er.getName()) + ": " + er.getId();
+                String exonName = er.getName()+ "_ex" + geneExon ;
+                String seqid = (exonName + ": " + er.getId());
                 ArrayList<String> result = designPrimers(seqid, 
                         dnaTarget.toString(), target);
                 designs.add(String.join("\n", result));
                 
                 //parse primer3 output and write our output
-                primers.put(String.valueOf(pair), parsePrimer3Output(result));
+                primers.add(parsePrimer3Output(++pair,  exonName, er.getId(), 
+                        r.getChromosome(), 1 + er.getStartPos() - flanks, result));
                 
             }
             
         }
-        
+        if (! primers.isEmpty()){
+            FXMLLoader tableLoader = new FXMLLoader(getClass().
+                                       getResource("Primer3ResultView.fxml"));
+            try{
+                Pane tablePane = (Pane) tableLoader.load();
+                Primer3ResultViewController resultView = 
+                        (Primer3ResultViewController) tableLoader.getController();
+                Scene tableScene = new Scene(tablePane);
+                Stage tableStage = new Stage();
+                tableStage.setScene(tableScene);
+                tableScene.getStylesheets().add(AutoPrimer3.class
+    .getResource("autoprimer3.css").toExternalForm());
+                resultView.displayData(primers, designs);
+                tableStage.setTitle("AutoPrimer3 Results");
+                //tableStage.getIcons().add(new Image(this.getClass().getResourceAsStream("icon.png")));
+                tableStage.initModality(Modality.NONE);
+                tableStage.show();
+           }catch (Exception ex){
+//               Dialogs.showErrorDialog(null, "Error displaying"
+//                       + " results from Find Regions Method.",
+//                       "Find Regions Error!", "SnpViewer", ex);
+               ex.printStackTrace();
+           }
+        }else{
+            Dialogs noPrimersError = Dialogs.create().title("No PrimersFound").
+                    masthead("No primers found for your targets.").
+                    message("No primer designs were attempted for your targets")
+                    .styleClass(Dialog.STYLE_CLASS_NATIVE);
+            noPrimersError.showError();        }
+       
     }
     
     //get left and right primer from Primer3 output
-    private HashMap<String, String> parsePrimer3Output(ArrayList<String> output){
-        HashMap<String, String> primers = new HashMap<>();
+    private Primer3Result parsePrimer3Output(int index, String name, String id,
+            String chrom, int baseCoordinate, ArrayList<String> output){
         String left = "NOT FOUND";
         String right = "NOT FOUND";
-        String productSize = "0";
+        Integer leftStart = 0;
+        Integer rightStart = 0;
+       String productSize = "0";
         for (String res: output){
             if (res.startsWith("LEFT PRIMER")){
-                List<String> split = Arrays.asList(res.split(" "));
+                List<String> split = Arrays.asList(res.split(" +"));
                 left = split.get(split.size() -1);
+                leftStart = Integer.valueOf(split.get(2));
             }else if (res.startsWith("RIGHT PRIMER")){
-                List<String> split = Arrays.asList(res.split(" "));
+                List<String> split = Arrays.asList(res.split(" +"));
                 right = split.get(split.size() -1);
+                rightStart = Integer.valueOf(split.get(2));
             }else if (res.startsWith("PRODUCT SIZE:")){
-                List<String> split = Arrays.asList(res.split(" "));
-                productSize = split.get(3);
+                List<String> split = Arrays.asList(res.split(" +"));
+                productSize = split.get(2).replaceAll("[^\\d/]", "");
                 break;
             }
         }
-        
-        primers.put("LEFT", left);
-        primers.put("RIGHT", right);
-        primers.put("SIZE", productSize);
-        return primers;
+        Primer3Result res = new Primer3Result();
+        res.setLeftPrimer(left);
+        res.setRightPrimer(right);
+        res.setName(name);
+        res.setTranscripts(id);
+        res.setIndex(index);
+        res.setChromosome(chrom);
+        res.setProductSize(Integer.valueOf(productSize));
+        res.setLeftPosition(baseCoordinate + leftStart);
+        res.setRightPosition(baseCoordinate + rightStart);
+        return res;
     }
     
     

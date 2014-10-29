@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="487.0" prefWidth="758.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="815.0" prefWidth="1210.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.autoprimer3.Primer3ResultViewController">
    <children>
       <TabPane layoutX="90.0" layoutY="117.0" prefHeight="359.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="41.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
@@ -13,12 +13,17 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="313.0" prefWidth="600.0">
                      <children>
-                        <TableView layoutX="55.0" layoutY="35.0" prefHeight="326.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <TableView fx:id="primerTable" layoutX="55.0" layoutY="35.0" prefHeight="326.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                           <columns>
-                            <TableColumn prefWidth="215.0" text="Target" />
-                            <TableColumn prefWidth="229.0" text="Left Primer" />
-                              <TableColumn prefWidth="208.0" text="Right Primer" />
-                              <TableColumn prefWidth="105.0" text="Product Size" />
+                              <TableColumn fx:id="indexCol" prefWidth="59.0" text="#" />
+                            <TableColumn fx:id="nameCol" prefWidth="103.0" text="Name" />
+                              <TableColumn fx:id="idCol" prefWidth="174.0" text="Other IDs" />
+                            <TableColumn fx:id="leftPrimerCol" prefWidth="252.0" text="Left Primer" />
+                              <TableColumn fx:id="rightPrimerCol" prefWidth="241.0" text="Right Primer" />
+                              <TableColumn fx:id="productSizeCol" prefWidth="112.0" text="Product Size" />
+                              <TableColumn fx:id="chromCol" prefWidth="101.0" text="Chromosome" />
+                              <TableColumn fx:id="leftPosCol" minWidth="0.0" prefWidth="124.0" text="Left Position" />
+                              <TableColumn fx:id="rightPosCol" prefWidth="118.0" text="Right Position" />
                           </columns>
                         </TableView>
                      </children>
@@ -29,17 +34,18 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <ScrollPane prefViewportHeight="413.0" prefViewportWidth="758.0">
-                           <content>
-                              <TextArea layoutX="159.0" layoutY="52.0" prefHeight="413.0" prefWidth="758.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                           </content>
-                        </ScrollPane>
+                        <TextArea fx:id="designTextSummary" layoutX="94.0" layoutY="279.0" prefHeight="741.0" prefWidth="1210.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <font>
+                              <Font name="Monospaced Regular" size="12.0" />
+                           </font>
+                        </TextArea>
                      </children>
                   </AnchorPane>
             </content>
           </Tab>
         </tabs>
       </TabPane>
-      <Button layoutX="692.0" layoutY="446.0" mnemonicParsing="false" text="Close" />
+      <Button fx:id="closeButton" layoutX="1138.0" layoutY="775.0" mnemonicParsing="false" text="Close" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="20.0" />
+      <Label fx:id="summaryLabel" layoutX="14.0" layoutY="793.0" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="14.0" />
    </children>
 </AnchorPane>
