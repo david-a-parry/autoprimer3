@@ -116,9 +116,9 @@ public class AutoPrimer3 extends Application implements Initializable{
             primaryStage.show();
             
   
-/*            primaryStage.getIcons().add(new Image(this.getClass().
+            primaryStage.getIcons().add(new Image(this.getClass().
                     getResourceAsStream("icon.png")));
-*/          
+          
             /*basic functionality test code
             SequenceFromDasUcsc seqFromDas = new SequenceFromDasUcsc();
             GetEnsemblGeneCoordinates getter = new GetEnsemblGeneCoordinates();
@@ -447,6 +447,8 @@ public class AutoPrimer3 extends Application implements Initializable{
             String dna = seqFromDas.retrieveSequence(
                     genome, r.getChromosome(), r.getStartPos(), r.getEndPos());
             //System.out.println(dna);//debug only
+            //get SNPs using mysql query like:
+            //select name,chrom,chromStart,chromEnd,observed from hg19.snp141Common where chrom='chr1' and chromEND >= 93992837 and chromStart < 94121149 ;
             ArrayList<GenomicRegionSummary> exonRegions = new ArrayList<>();
             int minus_strand = 0;
             int plus_strand = 0;
