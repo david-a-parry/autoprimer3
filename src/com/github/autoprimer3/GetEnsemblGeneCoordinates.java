@@ -36,25 +36,22 @@ public class GetEnsemblGeneCoordinates extends GetUcscGeneCoordinates {
             throws SQLException, GetGeneCoordinates.GetGeneExonsException{
         String fieldsToRetrieve = String.join(", ", fields);
         stmt = conn.createStatement();
-        try{
-            Statement stmt2 = conn.createStatement();
-            ResultSet rs2 = stmt2.executeQuery("SELECT COUNT(*) FROM "
-                    + "information_schema.tables  WHERE table_schema = '" + build +
-                    "' AND table_name = 'ensemblToGeneName';");
-            while (rs2.next()){
-                if (rs2.getInt("COUNT(*)") < 1){
-                    return getTranscriptsViaKgId(symbol, build, db, fieldsToRetrieve);
-                }else{
-                    return getTranscriptsFromEnsemblToName(symbol, build, db, 
-                            fieldsToRetrieve);
-                }
+        ArrayList<GeneDetails> transcripts = new ArrayList<>();
+        Statement stmt2 = conn.createStatement();
+        ResultSet rs2 = stmt2.executeQuery("SELECT COUNT(*) FROM "
+                + "information_schema.tables  WHERE table_schema = '" + build +
+                "' AND table_name = 'ensemblToGeneName';");
+        while (rs2.next()){
+            if (rs2.getInt("COUNT(*)") < 1){
+                transcripts = getTranscriptsViaKgId(symbol, build, db, fieldsToRetrieve);
+                return transcripts;
+            }else{
+                transcripts = getTranscriptsFromEnsemblToName(symbol, build, db, 
+                        fieldsToRetrieve);
+                return transcripts;
             }
-        }catch (Exception ex){
-            //TO DO
-            //throw this error
-            ex.printStackTrace();
         }
-        return new ArrayList<>();
+    return transcripts;
     }
     
     private ArrayList<GeneDetails> getTranscriptsFromEnsemblToName(String symbol, 
@@ -110,11 +107,11 @@ public class GetEnsemblGeneCoordinates extends GetUcscGeneCoordinates {
                 return transcripts;
             }else{
                 //TO DO!
-                //can't find ensemblToGene or knownToEnsembl - thrown an error!
-                return  null;
+                //can't find ensemblToGene or knownToEnsembl - throw an error?
+                return  transcripts;
             }
         }
-        return null;
+        return transcripts;
     }
     
     
@@ -178,5 +175,4 @@ public class GetEnsemblGeneCoordinates extends GetUcscGeneCoordinates {
         }
         return symbol;
     }
-    
-}
+}//end of class
