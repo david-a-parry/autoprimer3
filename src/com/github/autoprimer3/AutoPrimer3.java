@@ -18,6 +18,7 @@ package com.github.autoprimer3;
 
 import com.github.autoprimer3.GeneDetails.Exon;
 import static com.github.autoprimer3.ReverseComplementDNA.reverseComplement;
+import javafx.scene.input.KeyEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -27,7 +28,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -47,6 +47,7 @@ import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -55,6 +56,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
@@ -64,7 +66,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
-import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
@@ -75,7 +76,14 @@ import org.controlsfx.dialog.Dialogs;
  */
 public class AutoPrimer3 extends Application implements Initializable{
     
-    //Genes tab
+    //tabs
+    @FXML
+    Tab genesTab;
+    @FXML
+    Tab primerTab;
+    @FXML
+    Tab coordTab;
+    //Genes tab components
     @FXML 
     Button runButton;
     @FXML
@@ -101,11 +109,40 @@ public class AutoPrimer3 extends Application implements Initializable{
     @FXML
     Label progressLabel;
     
+//Coordinates tab components
+    //TO DO!
+    
+    //Primer3 Settings tab components
+    @FXML
+    TextField minSizeTextField;
+    @FXML
+    TextField optSizeTextField;
+    @FXML
+    TextField maxSizeTextField;
+    @FXML
+    TextField maxDiffTextField;
+    @FXML
+    TextField sizeRangeTextField;
+    @FXML
+    TextField maxMisprimeTextField;
+    @FXML
+    TextField minTmTextField;
+    @FXML
+    TextField optTmTextField;
+    @FXML
+    TextField maxTmTextField;
+    @FXML
+    ChoiceBox misprimingLibraryChoiceBox;
+    @FXML
+    Button resetValuesButton;
+    
     Boolean CANRUN = false;
     final GetUcscBuildsAndTables buildsAndTables = new GetUcscBuildsAndTables();;
     File primer3ex; 
     Path mispriming_libs;
     Path thermo_config;
+    String defaultSizeRange = "150-250 100-300 301-400 401-500 501-600 "
+                + "601-700 701-850 851-1000 1000-2000";
     
     @Override
     public void start(final Stage primaryStage) {
@@ -159,7 +196,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                         inputStream = this.getClass().
                                 getResourceAsStream("primer3_core_macosx");
                 }else if (System.getProperty("os.name").equals("Linux")){
-                    if (System.getProperty("os.arch").equals("x86_64")){
+                    if (System.getProperty("os.arch").endsWith("64")){
                         inputStream = this.getClass().
                                 getResourceAsStream("primer3_core");
                     }else{
@@ -180,7 +217,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                 outputStream.close();
                 primer3ex.setExecutable(true);
                 File mispriming_zip = File.createTempFile("misprime", ".zip" );
-                Path misprime_dir = Files.createTempDirectory("mispriming_lib");
+                mispriming_libs = Files.createTempDirectory("mispriming_lib");
                 mispriming_zip.deleteOnExit();
                 inputStream = this.getClass().
                         getResourceAsStream("mispriming_libraries.zip");
@@ -191,7 +228,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                 inputStream.close();
                 outputStream.close();
                 ZipFile zip = new ZipFile(mispriming_zip);
-                zip.extractAll(misprime_dir.toString());
+                zip.extractAll(mispriming_libs.toString());
                 thermo_config = Files.createTempDirectory("thermo_config");
                 File thermo_zip = File.createTempFile("primer_config", ".zip");
                 thermo_zip.deleteOnExit();
@@ -225,12 +262,112 @@ public class AutoPrimer3 extends Application implements Initializable{
                     getBuildTables(id);
                 }
             });
+            File misprimeDir = mispriming_libs.toFile();
+            misprimingLibraryChoiceBox.getItems().add("none");
+            for (File f: misprimeDir.listFiles()){
+                misprimingLibraryChoiceBox.getItems().add(f.getName());
+            }
+            misprimingLibraryChoiceBox.getSelectionModel().selectFirst();
+            minDistanceTextField.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
+            flankingRegionsTextField.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
+            minSizeTextField.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
+            optSizeTextField.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
+            maxSizeTextField.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
+            maxDiffTextField.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
+            maxMisprimeTextField.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
+            sizeRangeTextField.addEventFilter(KeyEvent.KEY_TYPED, checkRange());
+            minTmTextField.addEventFilter(KeyEvent.KEY_TYPED, checkDecimal());
+            optTmTextField.addEventFilter(KeyEvent.KEY_TYPED, checkDecimal());
+            maxTmTextField.addEventFilter(KeyEvent.KEY_TYPED, checkDecimal());
+            resetValuesButton.setOnAction(new EventHandler<ActionEvent>(){
+               @Override
+               public void handle(ActionEvent actionEvent){
+                    resetPrimerSettings();
+                }
+            });
+            
+                sizeRangeTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
+                    @Override
+                    public void changed(ObservableValue<? extends Boolean> observable,
+                            Boolean oldValue, Boolean newValue ){
+                        if (!sizeRangeTextField.isFocused()){
+                            if (!checkSizeRange(sizeRangeTextField)){
+                                displaySizeRangeError();
+                            }
+                        }
+                    }
+                });
+
             
             connectToUcsc();
 
 //            genomeChoiceBox.getItems().clear();
 //            genomeChoiceBox.getItems().addAll(genomes);
             
+    }
+    
+    private void displaySizeRangeError(){
+        Dialogs sizeRangeError = Dialogs.create().title("Invalid Size Range").
+                masthead("Invalid Primer Product Size Range values").
+                message("Primer Product Size Range field must be in the format '"
+                        + "100-200 200-400' etc.")
+                .styleClass(Dialog.STYLE_CLASS_NATIVE);
+        sizeRangeError.showError();
+    }
+    
+    EventHandler<KeyEvent> checkNumeric(){
+        return new EventHandler<KeyEvent>(){
+            @Override
+            public void handle(KeyEvent ke) {
+                if (!ke.getCharacter().matches("\\d")){
+                    ke.consume();
+                }
+            }
+        };
+    }
+    
+    EventHandler<KeyEvent> checkDecimal(){
+        return new EventHandler<KeyEvent>(){
+            @Override
+            public void handle(KeyEvent ke) {
+                if (!ke.getCharacter().matches("[\\d.]")){
+                    ke.consume();
+                }
+            }
+        };
+    }
+    
+    EventHandler<KeyEvent> checkRange(){
+        return new EventHandler<KeyEvent>(){
+            @Override
+            public void handle(KeyEvent ke) {
+                if (!ke.getCharacter().matches("[\\d-\\s]")){
+                    ke.consume();
+                }
+            }
+        };
+    }
+    
+    private boolean checkSizeRange(TextField field){
+        List<String> split = Arrays.asList(field.getText().split("\\s+"));
+        for (String s: split){
+            if (!s.matches("\\d+-\\d+")){
+                return false;
+            }
+        }
+        return true;
+    }
+            
+    private void resetPrimerSettings(){
+        minSizeTextField.setText("18");
+        optSizeTextField.setText("20");
+        maxSizeTextField.setText("27");
+        maxDiffTextField.setText("10");
+        minTmTextField.setText("57.0");
+        optTmTextField.setText("59.0");
+        maxTmTextField.setText("62.0");
+        maxMisprimeTextField.setText("12");
+        sizeRangeTextField.setText(defaultSizeRange);
     }
     
     private void getBuildTables(final String id){
@@ -382,10 +519,72 @@ public class AutoPrimer3 extends Application implements Initializable{
         if (!genesTextField.getText().matches(".*\\w.*")){
             return;//TO DO show ERROR dialog maybe
         }
-        Integer pair = 0;
+        
+        if (!checkSizeRange(sizeRangeTextField)){
+            displaySizeRangeError();
+            return;
+        }
+               
         int flanks = Integer.valueOf(flankingRegionsTextField.getText());
         int designBuffer = Integer.valueOf(minDistanceTextField.getText());
+        if (flanks <= (designBuffer + Integer.valueOf(maxSizeTextField.getText()))){
+            Dialogs flanksError = Dialogs.create().title("Flanks Error").
+                    masthead("Invalid values for 'Min distance'/"
+                            + "'Flanking region' fields.").
+                    message("Flanking region value must be greater than Min "
+                            + "distance value  plus maximum primer size.")
+                    .styleClass(Dialog.STYLE_CLASS_NATIVE);
+            flanksError.showError();
+            return;
+        }
+        
+        if (Integer.valueOf(optSizeTextField.getText()) < 
+                Integer.valueOf(minSizeTextField.getText())){
+            Dialogs sizeError = Dialogs.create().title("Primer Size Error").
+                    masthead("Invalid values for primer size fields.").
+                    message("Min Primer Size can not be greater than Opt "
+                            + "Primer Size.")
+                    .styleClass(Dialog.STYLE_CLASS_NATIVE);
+            sizeError.showError();
+            return;
+        }
+        
+        if (Integer.valueOf(maxSizeTextField.getText()) < 
+                Integer.valueOf(optSizeTextField.getText())){
+            Dialogs sizeError = Dialogs.create().title("Primer Size Error").
+                    masthead("Invalid values for primer size fields.").
+                    message("Max Primer Size can not be less than Opt "
+                            + "Primer Size.")
+                    .styleClass(Dialog.STYLE_CLASS_NATIVE);
+            sizeError.showError();
+            return;
+        }
+        
+        
+        if (Double.valueOf(optTmTextField.getText()) < 
+                Double.valueOf(minTmTextField.getText())){
+            Dialogs sizeError = Dialogs.create().title("Primer TM Error").
+                    masthead("Invalid values for primer TM fields.").
+                    message("Min Primer TM can not be greater than Opt "
+                            + "Primer TM.")
+                    .styleClass(Dialog.STYLE_CLASS_NATIVE);
+            sizeError.showError();
+            return;
+        }
+        
+        if (Double.valueOf(maxTmTextField.getText()) < 
+                Double.valueOf(optTmTextField.getText())){
+            Dialogs sizeError = Dialogs.create().title("Primer TM Error").
+                    masthead("Invalid values for primer TM fields.").
+                    message("Max Primer TM can not be less than Opt "
+                            + "Primer TM.")
+                    .styleClass(Dialog.STYLE_CLASS_NATIVE);
+            sizeError.showError();
+            return;
+        }
+        
         //get our transcript targets using databaseChoiceBox and genesTextField
+        Integer pair = 0;
         LinkedHashSet<String> searchStrings = new LinkedHashSet<>();
         Collections.addAll(searchStrings, genesTextField.getText().split("\\s+"));
         LinkedHashSet<String> notFound = new LinkedHashSet<>();
@@ -652,14 +851,37 @@ public class AutoPrimer3 extends Application implements Initializable{
             p3_job.append(target).append("\n");
             p3_job.append("SEQUENCE_ID=").append(name).append("\n");
             p3_job.append("SEQUENCE_TEMPLATE=").append(dna).append("\n");
-            p3_job.append("PRIMER_OPT_SIZE=20\n");
-            p3_job.append("PRIMER_MIN_SIZE=18\n");
-            p3_job.append("PRIMER_MAX_SIZE=27\n");
-            p3_job.append("PRIMER_PRODUCT_SIZE_RANGE=150-250 100-300 301-400 401-500 501-600 601-700 701-850 851-1000 1000-2000\n");
             p3_job.append("PRIMER_TASK=pick_pcr_primers\n");
+            p3_job.append("PRIMER_OPT_SIZE=").append(optSizeTextField.getText())
+                    .append("\n");
+            p3_job.append("PRIMER_MIN_SIZE=").append(minSizeTextField.getText())
+                    .append("\n");
+            p3_job.append("PRIMER_MAX_SIZE=").append(maxSizeTextField.getText())
+                    .append("\n");
+            p3_job.append("PRIMER_PRODUCT_SIZE_RANGE=")
+                    .append(sizeRangeTextField.getText()).append("\n");
+            p3_job.append("PRIMER_MIN_TM=")
+                    .append(minTmTextField.getText()).append("\n");
+            p3_job.append("PRIMER_OPT_TM=")
+                    .append(optTmTextField.getText()).append("\n");
+            p3_job.append("PRIMER_MAX_TM=")
+                    .append(maxTmTextField.getText()).append("\n");
+            p3_job.append("PRIMER_PAIR_MAX_DIFF_TM=")
+                    .append(maxDiffTextField.getText()).append("\n");
             p3_job.append("PRIMER_THERMODYNAMIC_PARAMETERS_PATH=").
-                    append(System.getProperty("user.home")).
-                    append("/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/primer3_config/\n");
+                    append(thermo_config.toString()).append("/\n");
+            String misprimeLibrary = (String) 
+                misprimingLibraryChoiceBox.getSelectionModel().getSelectedItem();
+            if (!misprimeLibrary.isEmpty()){
+                if (! misprimeLibrary.matches("none")){
+                    p3_job.append("PRIMER_MISPRIMING_LIBRARY=")
+                            .append(mispriming_libs.toString()).append("/")
+                            .append(misprimeLibrary).append("\n");
+                    p3_job.append("PRIMER_MAX_LIBRARY_MISPRIMING=")
+                            .append(maxMisprimeTextField.getText()).append("\n");
+            
+                }
+            }
             p3_job.append("=");
             //System.out.println(p3_job.toString());//debug only
             ArrayList<String> command = new ArrayList<>();
@@ -842,6 +1064,9 @@ public class AutoPrimer3 extends Application implements Initializable{
         }
     }
     
+    
+    
+    
     /**
      * The main() method is ignored in correctly deployed JavaFX application.
      * main() serves only as fallback in case the application can not be
@@ -853,4 +1078,6 @@ public class AutoPrimer3 extends Application implements Initializable{
     public static void main(String[] args) {
         Application.launch(AutoPrimer3.class, (java.lang.String[])null);
     }
+    
 }
+
