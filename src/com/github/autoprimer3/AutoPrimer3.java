@@ -16,27 +16,25 @@
  */
 package com.github.autoprimer3;
 
-import com.github.autoprimer3.GeneDetails.*;
 import com.github.autoprimer3.GeneDetails.Exon;
 import static com.github.autoprimer3.ReverseComplementDNA.reverseComplement;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -64,6 +62,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
@@ -103,6 +104,8 @@ public class AutoPrimer3 extends Application implements Initializable{
     Boolean CANRUN = false;
     final GetUcscBuildsAndTables buildsAndTables = new GetUcscBuildsAndTables();;
     File primer3ex; 
+    Path mispriming_libs;
+    Path thermo_config;
     
     @Override
     public void start(final Stage primaryStage) {
@@ -173,12 +176,39 @@ public class AutoPrimer3 extends Application implements Initializable{
 		while ((read = inputStream.read(bytes)) != -1) {
 			outputStream.write(bytes, 0, read);
 		}
+                inputStream.close();
+                outputStream.close();
                 primer3ex.setExecutable(true);
-            }catch(IOException ex){
-                //TO DO - throw this properly
+                File mispriming_zip = File.createTempFile("misprime", ".zip" );
+                Path misprime_dir = Files.createTempDirectory("mispriming_lib");
+                mispriming_zip.deleteOnExit();
+                inputStream = this.getClass().
+                        getResourceAsStream("mispriming_libraries.zip");
+                outputStream = new FileOutputStream(mispriming_zip);
+                while ((read = inputStream.read(bytes)) != -1) {
+			outputStream.write(bytes, 0, read);
+		}
+                inputStream.close();
+                outputStream.close();
+                ZipFile zip = new ZipFile(mispriming_zip);
+                zip.extractAll(misprime_dir.toString());
+                thermo_config = Files.createTempDirectory("thermo_config");
+                File thermo_zip = File.createTempFile("primer_config", ".zip");
+                thermo_zip.deleteOnExit();
+                inputStream = this.getClass().
+                        getResourceAsStream("primer3_config.zip");
+                outputStream = new FileOutputStream(thermo_zip);
+                while ((read = inputStream.read(bytes)) != -1) {
+			outputStream.write(bytes, 0, read);
+		}
+                zip = new ZipFile(thermo_zip);
+                zip.extractAll(thermo_config.toString());
+                System.out.println(thermo_config.toString());
+
+            }catch(IOException|ZipException ex){
+                //TO DO - catch this properly
                 ex.printStackTrace();
             }
-            System.out.println(primer3ex);
             designToChoiceBox.getSelectionModel().selectFirst();
             refreshButton.setOnAction(new EventHandler<ActionEvent>(){
                @Override
