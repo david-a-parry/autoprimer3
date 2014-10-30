@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import java.net.*?>
 <?import java.util.*?>
@@ -8,7 +9,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" minHeight="207.0" prefHeight="270.0" prefWidth="639.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml" fx:controller="com.github.autoprimer3.AutoPrimer3">
+<AnchorPane id="AnchorPane" minHeight="207.0" prefHeight="270.0" prefWidth="639.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.autoprimer3.AutoPrimer3">
   <children>
     <MenuBar focusTraversable="true" prefWidth="600.0" style="" useSystemMenuBar="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <menus>
@@ -31,7 +32,7 @@
     </MenuBar>
     <TabPane prefHeight="183.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="24.0">
       <tabs>
-        <Tab text="Genes">
+        <Tab fx:id="genesTab" text="Genes">
           <content>
             <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="226.0" prefWidth="635.0" style="">
               <children>
@@ -109,14 +110,145 @@
             </AnchorPane>
           </content>
         </Tab>
-        <Tab text="Coordinates">
+        <Tab fx:id="coordTab" text="Coordinates">
           <content>
             <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
           </content>
         </Tab>
-        <Tab text="Primer3 Settings">
+        <Tab fx:id="primerTab" text="Primer3 Settings">
           <content>
-            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <HBox layoutX="30.0" layoutY="14.0" spacing="5.0">
+                           <children>
+                              <VBox alignment="TOP_CENTER" layoutX="36.0" layoutY="14.0" prefHeight="57.0" prefWidth="94.0" spacing="5.0">
+                                 <children>
+                                    <Label layoutX="8.0" layoutY="14.0" text="Min Primer Size">
+                                       <font>
+                                          <Font size="10.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="minSizeTextField" alignment="CENTER" layoutX="6.0" layoutY="44.0" prefHeight="27.0" prefWidth="88.0" text="18">
+                                       <font>
+                                          <Font size="11.0" />
+                                       </font>
+                                    </TextField>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="TOP_CENTER" layoutX="135.0" layoutY="14.0" prefHeight="57.0" prefWidth="91.0" spacing="5.0">
+                                 <children>
+                                    <Label alignment="TOP_CENTER" layoutX="159.0" layoutY="14.0" text="Opt Primer Size">
+                                       <font>
+                                          <Font size="10.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="optSizeTextField" alignment="CENTER" layoutX="148.0" layoutY="44.0" prefHeight="27.0" prefWidth="97.0" text="20">
+                                       <font>
+                                          <Font size="11.0" />
+                                       </font>
+                                    </TextField>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="TOP_CENTER" layoutX="231.0" layoutY="14.0" prefHeight="57.0" prefWidth="92.0" spacing="5.0">
+                                 <children>
+                                    <Label layoutX="301.0" layoutY="14.0" text="Max Primer Size">
+                                       <font>
+                                          <Font size="10.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="maxSizeTextField" alignment="CENTER" layoutX="289.0" layoutY="44.0" prefHeight="27.0" prefWidth="130.0" text="27">
+                                       <font>
+                                          <Font size="11.0" />
+                                       </font>
+                                    </TextField>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="TOP_CENTER" layoutX="328.0" layoutY="14.0" prefHeight="57.0" prefWidth="69.0" spacing="5.0">
+                                 <children>
+                                    <Label layoutX="458.0" layoutY="14.0" text="Max Diff TM">
+                                       <font>
+                                          <Font size="10.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="maxDiffTextField" alignment="CENTER" layoutX="433.0" layoutY="44.0" prefHeight="27.0" prefWidth="126.0" text="10">
+                                       <font>
+                                          <Font size="11.0" />
+                                       </font>
+                                    </TextField>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="TOP_CENTER" layoutX="402.0" layoutY="14.0" prefHeight="57.0" prefWidth="62.0" spacing="5.0">
+                                 <children>
+                                    <VBox alignment="TOP_CENTER" prefHeight="57.0" prefWidth="69.0" spacing="5.0">
+                                       <children>
+                                          <Label layoutX="458.0" layoutY="14.0" text="Min TM">
+                                             <font>
+                                                <Font size="10.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField fx:id="minTmTextField" alignment="CENTER" layoutX="433.0" layoutY="44.0" prefHeight="27.0" prefWidth="126.0" text="57.0">
+                                             <font>
+                                                <Font size="11.0" />
+                                             </font>
+                                          </TextField>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="TOP_CENTER" layoutX="471.0" layoutY="14.0" prefHeight="57.0" prefWidth="69.0" spacing="5.0">
+                                 <children>
+                                    <Label layoutX="458.0" layoutY="14.0" text="Opt TM">
+                                       <font>
+                                          <Font size="10.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="optTmTextField" alignment="CENTER" layoutX="433.0" layoutY="44.0" prefHeight="27.0" prefWidth="126.0" text="59.0">
+                                       <font>
+                                          <Font size="11.0" />
+                                       </font>
+                                    </TextField>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="TOP_CENTER" layoutX="552.0" layoutY="14.0" prefHeight="57.0" prefWidth="69.0" spacing="5.0">
+                                 <children>
+                                    <Label layoutX="458.0" layoutY="14.0" text="Max TM">
+                                       <font>
+                                          <Font size="10.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="maxTmTextField" alignment="CENTER" layoutX="433.0" layoutY="44.0" prefHeight="27.0" prefWidth="126.0" text="62.0">
+                                       <font>
+                                          <Font size="11.0" />
+                                       </font>
+                                    </TextField>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                        <Label layoutX="231.0" layoutY="80.0" text="Primer Product Size Range" />
+                        <TextField fx:id="sizeRangeTextField" alignment="CENTER" layoutX="35.0" layoutY="104.0" prefHeight="27.0" prefWidth="566.0" text="150-250 100-300 301-400 401-500 501-600 601-700 701-850 851-1000 1000-2000" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="34.0">
+                           <font>
+                              <Font size="12.0" />
+                           </font>
+                        </TextField>
+                        <HBox layoutX="28.0" layoutY="144.0" spacing="25.0" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="28.0">
+                           <children>
+                              <VBox alignment="TOP_CENTER" layoutX="28.0" layoutY="144.0" spacing="15.0">
+                                 <children>
+                                    <Label alignment="TOP_CENTER" layoutX="80.0" layoutY="144.0" text="Mispriming Library" />
+                                    <ChoiceBox fx:id="misprimingLibraryChoiceBox" layoutX="28.0" layoutY="167.0" prefHeight="27.0" prefWidth="226.0" />
+                                 </children>
+                              </VBox>
+                              <VBox alignment="TOP_CENTER" layoutX="278.0" layoutY="144.0" spacing="15.0">
+                                 <children>
+                                    <Label alignment="CENTER" layoutX="278.0" layoutY="144.0" text="Max Mispriming" />
+                                    <TextField fx:id="maxMisprimeTextField" alignment="CENTER" layoutX="279.0" layoutY="167.0" prefHeight="27.0" prefWidth="102.0" text="12" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                        <Button fx:id="resetValuesButton" layoutX="432.0" layoutY="173.0" mnemonicParsing="false" text="Reset to default values" AnchorPane.bottomAnchor="9.0" AnchorPane.rightAnchor="34.0" />
+                     </children></AnchorPane>
           </content>
         </Tab>
       </tabs>
