@@ -73,6 +73,7 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
 import  java.util.prefs.*;
+import javafx.scene.control.TabPane;
 
 /**
  *
@@ -80,7 +81,11 @@ import  java.util.prefs.*;
  */
 public class AutoPrimer3 extends Application implements Initializable{
     
+    @FXML
+    AnchorPane mainPane;
     //tabs
+    @FXML
+    TabPane mainTabPane;
     @FXML
     Tab genesTab;
     @FXML
@@ -136,6 +141,8 @@ public class AutoPrimer3 extends Application implements Initializable{
     @FXML
     TextField maxTmTextField;
     @FXML
+    TextField splitRegionsTextField;
+    @FXML
     ChoiceBox misprimingLibraryChoiceBox;
     @FXML
     Button resetValuesButton;
@@ -150,6 +157,9 @@ public class AutoPrimer3 extends Application implements Initializable{
     Path thermo_config;
     String defaultSizeRange = "150-250 100-300 301-400 401-500 501-600 "
                 + "601-700 701-850 851-1000 1000-2000";
+    HashMap<TextField, String> defaultPrimer3Values = new HashMap<>();
+        
+        
     File configDirectory;
     AutoPrimer3Config ap3Config = new AutoPrimer3Config();
     
@@ -162,9 +172,8 @@ public class AutoPrimer3 extends Application implements Initializable{
             primaryStage.setTitle("AutoPrimer3");
             scene.getStylesheets().add(com.github.autoprimer3.AutoPrimer3.class.
                     getResource("autoprimer3.css").toExternalForm());
+            primaryStage.setResizable(false);
             primaryStage.show();
-            
-  
             primaryStage.getIcons().add(new Image(this.getClass().
                     getResourceAsStream("icon.png")));
           
@@ -194,124 +203,144 @@ public class AutoPrimer3 extends Application implements Initializable{
 //            buildsAndTables.connectToUcsc();
 //            ArrayList<String> genomeBuilds = buildsAndTables.getBuildIds();
 //            ObservableList<String> genomes = FXCollections.observableList(genomeBuilds);
-            
-            setLoading(true);
-            try{
-                ap3Config.readConfig();
-                buildsToDescriptions = ap3Config.getBuildToDescription();
-                buildToMap = ap3Config.getBuildToMapMaster();
-                buildToTable = ap3Config.getBuildToTables();
-            }catch (IOException|ClassNotFoundException ex){
-                Dialogs configError = Dialogs.create().title("Config Error").
-                masthead("Error Reading AutoPrimer3 Config").
-                message("AutoPrimer3 encountered an error reading config details"
-                        + " - please see the exception below and report this error.").
-                        styleClass(Dialog.STYLE_CLASS_NATIVE);
-                configError.showException(ex);
-            }
-            try{
-                primer3ex = File.createTempFile("primer3", "exe");
-                primer3ex.deleteOnExit();
-                InputStream inputStream;
-                if (System.getProperty("os.name").equals("Mac OS X")){
-                        inputStream = this.getClass().
-                                getResourceAsStream("primer3_core_macosx");
-                }else if (System.getProperty("os.name").equals("Linux")){
-                    if (System.getProperty("os.arch").endsWith("64")){
-                        inputStream = this.getClass().
-                                getResourceAsStream("primer3_core");
-                    }else{
-                        inputStream = this.getClass().
-                                getResourceAsStream("primer3_core32");
-                    }
+        setLoading(true);
+        try{
+            ap3Config.readConfig();
+            buildsToDescriptions = ap3Config.getBuildToDescription();
+            buildToMap = ap3Config.getBuildToMapMaster();
+            buildToTable = ap3Config.getBuildToTables();
+        }catch (IOException|ClassNotFoundException ex){
+            Dialogs configError = Dialogs.create().title("Config Error").
+            masthead("Error Reading AutoPrimer3 Config").
+            message("AutoPrimer3 encountered an error reading config details"
+                    + " - please see the exception below and report this error.").
+                    styleClass(Dialog.STYLE_CLASS_NATIVE);
+            configError.showException(ex);
+        }
+        try{
+            primer3ex = File.createTempFile("primer3", "exe");
+            primer3ex.deleteOnExit();
+            InputStream inputStream;
+            if (System.getProperty("os.name").equals("Mac OS X")){
+                    inputStream = this.getClass().
+                            getResourceAsStream("primer3_core_macosx");
+            }else if (System.getProperty("os.name").equals("Linux")){
+                if (System.getProperty("os.arch").endsWith("64")){
+                    inputStream = this.getClass().
+                            getResourceAsStream("primer3_core");
                 }else{
                     inputStream = this.getClass().
-                                getResourceAsStream("primer3_core");
+                            getResourceAsStream("primer3_core32");
                 }
-                OutputStream outputStream = new FileOutputStream(primer3ex);
-                int read = 0;
-		byte[] bytes = new byte[1024];
-		while ((read = inputStream.read(bytes)) != -1) {
-			outputStream.write(bytes, 0, read);
-		}
-                inputStream.close();
-                outputStream.close();
-                primer3ex.setExecutable(true);
-                File mispriming_zip = File.createTempFile("misprime", ".zip" );
-                mispriming_libs = Files.createTempDirectory("mispriming_lib");
-                mispriming_zip.deleteOnExit();
+            }else{
                 inputStream = this.getClass().
-                        getResourceAsStream("mispriming_libraries.zip");
-                outputStream = new FileOutputStream(mispriming_zip);
-                while ((read = inputStream.read(bytes)) != -1) {
-			outputStream.write(bytes, 0, read);
-		}
-                inputStream.close();
-                outputStream.close();
-                ZipFile zip = new ZipFile(mispriming_zip);
-                zip.extractAll(mispriming_libs.toString());
-                thermo_config = Files.createTempDirectory("thermo_config");
-                File thermo_zip = File.createTempFile("primer_config", ".zip");
-                thermo_zip.deleteOnExit();
-                inputStream = this.getClass().
-                        getResourceAsStream("primer3_config.zip");
-                outputStream = new FileOutputStream(thermo_zip);
-                while ((read = inputStream.read(bytes)) != -1) {
-			outputStream.write(bytes, 0, read);
-		}
-                zip = new ZipFile(thermo_zip);
-                zip.extractAll(thermo_config.toString());
-            }catch(IOException|ZipException ex){
-                //TO DO - catch this properly
-                ex.printStackTrace();
+                            getResourceAsStream("primer3_core");
             }
-            designToChoiceBox.getSelectionModel().selectFirst();
-            refreshButton.setOnAction(new EventHandler<ActionEvent>(){
-               @Override
-               public void handle(ActionEvent actionEvent){
-                    refreshDatabase();
+            OutputStream outputStream = new FileOutputStream(primer3ex);
+            int read = 0;
+            byte[] bytes = new byte[1024];
+            while ((read = inputStream.read(bytes)) != -1) {
+                    outputStream.write(bytes, 0, read);
+            }
+            inputStream.close();
+            outputStream.close();
+            primer3ex.setExecutable(true);
+            File mispriming_zip = File.createTempFile("misprime", ".zip" );
+            mispriming_libs = Files.createTempDirectory("mispriming_lib");
+            mispriming_zip.deleteOnExit();
+            inputStream = this.getClass().
+                    getResourceAsStream("mispriming_libraries.zip");
+            outputStream = new FileOutputStream(mispriming_zip);
+            while ((read = inputStream.read(bytes)) != -1) {
+                    outputStream.write(bytes, 0, read);
+            }
+            inputStream.close();
+            outputStream.close();
+            ZipFile zip = new ZipFile(mispriming_zip);
+            zip.extractAll(mispriming_libs.toString());
+            thermo_config = Files.createTempDirectory("thermo_config");
+            File thermo_zip = File.createTempFile("primer_config", ".zip");
+            thermo_zip.deleteOnExit();
+            inputStream = this.getClass().
+                    getResourceAsStream("primer3_config.zip");
+            outputStream = new FileOutputStream(thermo_zip);
+            while ((read = inputStream.read(bytes)) != -1) {
+                    outputStream.write(bytes, 0, read);
+            }
+            zip = new ZipFile(thermo_zip);
+            zip.extractAll(thermo_config.toString());
+        }catch(IOException|ZipException ex){
+            //TO DO - catch this properly
+            ex.printStackTrace();
+        }
+        designToChoiceBox.getSelectionModel().selectFirst();
+        refreshButton.setOnAction(new EventHandler<ActionEvent>(){
+           @Override
+           public void handle(ActionEvent actionEvent){
+                refreshDatabase();
+            }
+        });
+
+
+        genomeChoiceBox.getSelectionModel().selectedIndexProperty().addListener
+            (new ChangeListener<Number>(){
+            @Override
+            public void changed (ObservableValue ov, Number value, Number new_value){ 
+                if (new_value.intValue() >= 0){
+                    final String id = (String) genomeChoiceBox.getItems().get(new_value.intValue());
+                    genomeChoiceBox.setTooltip(new Tooltip (ap3Config.getBuildToDescription().get(id)));
+                    getBuildTables(id);
                 }
-            });
+            }
+        });
+        genomeChoiceBox.getItems().clear();
+        genomeChoiceBox.getItems().addAll(new ArrayList<>(buildsToDescriptions.keySet()));
+        genomeChoiceBox.getSelectionModel().selectFirst();
+        File misprimeDir = mispriming_libs.toFile();
+        misprimingLibraryChoiceBox.getItems().add("none");
+        for (File f: misprimeDir.listFiles()){
+            misprimingLibraryChoiceBox.getItems().add(f.getName());
+        }
+        misprimingLibraryChoiceBox.getSelectionModel().selectFirst();
+        minDistanceTextField.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
+        flankingRegionsTextField.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
+        minSizeTextField.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
+        optSizeTextField.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
+        maxSizeTextField.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
+        maxDiffTextField.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
+        maxMisprimeTextField.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
+        sizeRangeTextField.addEventFilter(KeyEvent.KEY_TYPED, checkRange());
+        minTmTextField.addEventFilter(KeyEvent.KEY_TYPED, checkDecimal());
+        optTmTextField.addEventFilter(KeyEvent.KEY_TYPED, checkDecimal());
+        maxTmTextField.addEventFilter(KeyEvent.KEY_TYPED, checkDecimal());
+        splitRegionsTextField.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
+        defaultPrimer3Values.put(minSizeTextField, "18");
+        defaultPrimer3Values.put(optSizeTextField, "20");
+        defaultPrimer3Values.put(maxSizeTextField, "27");
+        defaultPrimer3Values.put(maxDiffTextField, "10");
+        defaultPrimer3Values.put(minTmTextField, "57.0");
+        defaultPrimer3Values.put(optTmTextField, "59.0");
+        defaultPrimer3Values.put(maxTmTextField, "62.0");
+        defaultPrimer3Values.put(splitRegionsTextField, "500");
+        defaultPrimer3Values.put(maxMisprimeTextField, "12");
+        defaultPrimer3Values.put(sizeRangeTextField, defaultSizeRange);
+        resetValuesButton.setOnAction(new EventHandler<ActionEvent>(){
+           @Override
+           public void handle(ActionEvent actionEvent){
+                resetPrimerSettings();
+            }
+        });
             
-            
-            genomeChoiceBox.getSelectionModel().selectedIndexProperty().addListener
-                (new ChangeListener<Number>(){
-                @Override
-                public void changed (ObservableValue ov, Number value, Number new_value){ 
-                    if (new_value.intValue() >= 0){
-                        final String id = (String) genomeChoiceBox.getItems().get(new_value.intValue());
-                        genomeChoiceBox.setTooltip(new Tooltip (ap3Config.getBuildToDescription().get(id)));
-                        getBuildTables(id);
+        mainTabPane.getSelectionModel().selectedItemProperty().addListener(
+                new ChangeListener<Tab>(){
+                    @Override
+                    public void changed (ObservableValue<? extends Tab> ov, Tab t, Tab t1) {
+                        if (t.equals(primerTab)){
+                            resetEmptyPrimerSettings();
+                        }
                     }
                 }
-            });
-            genomeChoiceBox.getItems().clear();
-            genomeChoiceBox.getItems().addAll(new ArrayList<>(buildsToDescriptions.keySet()));
-            genomeChoiceBox.getSelectionModel().selectFirst();
-            File misprimeDir = mispriming_libs.toFile();
-            misprimingLibraryChoiceBox.getItems().add("none");
-            for (File f: misprimeDir.listFiles()){
-                misprimingLibraryChoiceBox.getItems().add(f.getName());
-            }
-            misprimingLibraryChoiceBox.getSelectionModel().selectFirst();
-            minDistanceTextField.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
-            flankingRegionsTextField.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
-            minSizeTextField.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
-            optSizeTextField.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
-            maxSizeTextField.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
-            maxDiffTextField.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
-            maxMisprimeTextField.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
-            sizeRangeTextField.addEventFilter(KeyEvent.KEY_TYPED, checkRange());
-            minTmTextField.addEventFilter(KeyEvent.KEY_TYPED, checkDecimal());
-            optTmTextField.addEventFilter(KeyEvent.KEY_TYPED, checkDecimal());
-            maxTmTextField.addEventFilter(KeyEvent.KEY_TYPED, checkDecimal());
-            resetValuesButton.setOnAction(new EventHandler<ActionEvent>(){
-               @Override
-               public void handle(ActionEvent actionEvent){
-                    resetPrimerSettings();
-                }
-            });
-            
+        );
         sizeRangeTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
             @Override
             public void changed(ObservableValue<? extends Boolean> observable,
@@ -556,17 +585,21 @@ public class AutoPrimer3 extends Application implements Initializable{
     }
             
     private void resetPrimerSettings(){
-        minSizeTextField.setText("18");
-        optSizeTextField.setText("20");
-        maxSizeTextField.setText("27");
-        maxDiffTextField.setText("10");
-        minTmTextField.setText("57.0");
-        optTmTextField.setText("59.0");
-        maxTmTextField.setText("62.0");
-        maxMisprimeTextField.setText("12");
-        sizeRangeTextField.setText(defaultSizeRange);
+        for (TextField f: defaultPrimer3Values.keySet()){
+            f.setText(defaultPrimer3Values.get(f));
+        }
     }
     
+    private void resetEmptyPrimerSettings(){
+        for (TextField f: defaultPrimer3Values.keySet()){
+            if (f.getText().isEmpty()){
+                f.setText(defaultPrimer3Values.get(f));
+            }else if (f.getText().trim().length() < 1){
+                f.setText(defaultPrimer3Values.get(f));
+            }
+        }
+        
+    }
     
     
     public void refreshDatabase(){
@@ -583,7 +616,7 @@ public class AutoPrimer3 extends Application implements Initializable{
         if (!genesTextField.getText().matches(".*\\w.*")){
             return;//TO DO show ERROR dialog maybe
         }
-        
+        resetEmptyPrimerSettings();
         if (!checkSizeRange(sizeRangeTextField)){
             displaySizeRangeError();
             return;
