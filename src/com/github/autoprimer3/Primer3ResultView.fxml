@@ -18,12 +18,12 @@
                               <TableColumn fx:id="indexCol" prefWidth="59.0" text="#" />
                             <TableColumn fx:id="nameCol" prefWidth="147.0" text="Name" />
                               <TableColumn fx:id="idCol" prefWidth="160.0" text="Other IDs" />
-                            <TableColumn fx:id="leftPrimerCol" prefWidth="222.0" text="Left Primer" />
-                              <TableColumn fx:id="rightPrimerCol" prefWidth="241.0" text="Right Primer" />
-                              <TableColumn fx:id="productSizeCol" prefWidth="112.0" text="Product Size" />
-                              <TableColumn fx:id="chromCol" prefWidth="101.0" text="Chromosome" />
-                              <TableColumn fx:id="leftPosCol" minWidth="0.0" prefWidth="124.0" text="Left Position" />
-                              <TableColumn fx:id="rightPosCol" prefWidth="118.0" text="Right Position" />
+                            <TableColumn fx:id="leftPrimerCol" prefWidth="190.0" text="Left Primer" />
+                              <TableColumn fx:id="rightPrimerCol" prefWidth="205.0" text="Right Primer" />
+                              <TableColumn fx:id="productSizeCol" prefWidth="90.0" text="Product Size" />
+                              <TableColumn fx:id="chromCol" prefWidth="98.0" text="Chromosome" />
+                              <TableColumn fx:id="leftPosCol" minWidth="0.0" prefWidth="126.0" text="Left Position" />
+                              <TableColumn fx:id="rightPosCol" prefWidth="134.0" text="Right Position" />
                           </columns>
                         </TableView>
                      </children>
@@ -34,7 +34,7 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <TextArea fx:id="designTextSummary" layoutX="94.0" layoutY="279.0" prefHeight="741.0" prefWidth="1210.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <TextArea fx:id="designTextSummary" editable="false" layoutX="94.0" layoutY="279.0" prefHeight="741.0" prefWidth="1210.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <font>
                               <Font name="Monospaced Regular" size="12.0" />
                            </font>
