@@ -35,9 +35,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -69,6 +72,7 @@ import net.lingala.zip4j.exception.ZipException;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
+import  java.util.prefs.*;
 
 /**
  *
@@ -137,12 +141,17 @@ public class AutoPrimer3 extends Application implements Initializable{
     Button resetValuesButton;
     
     Boolean CANRUN = false;
-    final GetUcscBuildsAndTables buildsAndTables = new GetUcscBuildsAndTables();;
+    final GetUcscBuildsAndTables buildsAndTables = new GetUcscBuildsAndTables();
+    LinkedHashMap<String, String> buildsToDescriptions = new LinkedHashMap<>();
+    HashMap<String, String> buildToMap = new HashMap<>();
+    HashMap<String, ArrayList<String>> buildToTable = new HashMap<>();
     File primer3ex; 
     Path mispriming_libs;
     Path thermo_config;
     String defaultSizeRange = "150-250 100-300 301-400 401-500 501-600 "
                 + "601-700 701-850 851-1000 1000-2000";
+    File configDirectory;
+    AutoPrimer3Config ap3Config = new AutoPrimer3Config();
     
     @Override
     public void start(final Stage primaryStage) {
@@ -187,7 +196,19 @@ public class AutoPrimer3 extends Application implements Initializable{
 //            ObservableList<String> genomes = FXCollections.observableList(genomeBuilds);
             
             setLoading(true);
-            
+            try{
+                ap3Config.readConfig();
+                buildsToDescriptions = ap3Config.getBuildToDescription();
+                buildToMap = ap3Config.getBuildToMapMaster();
+                buildToTable = ap3Config.getBuildToTables();
+            }catch (IOException|ClassNotFoundException ex){
+                Dialogs configError = Dialogs.create().title("Config Error").
+                masthead("Error Reading AutoPrimer3 Config").
+                message("AutoPrimer3 encountered an error reading config details"
+                        + " - please see the exception below and report this error.").
+                        styleClass(Dialog.STYLE_CLASS_NATIVE);
+                configError.showException(ex);
+            }
             try{
                 primer3ex = File.createTempFile("primer3", "exe");
                 primer3ex.deleteOnExit();
@@ -240,8 +261,6 @@ public class AutoPrimer3 extends Application implements Initializable{
 		}
                 zip = new ZipFile(thermo_zip);
                 zip.extractAll(thermo_config.toString());
-                System.out.println(thermo_config.toString());
-
             }catch(IOException|ZipException ex){
                 //TO DO - catch this properly
                 ex.printStackTrace();
@@ -253,15 +272,22 @@ public class AutoPrimer3 extends Application implements Initializable{
                     refreshDatabase();
                 }
             });
+            
+            
             genomeChoiceBox.getSelectionModel().selectedIndexProperty().addListener
                 (new ChangeListener<Number>(){
                 @Override
                 public void changed (ObservableValue ov, Number value, Number new_value){ 
-                    final String id = (String) genomeChoiceBox.getItems().get(new_value.intValue());
-                    genomeChoiceBox.setTooltip(new Tooltip (buildsAndTables.getGenomeDescription(id)));
-                    getBuildTables(id);
+                    if (new_value.intValue() >= 0){
+                        final String id = (String) genomeChoiceBox.getItems().get(new_value.intValue());
+                        genomeChoiceBox.setTooltip(new Tooltip (ap3Config.getBuildToDescription().get(id)));
+                        getBuildTables(id);
+                    }
                 }
             });
+            genomeChoiceBox.getItems().clear();
+            genomeChoiceBox.getItems().addAll(new ArrayList<>(buildsToDescriptions.keySet()));
+            genomeChoiceBox.getSelectionModel().selectFirst();
             File misprimeDir = mispriming_libs.toFile();
             misprimingLibraryChoiceBox.getItems().add("none");
             for (File f: misprimeDir.listFiles()){
@@ -286,25 +312,196 @@ public class AutoPrimer3 extends Application implements Initializable{
                 }
             });
             
-                sizeRangeTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
-                    @Override
-                    public void changed(ObservableValue<? extends Boolean> observable,
-                            Boolean oldValue, Boolean newValue ){
-                        if (!sizeRangeTextField.isFocused()){
-                            if (!checkSizeRange(sizeRangeTextField)){
-                                displaySizeRangeError();
-                            }
-                        }
+        sizeRangeTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable,
+                    Boolean oldValue, Boolean newValue ){
+                if (!sizeRangeTextField.isFocused()){
+                    if (!checkSizeRange(sizeRangeTextField)){
+                        displaySizeRangeError();
                     }
-                });
-
-            
-            connectToUcsc();
-
-//            genomeChoiceBox.getItems().clear();
-//            genomeChoiceBox.getItems().addAll(genomes);
+                }
+            }
+        });
+        
+        if (ap3Config.getBuildToDescription().isEmpty()){
+            connectToUcsc();   
+        }else{
+            setLoading(false);
+        }
             
     }
+    
+    private void connectToUcsc(){
+        progressIndicator.setProgress(-1);
+        final Task<LinkedHashMap<String, String>> getBuildsTask = 
+                new Task<LinkedHashMap<String, String>>(){
+            @Override
+            protected LinkedHashMap<String, String> call() {
+                buildsAndTables.connectToUcsc();
+                return buildsAndTables.getBuildToDescription();
+            }
+        };
+        getBuildsTask.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
+            @Override
+            public void handle (WorkerStateEvent e){
+                LinkedHashMap<String, String> buildIds = 
+                        (LinkedHashMap<String, String>) e.getSource().getValue();
+                genomeChoiceBox.getItems().clear();
+                if (! buildsToDescriptions.equals(buildIds)){
+                    genomeChoiceBox.getItems().addAll(buildIds.keySet());
+                    genomeChoiceBox.getSelectionModel().selectFirst();
+                    ap3Config.setBuildToDescription(buildIds);
+                    ap3Config.setBuildToMapMaster(buildsAndTables.getBuildToMapMaster());
+                    ap3Config.setBuildToTables(buildToTable);
+                    try{
+                        System.out.println("Writing output");
+                        ap3Config.writeConfig();
+                    }catch (IOException ex){
+                        ex.printStackTrace();
+                    }
+                }
+                setLoading(false);
+                
+//                    progressIndicator.setProgress(0);
+                /*keep progress running as we have just indirectly called the
+                 * getTablesTask by selecting our first genome
+                 */
+            }
+        });
+
+        getBuildsTask.setOnFailed(new EventHandler<WorkerStateEvent>(){
+            @Override
+            public void handle (WorkerStateEvent e){
+                progressIndicator.setProgress(0);
+                System.out.println(e.getSource().getException());
+                setLoading(false);
+                setCanRun(false);
+            }
+        });
+        getBuildsTask.setOnCancelled(new EventHandler<WorkerStateEvent>(){
+            @Override
+            public void handle (WorkerStateEvent e){
+                progressIndicator.setProgress(0);
+                progressLabel.setText("UCSC connection cancelled.");
+                setLoading(false);
+                setCanRun(false);
+            }
+        });
+        cancelButton.setOnAction(new EventHandler<ActionEvent>(){
+           @Override
+           public void handle(ActionEvent actionEvent){
+                getBuildsTask.cancel();
+
+            }
+       });
+        progressLabel.setText("Connecting to UCSC...");
+        new Thread(getBuildsTask).start();
+    }
+    
+    private void setTables(ArrayList<String> tables){
+        ArrayList<String> genes = new ArrayList<>();
+        ArrayList<String> snps = new ArrayList<>();
+        for (String t: tables){
+            if (t.equals("refGene") || t.equals("knownGene") || 
+                    t.equals("ensGene") || t.equals("xenoRefGene")){
+                genes.add(t);
+            }else if (t.matches("^snp\\d+(\\w+)*")){
+                snps.add(t);
+            }
+        }
+        if (genes.isEmpty()){
+            databaseChoiceBox.getItems().add("No gene databases found - please choose another genome.");
+            setCanRun(false);
+            databaseChoiceBox.getSelectionModel().selectFirst();
+        }else{
+            databaseChoiceBox.getItems().addAll(genes);
+            if (databaseChoiceBox.getItems().contains("refGene")){
+                databaseChoiceBox.getSelectionModel().select("refGene");
+            }else{
+                databaseChoiceBox.getSelectionModel().selectFirst();
+            }
+        }
+        snpsChoiceBox.getItems().clear();
+        snpsChoiceBox.getItems().add("No");
+        snpsChoiceBox.getItems().addAll(snps);
+        snpsChoiceBox.getSelectionModel().selectFirst();
+
+    }
+    
+    private void getBuildTables(final String id){
+        databaseChoiceBox.getItems().clear();
+        snpsChoiceBox.getItems().clear();
+        if (ap3Config.getBuildToTables().containsKey(id)){
+            setTables(ap3Config.getBuildToTables().get(id));
+            return;
+        }
+        setLoading(true);
+        progressLabel.setText("Getting database information for " + id);
+        final Task<ArrayList<String>> getTablesTask = new Task<ArrayList<String>>(){
+            @Override
+            protected ArrayList<String> call() {
+                System.out.println("Called getTablesTask...");
+                return buildsAndTables.getAvailableTables(id);
+            }
+        };
+
+        getTablesTask.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
+            @Override
+            public void handle (WorkerStateEvent e){
+                System.out.println("getTablesTask succeeded.");
+                ArrayList<String> tables = (ArrayList<String>) e.getSource().getValue();
+                if (! tables.equals(ap3Config.getBuildToTables().get(id))){
+                    ap3Config.getBuildToTables().put(id, tables);
+                    ap3Config.setBuildToDescription(ap3Config.getBuildToDescription());
+                    ap3Config.setBuildToMapMaster(ap3Config.getBuildToMapMaster());
+                    try{
+                        System.out.println("Writing output");
+                        ap3Config.writeConfig();
+                    }catch (IOException ex){
+                        ex.printStackTrace();
+                    }
+                }
+                setTables(tables);
+                progressIndicator.setProgress(0);
+                progressLabel.setText("");
+                setLoading(false);
+            }
+        });
+
+        getTablesTask.setOnFailed(new EventHandler<WorkerStateEvent>(){
+            @Override
+            public void handle (WorkerStateEvent e){
+                progressLabel.setText("Get Tables Task Failed");
+                System.out.println("getTablesTask failed.");
+                System.out.println(e.getSource().getException());
+                setLoading(false);
+                setCanRun(false);
+            }
+        });
+
+        getTablesTask.setOnCancelled(new EventHandler<WorkerStateEvent>(){
+            @Override
+            public void handle (WorkerStateEvent e){
+                progressLabel.setText("Get Tables Task Cancelled");
+                System.out.println("getTablesTask cancelled.");
+                setLoading(false);
+                setCanRun(false);
+            }
+        });
+
+        cancelButton.setOnAction(new EventHandler<ActionEvent>(){
+           @Override
+           public void handle(ActionEvent actionEvent){
+                getTablesTask.cancel();
+
+            }
+       });
+
+        progressIndicator.setProgress(-1);
+        new Thread(getTablesTask).start();
+    }
+    
     
     private void displaySizeRangeError(){
         Dialogs sizeRangeError = Dialogs.create().title("Invalid Size Range").
@@ -370,140 +567,7 @@ public class AutoPrimer3 extends Application implements Initializable{
         sizeRangeTextField.setText(defaultSizeRange);
     }
     
-    private void getBuildTables(final String id){
-        setLoading(true);
-        databaseChoiceBox.getItems().clear();
-        snpsChoiceBox.getItems().clear();
-        progressLabel.setText("Getting database information for " + id);
-        final Task<ArrayList<String>> getTablesTask = new Task<ArrayList<String>>(){
-            @Override
-            protected ArrayList<String> call() {
-                System.out.println("Called getTablesTask...");
-                return buildsAndTables.getAvailableTables(id);
-            }
-        };
-
-        getTablesTask.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
-            @Override
-            public void handle (WorkerStateEvent e){
-                System.out.println("getTablesTask succeeded.");
-                ArrayList<String> tables = (ArrayList<String>) e.getSource().getValue();
-                ArrayList<String> genes = new ArrayList<>();
-                ArrayList<String> snps = new ArrayList<>();
-                for (String t: tables){
-                    if (t.equals("refGene") || t.equals("knownGene") || 
-                            t.equals("ensGene") || t.equals("xenoRefGene")){
-                        genes.add(t);
-                    }else if (t.matches("^snp\\d+(\\w+)*")){
-                        snps.add(t);
-                    }
-                }
-                if (genes.isEmpty()){
-                    databaseChoiceBox.getItems().add("No gene databases found - please choose another genome.");
-                    setCanRun(false);
-                    databaseChoiceBox.getSelectionModel().selectFirst();
-                }else{
-                    databaseChoiceBox.getItems().addAll(genes);
-                    if (databaseChoiceBox.getItems().contains("refGene")){
-                        databaseChoiceBox.getSelectionModel().select("refGene");
-                    }else{
-                        databaseChoiceBox.getSelectionModel().selectFirst();
-                    }
-                }
-                snpsChoiceBox.getItems().clear();
-                snpsChoiceBox.getItems().add("No");
-                snpsChoiceBox.getItems().addAll(snps);
-                snpsChoiceBox.getSelectionModel().selectFirst();
-                progressIndicator.setProgress(0);
-                progressLabel.setText("");
-                setLoading(false);
-            }
-        });
-
-        getTablesTask.setOnFailed(new EventHandler<WorkerStateEvent>(){
-            @Override
-            public void handle (WorkerStateEvent e){
-                progressLabel.setText("Get Tables Task Failed");
-                System.out.println("getTablesTask failed.");
-                System.out.println(e.getSource().getException());
-                setLoading(false);
-                setCanRun(false);
-            }
-        });
-
-        getTablesTask.setOnCancelled(new EventHandler<WorkerStateEvent>(){
-            @Override
-            public void handle (WorkerStateEvent e){
-                progressLabel.setText("Get Tables Task Cancelled");
-                System.out.println("getTablesTask cancelled.");
-                setLoading(false);
-                setCanRun(false);
-            }
-        });
-
-        cancelButton.setOnAction(new EventHandler<ActionEvent>(){
-           @Override
-           public void handle(ActionEvent actionEvent){
-                getTablesTask.cancel();
-
-            }
-       });
-
-        progressIndicator.setProgress(-1);
-        new Thread(getTablesTask).start();
-    }
     
-    private void connectToUcsc(){
-        progressIndicator.setProgress(-1);
-        final Task<ArrayList<String>> getBuildsTask = new Task<ArrayList<String>>(){
-            @Override
-            protected ArrayList<String> call() {
-                buildsAndTables.connectToUcsc();
-                return buildsAndTables.getBuildIds();
-            }
-        };
-        getBuildsTask.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
-            @Override
-            public void handle (WorkerStateEvent e){
-                ArrayList<String> buildIds = (ArrayList<String>) e.getSource().getValue();
-                genomeChoiceBox.getItems().clear();
-                genomeChoiceBox.getItems().addAll(buildIds);
-                genomeChoiceBox.getSelectionModel().selectFirst();
-//                    progressIndicator.setProgress(0);
-                /*keep progress running as we have just indirectly called the
-                 * getTablesTask by selecting our first genome
-                 */
-            }
-        });
-
-        getBuildsTask.setOnFailed(new EventHandler<WorkerStateEvent>(){
-            @Override
-            public void handle (WorkerStateEvent e){
-                progressIndicator.setProgress(0);
-                System.out.println(e.getSource().getException());
-                setLoading(false);
-                setCanRun(false);
-            }
-        });
-        getBuildsTask.setOnCancelled(new EventHandler<WorkerStateEvent>(){
-            @Override
-            public void handle (WorkerStateEvent e){
-                progressIndicator.setProgress(0);
-                progressLabel.setText("UCSC connection cancelled.");
-                setLoading(false);
-                setCanRun(false);
-            }
-        });
-        cancelButton.setOnAction(new EventHandler<ActionEvent>(){
-           @Override
-           public void handle(ActionEvent actionEvent){
-                getBuildsTask.cancel();
-
-            }
-       });
-        progressLabel.setText("Connecting to UCSC...");
-        new Thread(getBuildsTask).start();
-    }
     
     public void refreshDatabase(){
         if (genomeChoiceBox.getSelectionModel().isEmpty()){//implies no connection to UCSC
@@ -737,11 +801,13 @@ public class AutoPrimer3 extends Application implements Initializable{
                 //TO DO
                 //get SNPs using mysql query like:
                 //select name,chrom,chromStart,chromEnd,observed from hg19.snp141Common where chrom='chr1' and chromEND >= 93992837 and chromStart < 94121149 ;
+                int subsStart = tStart - flanks > 0 ? tStart - flanks : 0;
+                int subsEnd = tEnd + flanks - 1 < dna.length() ?  tEnd + flanks - 1 : dna.length();
                 StringBuilder dnaTarget = new StringBuilder(
-                        dna.substring(tStart - flanks, tStart).toLowerCase());
+                        dna.substring(subsStart, tStart).toLowerCase());
                 dnaTarget.append(dna.substring(tStart, tEnd-1)
                         .toUpperCase());
-                dnaTarget.append(dna.substring(tEnd -1, tEnd + flanks - 1)
+                dnaTarget.append(dna.substring(tEnd -1, subsEnd)
                         .toLowerCase());
                 if (minus_strand > plus_strand){
                     dnaTarget = new StringBuilder(reverseComplement
@@ -869,19 +935,22 @@ public class AutoPrimer3 extends Application implements Initializable{
             p3_job.append("PRIMER_PAIR_MAX_DIFF_TM=")
                     .append(maxDiffTextField.getText()).append("\n");
             p3_job.append("PRIMER_THERMODYNAMIC_PARAMETERS_PATH=").
-                    append(thermo_config.toString()).append("/\n");
+                    append(thermo_config.toString())
+                    .append(System.getProperty("file.separator")).append("\n");
             String misprimeLibrary = (String) 
                 misprimingLibraryChoiceBox.getSelectionModel().getSelectedItem();
             if (!misprimeLibrary.isEmpty()){
                 if (! misprimeLibrary.matches("none")){
                     p3_job.append("PRIMER_MISPRIMING_LIBRARY=")
-                            .append(mispriming_libs.toString()).append("/")
+                            .append(mispriming_libs.toString())
+                            .append(System.getProperty("file.separator"))
                             .append(misprimeLibrary).append("\n");
                     p3_job.append("PRIMER_MAX_LIBRARY_MISPRIMING=")
                             .append(maxMisprimeTextField.getText()).append("\n");
             
                 }
             }
+            
             p3_job.append("=");
             //System.out.println(p3_job.toString());//debug only
             ArrayList<String> command = new ArrayList<>();
@@ -902,7 +971,7 @@ public class AutoPrimer3 extends Application implements Initializable{
 
                     String line;
                     while ((line = inbuf.readLine()) != null) {
-                        System.out.println(line);//debug only
+                        //System.out.println(line);//debug only
                         result.add(line);
                     }
                     while ((line = errorbuf.readLine()) != null){
@@ -910,7 +979,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                         error.append(line);
                     }
                     int exit = ps.waitFor();
-                    System.out.println(exit);//debug only
+                    //System.out.println(exit);//debug only
                 }catch(InterruptedException ex){
                     ex.printStackTrace();
                 }
@@ -934,7 +1003,11 @@ public class AutoPrimer3 extends Application implements Initializable{
             start = g.getTxStart();
         }
         start -= flanks;
-        return start;
+        if (start > 0){
+            return start;
+        }else{
+            return 0;
+        }
     }
     /*this method gets the end coordinates of a gene based on 
     the values for the designToChoiceBox and the Flanking region choice box
