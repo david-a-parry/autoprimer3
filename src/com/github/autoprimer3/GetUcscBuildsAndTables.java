@@ -21,6 +21,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Set;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -36,9 +38,11 @@ import org.dom4j.io.SAXReader;
  */
 public class GetUcscBuildsAndTables {
     
-    private HashMap<String, String> buildToMapMaster = new HashMap<>();//maps build name to url e.g. hg19 => http://genome.cse.ucsc.edu:80/cgi-bin/das/hg19
-    private ArrayList<String> buildIds = new ArrayList<>();//a list of IDs so we can retrieve them in the same order they're given
-    private HashMap<String, String> buildToDescription = new HashMap<>();//maps build name to description e.g. hg19 => 'Human Feb. 2009 (GRCh37/hg19) Genome at UCSC'
+    private HashMap<String, String> buildToMapMaster = new HashMap<>();
+//maps build name to url e.g. hg19 => http://genome.cse.ucsc.edu:80/cgi-bin/das/hg19
+//a list of IDs so we can retrieve them in the same order they're given
+    private LinkedHashMap<String, String> buildToDescription = new LinkedHashMap<>();
+//maps build name to description e.g. hg19 => 'Human Feb. 2009 (GRCh37/hg19) Genome at UCSC'
     
     //get build names and DAS urls
     public void connectToUcsc(){
@@ -56,7 +60,6 @@ public class GetUcscBuildsAndTables {
                 Element mapmaster = dsn.element("MAPMASTER");
                 Element desc = dsn.element("DESCRIPTION");
                 buildToMapMaster.put(build.getValue(), mapmaster.getText());
-                buildIds.add(build.getValue());
                 buildToDescription.put(build.getValue(), desc.getText());
             }
         }catch (DocumentException|MalformedURLException ex){
@@ -69,12 +72,12 @@ public class GetUcscBuildsAndTables {
         return buildToMapMaster;
     }
     
-    public HashMap<String, String> getBuildToDescription(){
+    public LinkedHashMap<String, String> getBuildToDescription(){
         return buildToDescription;
     }
     
     public ArrayList<String> getBuildIds(){
-        return buildIds;
+        return new ArrayList<>(buildToDescription.keySet());
     }
     
     public String getGenomeDescription(String genome){
@@ -82,9 +85,9 @@ public class GetUcscBuildsAndTables {
     }
     
     public ArrayList<String> getAvailableTables(String build){
-           if (buildIds.isEmpty()){
-               this.connectToUcsc();
-           }
+        if (buildToDescription.isEmpty()){
+           this.connectToUcsc();
+        }
         ArrayList<String> tables = new ArrayList<>();
         try{
             SAXReader reader = new SAXReader();
@@ -108,7 +111,7 @@ public class GetUcscBuildsAndTables {
     }
     
     public ArrayList<String> getAvailableTables(String build, String category){
-        if (buildIds.isEmpty()){
+        if (buildToDescription.isEmpty()){
             this.connectToUcsc();
         }
         ArrayList<String> tables = new ArrayList<>();
@@ -137,7 +140,7 @@ public class GetUcscBuildsAndTables {
     }
     //uses 0-based coordinates for compatibility with gene tables, bed etc., although DAS uses 1-based
     public String retrieveSequence(String build, String chrom, Integer start, Integer end){
-        if (buildIds.isEmpty()){
+        if (buildToDescription.isEmpty()){
             this.connectToUcsc();
         }
         if (! buildToMapMaster.containsKey(build)){
