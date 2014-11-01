@@ -16,6 +16,7 @@
  */
 package com.github.autoprimer3;
 
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -25,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
@@ -47,6 +49,14 @@ public class AutoPrimer3Config implements Serializable{
     private LinkedHashMap<String, String> buildToDescription = new LinkedHashMap<>();
 //maps build name to description e.g. hg19 => 'Human Feb. 2009 (GRCh37/hg19) Genome at UCSC'
     private HashMap<String, ArrayList<String>> buildToTables = new HashMap<>();
+    
+    public File getConfigFile(){
+        return configFile;
+    }
+    
+    public void setConfigFile(File file){
+        configFile = file;
+    }
     
     public HashMap<String, String> getBuildToMapMaster(){
         return buildToMapMaster;
@@ -100,14 +110,20 @@ public class AutoPrimer3Config implements Serializable{
         if (configFile.exists()){
             readConfigFile(configFile);
         }else{
-            InputStream  is = new ObjectInputStream(new BufferedInputStream
-            (this.getClass().getResourceAsStream("config.ser")));
-            ObjectInputStream ois = new ObjectInputStream(is);
-            buildToMapMaster = (HashMap<String, String>) ois.readObject();
-            buildToDescription = (LinkedHashMap<String, String> ) ois.readObject();  
-            buildToTables = (HashMap<String, ArrayList<String>>) ois.readObject();
-            is.close();
-            ois.close();
+            if (! configDir.exists()){
+                configDir.mkdir();
+            }
+            InputStream inputStream = this.getClass().
+                            getResourceAsStream("config.ser");
+            OutputStream outputStream = new FileOutputStream(configFile);
+            int read = 0;
+            byte[] bytes = new byte[1024];
+            while ((read = inputStream.read(bytes)) != -1) {
+                outputStream.write(bytes, 0, read);
+            }
+            inputStream.close();
+            outputStream.close();
+            readConfigFile(configFile);
         }
     }
     
