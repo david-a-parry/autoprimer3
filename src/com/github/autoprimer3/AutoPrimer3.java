@@ -18,6 +18,7 @@ package com.github.autoprimer3;
 
 import com.github.autoprimer3.GeneDetails.Exon;
 import static com.github.autoprimer3.ReverseComplementDNA.reverseComplement;
+import java.io.BufferedInputStream;
 import javafx.scene.input.KeyEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -26,6 +27,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
@@ -50,7 +53,6 @@ import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -60,6 +62,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
@@ -72,8 +75,6 @@ import net.lingala.zip4j.exception.ZipException;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
-import  java.util.prefs.*;
-import javafx.scene.control.TabPane;
 
 /**
  *
@@ -170,8 +171,8 @@ public class AutoPrimer3 extends Application implements Initializable{
             Scene scene = new Scene(page);
             primaryStage.setScene(scene);
             primaryStage.setTitle("AutoPrimer3");
-            scene.getStylesheets().add(com.github.autoprimer3.AutoPrimer3.class.
-                    getResource("autoprimer3.css").toExternalForm());
+            //scene.getStylesheets().add(com.github.autoprimer3.AutoPrimer3.class.
+            //        getResource("autoprimer3.css").toExternalForm());
             primaryStage.setResizable(false);
             primaryStage.show();
             primaryStage.getIcons().add(new Image(this.getClass().
@@ -427,6 +428,7 @@ public class AutoPrimer3 extends Application implements Initializable{
         progressLabel.setText("Connecting to UCSC...");
         new Thread(getBuildsTask).start();
     }
+    
     
     private void setTables(ArrayList<String> tables){
         ArrayList<String> genes = new ArrayList<>();
@@ -877,8 +879,8 @@ public class AutoPrimer3 extends Application implements Initializable{
                 Scene tableScene = new Scene(tablePane);
                 Stage tableStage = new Stage();
                 tableStage.setScene(tableScene);
-                tableScene.getStylesheets().add(AutoPrimer3.class
-                        .getResource("autoprimer3.css").toExternalForm());
+                //tableScene.getStylesheets().add(AutoPrimer3.class
+                //        .getResource("autoprimer3.css").toExternalForm());
                 resultView.displayData(primers, designs);
                 tableStage.setTitle("AutoPrimer3 Results");
                 tableStage.getIcons().add(new Image(this.getClass()
