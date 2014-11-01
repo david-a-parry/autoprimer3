@@ -166,16 +166,29 @@ public class Primer3ResultViewController implements Initializable {
     
     public void displayData(ArrayList<Primer3Result> regions, ArrayList<String> design){
         int totalPairs = 0;
+        int failures = 0;
         StringBuilder designString = new StringBuilder();
         for (Primer3Result r: regions){
             data.add(r);
             primerTable.setItems(data);
-            totalPairs++;
+            if (r.getProductSize() > 0){
+                totalPairs++;
+            }else{
+                failures++;
+            }
         }
         for (String s: design){
             designString.append(s).append("\n");
         }
         designTextSummary.setText(designString.toString());
-        summaryLabel.setText(totalPairs + " primer pairs designed");
+        StringBuilder labelText = new StringBuilder (totalPairs + " primer pairs designed");
+        if (failures > 0){
+            labelText.append(". ").append(failures).append(" design");
+            if (failures > 1){
+                labelText.append("s");
+            }
+            labelText.append(" failed.");
+        }
+        summaryLabel.setText(labelText.toString());
     }
 }
