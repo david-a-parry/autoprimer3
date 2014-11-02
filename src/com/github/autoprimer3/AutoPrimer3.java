@@ -47,12 +47,14 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -63,6 +65,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
@@ -119,8 +122,29 @@ public class AutoPrimer3 extends Application implements Initializable{
     @FXML
     Label progressLabel;
     
-//Coordinates tab components
-    //TO DO!
+    //Coordinates tab components
+    @FXML
+    TextArea regionsTextArea;
+    @FXML
+    ChoiceBox genomeChoiceBox2;
+    @FXML
+    ChoiceBox snpsChoiceBox2;
+    @FXML
+    TextField minDistanceTextField2;
+    @FXML
+    TextField flankingRegionsTextField2;
+    @FXML
+    ProgressIndicator progressIndicator2 = new ProgressIndicator();
+    @FXML
+    Label progressLabel2;
+    @FXML 
+    Button runButton2;
+    @FXML
+    Button cancelButton2;
+    @FXML
+    Button loadFileButton;
+    @FXML
+    Label loadFileLabel;
     
     //Primer3 Settings tab components
     @FXML
@@ -177,22 +201,7 @@ public class AutoPrimer3 extends Application implements Initializable{
             primaryStage.show();
             primaryStage.getIcons().add(new Image(this.getClass().
                     getResourceAsStream("icon.png")));
-          
-            /*basic functionality test code
-            SequenceFromDasUcsc seqFromDas = new SequenceFromDasUcsc();
-            GetEnsemblGeneCoordinates getter = new GetEnsemblGeneCoordinates();
-            ArrayList<GeneDetails> refSeq = getter.getGeneFromSymbol("PIK3R1", "hg19", "ensGene");
-            for (GeneDetails r: refSeq){
-                System.out.println(r.getId() + "\t"+ r.getCdsStart() + "\t"+ 
-                        r.getCdsEnd() + "\t"+ r.getChromosome());
-            /*    for (Exon e: r.getExons()){
-                    String dna = seqFromDas.retrieveSequence("hg19", r.getChromosome(),
-                            e.getStart(), e.getEnd());
-                    System.out.println(dna);
-                }
-                String dna = seqFromDas.retrieveSequence("hg19", r.getChromosome(), r.getTxStart(), r.getTxEnd());
-                System.out.println(dna);
-            }*/
+            
             
         } catch (Exception ex) {
             Logger.getLogger(AutoPrimer3.class.getName()).log(Level.SEVERE, null, ex);
@@ -201,9 +210,7 @@ public class AutoPrimer3 extends Application implements Initializable{
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-//            buildsAndTables.connectToUcsc();
-//            ArrayList<String> genomeBuilds = buildsAndTables.getBuildIds();
-//            ObservableList<String> genomes = FXCollections.observableList(genomeBuilds);
+        genesTextField.requestFocus();
         setLoading(true);
         try{
             ap3Config.readConfig();
@@ -282,21 +289,54 @@ public class AutoPrimer3 extends Application implements Initializable{
             }
         });
 
-
         genomeChoiceBox.getSelectionModel().selectedIndexProperty().addListener
             (new ChangeListener<Number>(){
             @Override
-            public void changed (ObservableValue ov, Number value, Number new_value){ 
+            public void changed (ObservableValue ov, Number value, final Number new_value){ 
                 if (new_value.intValue() >= 0){
                     final String id = (String) genomeChoiceBox.getItems().get(new_value.intValue());
                     genomeChoiceBox.setTooltip(new Tooltip (ap3Config.getBuildToDescription().get(id)));
                     getBuildTables(id);
+                    if (genomeChoiceBox2.getSelectionModel()
+                            .selectedIndexProperty().intValue() != new_value.intValue()){
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                genomeChoiceBox2.getSelectionModel().select(new_value.intValue());
+                            }
+                        });
+                    }
                 }
             }
         });
+        
+        genomeChoiceBox2.getSelectionModel().selectedIndexProperty().addListener
+            (new ChangeListener<Number>(){
+            @Override
+            public void changed (ObservableValue ov, Number value, final Number new_value){ 
+                if (new_value.intValue() >= 0){
+                    final String id = (String) genomeChoiceBox2.getItems().get(new_value.intValue());
+                    genomeChoiceBox2.setTooltip(new Tooltip (ap3Config.getBuildToDescription().get(id)));
+                    getBuildTables(id);
+                    if (genomeChoiceBox.getSelectionModel()
+                            .selectedIndexProperty().intValue() != new_value.intValue()){
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                genomeChoiceBox.getSelectionModel().select(new_value.intValue());
+                            }
+                        });
+                    }
+                }
+            }
+        });
+        
         genomeChoiceBox.getItems().clear();
         genomeChoiceBox.getItems().addAll(new ArrayList<>(buildsToDescriptions.keySet()));
         genomeChoiceBox.getSelectionModel().selectFirst();
+        genomeChoiceBox2.getItems().clear();
+        genomeChoiceBox2.getItems().addAll(new ArrayList<>(buildsToDescriptions.keySet()));
+        genomeChoiceBox2.getSelectionModel().selectFirst();
         File misprimeDir = mispriming_libs.toFile();
         misprimingLibraryChoiceBox.getItems().add("none");
         for (File f: misprimeDir.listFiles()){
@@ -304,7 +344,9 @@ public class AutoPrimer3 extends Application implements Initializable{
         }
         misprimingLibraryChoiceBox.getSelectionModel().selectFirst();
         minDistanceTextField.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
+        minDistanceTextField2.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
         flankingRegionsTextField.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
+        flankingRegionsTextField2.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
         minSizeTextField.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
         optSizeTextField.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
         maxSizeTextField.addEventFilter(KeyEvent.KEY_TYPED, checkNumeric());
@@ -322,9 +364,74 @@ public class AutoPrimer3 extends Application implements Initializable{
         defaultPrimer3Values.put(minTmTextField, "57.0");
         defaultPrimer3Values.put(optTmTextField, "59.0");
         defaultPrimer3Values.put(maxTmTextField, "62.0");
-        defaultPrimer3Values.put(splitRegionsTextField, "500");
+        defaultPrimer3Values.put(splitRegionsTextField, "300");
         defaultPrimer3Values.put(maxMisprimeTextField, "12");
         defaultPrimer3Values.put(sizeRangeTextField, defaultSizeRange);
+        
+        minDistanceTextField.textProperty().addListener(
+                new ChangeListener<String>(){
+            @Override
+            public void changed(ObservableValue<? extends String> ov,
+                    String oldValue, final String newValue){
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!minDistanceTextField2.getText().equals(newValue)){
+                        minDistanceTextField2.setText(newValue);
+                        }
+                    }
+                });
+            }
+        });
+        
+        minDistanceTextField2.textProperty().addListener(
+                new ChangeListener<String>(){
+            @Override
+            public void changed(ObservableValue<? extends String> ov,
+                    String oldValue, final String newValue){
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!minDistanceTextField.getText().equals(newValue)){
+                        minDistanceTextField.setText(newValue);
+                        }
+                    }
+                });
+            }
+        });
+        
+        flankingRegionsTextField.textProperty().addListener(
+                new ChangeListener<String>(){
+            @Override
+            public void changed(ObservableValue<? extends String> ov,
+                    String oldValue, final String newValue){
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!flankingRegionsTextField2.getText().equals(newValue)){
+                        flankingRegionsTextField2.setText(newValue);
+                        }
+                    }
+                });
+            }
+        });
+        
+        flankingRegionsTextField2.textProperty().addListener(
+                new ChangeListener<String>(){
+            @Override
+            public void changed(ObservableValue<? extends String> ov,
+                    String oldValue, final String newValue){
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!flankingRegionsTextField.getText().equals(newValue)){
+                            flankingRegionsTextField.setText(newValue);
+                        }
+                    }
+                });
+            }
+        });
+        
         resetValuesButton.setOnAction(new EventHandler<ActionEvent>(){
            @Override
            public void handle(ActionEvent actionEvent){
@@ -335,13 +442,24 @@ public class AutoPrimer3 extends Application implements Initializable{
         mainTabPane.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener<Tab>(){
                     @Override
-                    public void changed (ObservableValue<? extends Tab> ov, Tab t, Tab t1) {
-                        if (t.equals(primerTab)){
+                    public void changed (ObservableValue<? extends Tab> ov, 
+                            Tab ot, Tab nt) {
+                        if (ot.equals(primerTab)){
                             resetEmptyPrimerSettings();
+                        }
+                        if (nt.equals(genesTab)){
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    genesTextField.requestFocus();
+                                }
+                            });
                         }
                     }
                 }
         );
+        //this error is actually quite annoying, we should change this so that
+        //it is only checked on design or change of tab focus
         sizeRangeTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
             @Override
             public void changed(ObservableValue<? extends Boolean> observable,
@@ -359,7 +477,13 @@ public class AutoPrimer3 extends Application implements Initializable{
         }else{
             setLoading(false);
         }
-            
+        Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    genesTextField.requestFocus();
+                }
+            }
+        );
     }
     
     private void connectToUcsc(){
@@ -381,6 +505,8 @@ public class AutoPrimer3 extends Application implements Initializable{
                 if (! buildsToDescriptions.equals(buildIds)){
                     genomeChoiceBox.getItems().addAll(buildIds.keySet());
                     genomeChoiceBox.getSelectionModel().selectFirst();
+                    genomeChoiceBox2.getItems().addAll(buildIds.keySet());
+                    genomeChoiceBox2.getSelectionModel().selectFirst();
                     ap3Config.setBuildToDescription(buildIds);
                     ap3Config.setBuildToMapMaster(buildsAndTables.getBuildToMapMaster());
                     ap3Config.setBuildToTables(buildToTable);
@@ -404,6 +530,7 @@ public class AutoPrimer3 extends Application implements Initializable{
             @Override
             public void handle (WorkerStateEvent e){
                 progressIndicator.setProgress(0);
+                progressIndicator2.setProgress(0);
                 System.out.println(e.getSource().getException());
                 setLoading(false);
                 setCanRun(false);
@@ -412,7 +539,8 @@ public class AutoPrimer3 extends Application implements Initializable{
         getBuildsTask.setOnCancelled(new EventHandler<WorkerStateEvent>(){
             @Override
             public void handle (WorkerStateEvent e){
-                progressIndicator.setProgress(0);
+                progressIndicator.setProgress(0);                
+                progressIndicator2.setProgress(0);
                 progressLabel.setText("UCSC connection cancelled.");
                 setLoading(false);
                 setCanRun(false);
@@ -426,6 +554,7 @@ public class AutoPrimer3 extends Application implements Initializable{
             }
        });
         progressLabel.setText("Connecting to UCSC...");
+        progressLabel2.setText("Connecting to UCSC...");
         new Thread(getBuildsTask).start();
     }
     
@@ -457,18 +586,24 @@ public class AutoPrimer3 extends Application implements Initializable{
         snpsChoiceBox.getItems().add("No");
         snpsChoiceBox.getItems().addAll(snps);
         snpsChoiceBox.getSelectionModel().selectFirst();
+        snpsChoiceBox2.getItems().clear();
+        snpsChoiceBox2.getItems().add("No");
+        snpsChoiceBox2.getItems().addAll(snps);
+        snpsChoiceBox2.getSelectionModel().selectFirst();
 
     }
     
     private void getBuildTables(final String id){
         databaseChoiceBox.getItems().clear();
         snpsChoiceBox.getItems().clear();
+        snpsChoiceBox2.getItems().clear();
         if (ap3Config.getBuildToTables().containsKey(id)){
             setTables(ap3Config.getBuildToTables().get(id));
             return;
         }
         setLoading(true);
         progressLabel.setText("Getting database information for " + id);
+        progressLabel2.setText("Getting database information for " + id);
         final Task<ArrayList<String>> getTablesTask = new Task<ArrayList<String>>(){
             @Override
             protected ArrayList<String> call() {
@@ -496,6 +631,8 @@ public class AutoPrimer3 extends Application implements Initializable{
                 setTables(tables);
                 progressIndicator.setProgress(0);
                 progressLabel.setText("");
+                progressIndicator2.setProgress(0);
+                progressLabel2.setText("");
                 setLoading(false);
             }
         });
@@ -504,6 +641,7 @@ public class AutoPrimer3 extends Application implements Initializable{
             @Override
             public void handle (WorkerStateEvent e){
                 progressLabel.setText("Get Tables Task Failed");
+                progressLabel2.setText("Get Tables Task Failed");
                 System.out.println("getTablesTask failed.");
                 System.out.println(e.getSource().getException());
                 setLoading(false);
@@ -515,6 +653,7 @@ public class AutoPrimer3 extends Application implements Initializable{
             @Override
             public void handle (WorkerStateEvent e){
                 progressLabel.setText("Get Tables Task Cancelled");
+                progressLabel2.setText("Get Tables Task Cancelled");
                 System.out.println("getTablesTask cancelled.");
                 setLoading(false);
                 setCanRun(false);
@@ -530,6 +669,7 @@ public class AutoPrimer3 extends Application implements Initializable{
        });
 
         progressIndicator.setProgress(-1);
+        progressIndicator2.setProgress(-1);
         new Thread(getTablesTask).start();
     }
     
@@ -623,7 +763,7 @@ public class AutoPrimer3 extends Application implements Initializable{
             displaySizeRangeError();
             return;
         }
-               
+        int optSize = Integer.valueOf(splitRegionsTextField.getText());
         int flanks = Integer.valueOf(flankingRegionsTextField.getText());
         int designBuffer = Integer.valueOf(minDistanceTextField.getText());
         if (flanks <= (designBuffer + Integer.valueOf(maxSizeTextField.getText()))){
@@ -779,7 +919,7 @@ public class AutoPrimer3 extends Application implements Initializable{
             ArrayList<GenomicRegionSummary> exonRegions = new ArrayList<>();
             int minus_strand = 0;
             int plus_strand = 0;
-           for (GeneDetails t : targets){
+            for (GeneDetails t : targets){
                 if (! t.getChromosome().equals(r.getChromosome())){
                     continue;
                 }
@@ -823,14 +963,19 @@ public class AutoPrimer3 extends Application implements Initializable{
                     exonRegions.add(ex);
                 }
             }
-            merger.mergeRegionsByPosition(exonRegions);
+            boolean onMinusStrand = false;
             if (minus_strand > plus_strand){
+                onMinusStrand = true;
+            }
+            merger.mergeRegionsByPosition(exonRegions);
+            numberExons(exonRegions, onMinusStrand);
+            exonRegions = splitLargeRegionsMergeSmallRegions(exonRegions, 
+                    optSize, designBuffer, onMinusStrand);
+            if (onMinusStrand){
                 Collections.reverse(exonRegions);
             }
             //get substring for each exon and design primers using primer3
-            int geneExon = 0;
             for (GenomicRegionSummary er: exonRegions){
-                geneExon++;
                 int tStart = er.getStartPos() - r.getStartPos();
                 int tEnd = 1 + er.getEndPos() - r.getStartPos();
                 //TO DO
@@ -854,16 +999,15 @@ public class AutoPrimer3 extends Application implements Initializable{
                 
                 //get info from text fields for primer3 options
                 
-                String target =  Integer.toString(flanks - designBuffer) + 
+                String target = Integer.toString(flanks - designBuffer) + 
                         "," + Integer.toString(tEnd - tStart + (designBuffer * 2));
-                String exonName = er.getName()+ "_ex" + geneExon ;
-                String seqid = (exonName + ": " + er.getId());
+                String seqid = (er.getName() + ": " + er.getId());
                 ArrayList<String> result = designPrimers(seqid, 
                         dnaTarget.toString(), target);
                 designs.add(String.join("\n", result));
                 
                 //parse primer3 output and write our output
-                primers.add(parsePrimer3Output(++pair,  exonName, er.getId(), 
+                primers.add(parsePrimer3Output(++pair,  er.getName(), er.getId(), 
                         r.getChromosome(), 1 + er.getStartPos() - flanks, result));
                 
             }
@@ -898,8 +1042,160 @@ public class AutoPrimer3 extends Application implements Initializable{
                     masthead("No primers found for your targets.").
                     message("No primer designs were attempted for your targets")
                     .styleClass(Dialog.STYLE_CLASS_NATIVE);
-            noPrimersError.showError();        }
+            noPrimersError.showError();        
+        }
        
+    }
+    
+    private void numberExons(ArrayList<GenomicRegionSummary> exonRegions,
+            boolean minusStrand){
+        int n = 0;
+        for (GenomicRegionSummary e: exonRegions){
+            if (minusStrand){
+                e.setName(e.getName() + "_ex" + (exonRegions.size() - n));
+            }else{
+                e.setName(e.getName() + "_ex" + (n+1));
+            }
+            n++;
+        }
+    }
+    
+    private ArrayList<GenomicRegionSummary> splitLargeRegionsMergeSmallRegions(
+            ArrayList<GenomicRegionSummary> regions, Integer optSize, 
+            Integer buffer, boolean minusStrand){
+        ArrayList<GenomicRegionSummary> splitRegions = new ArrayList<>();
+        for (GenomicRegionSummary r: regions){
+            if (r.getLength() > optSize){
+                //divide length by maxSize to determine no of products to make
+                Double products = Math.ceil(r.getLength().doubleValue()/ 
+                        (optSize.doubleValue() + buffer));
+                //divide length by no. products and make each product
+                Double productSize = r.getLength().doubleValue()/products;
+                for (int i = 0; i < products.intValue(); i++){
+                    int increment = i * productSize.intValue();
+                    int startPos = r.getStartPos() + increment;
+                    int endPos = startPos + productSize.intValue();
+                    endPos = endPos < r.getEndPos() ? endPos : r.getEndPos();
+                    String name;
+                    if (minusStrand){
+                        name = r.getName() + "_part" + (products.intValue() - i);
+                    }else{
+                        name = r.getName() + "_part" + (i+1);
+                    }
+                    ArrayList<String> ids = new ArrayList<>(); 
+                    for (String id : r.getId().split("/")){
+                        if (minusStrand){
+                            ids.add(id + "_part" + (products.intValue() - i));
+                        }else{
+                            ids.add(id + "_part" + (i+1));
+                        }
+                    }
+                    GenomicRegionSummary s = new GenomicRegionSummary(
+                        r.getChromosome(), startPos, endPos,
+                        r.getStartId(), r.getEndId(), String.join("/", ids), name);
+                    if (i == products.intValue() - 1){
+                        s.setEndPos(r.getEndPos());
+                    }
+                    splitRegions.add(s);
+                }
+            }else{
+                splitRegions.add(r);
+            }
+        }
+        ArrayList<GenomicRegionSummary> splitAndMergedRegions = new ArrayList<>();
+        boolean smallRegion;
+        do{
+            smallRegion = false;
+            splitAndMergedRegions.clear();
+            for (int i = 0; i < splitRegions.size() - 1; i++){
+                //merge any small and close regions
+                int gap = splitRegions.get(i+1).getEndPos() - splitRegions.get(i).getStartPos();
+                if (gap + (2*buffer)  <= optSize){
+                    smallRegion = true;
+                    String chrom = splitRegions.get(i).getChromosome();
+                    int start = splitRegions.get(i).getStartPos();
+                    int end = splitRegions.get(i+1).getEndPos();
+                    String name = mergeNames(splitRegions.get(i).getName(), 
+                            splitRegions.get(i+1).getName());
+                    String id = mergeIds(splitRegions.get(i).getId(), 
+                            splitRegions.get(i).getId());
+                    splitAndMergedRegions.add(new GenomicRegionSummary(chrom, 
+                            start, end, null, null, id, name));
+                    for (int j = i +2; j < splitRegions.size(); j++){
+                        splitAndMergedRegions.add(splitRegions.get(j));
+                    }
+                    splitRegions.clear();
+                    splitRegions.addAll(splitAndMergedRegions);
+                    break;
+                }else{
+                    splitAndMergedRegions.add(splitRegions.get(i));
+                }
+            }
+            splitAndMergedRegions.add(splitRegions.get(splitRegions.size()-1));
+        }while (smallRegion);
+        return splitAndMergedRegions;
+    }
+    
+    //create a new id from two genomic regions' ids
+    private String mergeIds(String id1, String id2){
+        ArrayList<String> merged = new ArrayList<>();
+        List<String> ids1 = Arrays.asList(id1.split("/"));
+        List<String> ids2 = Arrays.asList(id2.split("/"));
+        LinkedHashMap<String, String> idToEx1 = new LinkedHashMap<>();
+        LinkedHashMap<String, String> idToEx2 = new LinkedHashMap<>();
+        for (String d: ids1){
+            List<String> split = Arrays.asList(d.split("_ex"));
+            if (split.size() > 1){
+                idToEx1.put(split.get(0), split.get(1));
+            }else{
+                idToEx1.put(d, d);
+            }
+        }
+        for (String d: ids2){
+            List<String> split = Arrays.asList(d.split("_ex"));
+            if (split.size() > 1){
+                idToEx2.put(split.get(0), split.get(1));
+            }else{
+                idToEx2.put(d, d);
+            }
+        }
+        for (String d: idToEx1.keySet()){
+            if (idToEx2.containsKey(d)){
+                merged.add(d + "_ex" + idToEx1.get(d) + idToEx2.get(d));
+            }else{
+                merged.add(d + "_ex" + idToEx1.get(d));
+            }
+        }
+        for (String d: idToEx2.keySet()){
+            if (! idToEx1.containsKey(d)){
+                merged.add(d + "_ex" + idToEx2.get(d));
+            }
+        }
+        return String.join("/", merged);
+    }
+
+    
+    //create a new name from two genomic regions' names
+    private String mergeNames(String name1, String name2){
+        String name;
+        List<String> geneName1 = Arrays.asList(name1.split("_ex"));
+        List<String> geneName2 = Arrays.asList(name2.split("_ex"));
+        if (geneName1.size() >= 2 && geneName2.size() >= 2 && 
+                geneName1.get(0).equals(geneName2.get(0))){
+            ArrayList<Integer> sizes = new ArrayList<>();
+            for (int i = 1; i < geneName1.size(); i++){
+                sizes.add(Integer.valueOf(geneName1.get(i)));
+            }
+            for (int i = 1; i < geneName2.size(); i++){
+                sizes.add(Integer.valueOf(geneName2.get(i)));
+            }
+            Collections.sort(sizes);
+            name = geneName1.get(0) + "_ex" + sizes.get(0) + 
+                    "-" + sizes.get(sizes.size()-1);
+        }else{
+            name = name1 + "_and_" +  name2;
+        }
+        return name;
     }
     
     //get left and right primer from Primer3 output
@@ -1153,22 +1449,29 @@ public class AutoPrimer3 extends Application implements Initializable{
         CANRUN = designable;
         runButton.setDisable(!CANRUN);
         cancelButton.setDisable(CANRUN);
+        runButton2.setDisable(!CANRUN);
+        cancelButton2.setDisable(CANRUN);
     }
     
     private void setLoading(boolean loading){
         setCanRun(!loading);
         refreshButton.setDisable(loading);
         genomeChoiceBox.setDisable(loading);
+        genomeChoiceBox2.setDisable(loading);
         databaseChoiceBox.setDisable(loading);
         snpsChoiceBox.setDisable(loading);
+        snpsChoiceBox2.setDisable(loading);
         designToChoiceBox.setDisable(loading);
         minDistanceTextField.setDisable(loading);
         flankingRegionsTextField.setDisable(loading);
+        flankingRegionsTextField2.setDisable(loading);
         genesTextField.setDisable(loading);
         if (loading){
             progressIndicator.setProgress(-1);
+            progressIndicator2.setProgress(-1);
         }else{
             progressIndicator.setProgress(0);
+            progressIndicator2.setProgress(0);
         }
     }
     
