@@ -40,30 +40,29 @@
                            <children>
                               <VBox layoutX="14.0" layoutY="59.0" spacing="10.0">
                                  <children>
-                          <Label layoutX="15.0" layoutY="59.0" prefHeight="15.0" prefWidth="126.0" text="Min distance (bp)" />
-                          <TextField fx:id="minDistanceTextField" layoutX="14.0" layoutY="83.0" prefHeight="27.0" prefWidth="119.0" promptText="Min distance between primer and target" text="50" HBox.hgrow="NEVER" />
+                          <Label alignment="CENTER" layoutX="15.0" layoutY="59.0" prefHeight="15.0" prefWidth="126.0" text="Min distance (bp)" />
+                          <TextField fx:id="minDistanceTextField" alignment="CENTER" layoutX="14.0" layoutY="83.0" prefHeight="27.0" prefWidth="119.0" promptText="Min distance between primer and target" text="50" HBox.hgrow="NEVER" />
                                  </children>
                               </VBox>
                               <VBox layoutX="148.0" layoutY="59.0" spacing="10.0">
                                  <children>
-                          <Label layoutX="156.0" layoutY="59.0" prefHeight="15.0" prefWidth="143.0" text="Flanking region (bp)" />
-                          <TextField fx:id="flankingRegionsTextField" layoutX="148.0" layoutY="83.0" prefHeight="27.0" prefWidth="147.0" promptText="Distance from exon to design to" text="500" HBox.hgrow="NEVER" />
+                          <Label alignment="CENTER" layoutX="156.0" layoutY="59.0" prefHeight="15.0" prefWidth="143.0" text="Flanking region (bp)" />
+                          <TextField fx:id="flankingRegionsTextField" alignment="CENTER" layoutX="148.0" layoutY="83.0" prefHeight="27.0" prefWidth="147.0" promptText="Distance from exon to design to" text="500" HBox.hgrow="NEVER" />
                                  </children>
                               </VBox>
                               <VBox layoutX="310.0" layoutY="59.0" spacing="10.0">
                                  <children>
-                          <Label layoutX="314.0" layoutY="59.0" prefWidth="200.0" text="Gene(s)" />
+                          <Label alignment="CENTER" layoutX="314.0" layoutY="59.0" prefHeight="16.0" prefWidth="326.0" text="Gene(s)" />
                           <TextField fx:id="genesTextField" layoutX="310.0" layoutY="83.0" prefHeight="27.0" prefWidth="326.0" promptText="Gene symbols/Gene IDs separated with spaces" HBox.hgrow="NEVER" />
                                  </children>
                               </VBox>
                            </children>
                         </HBox>
-                <HBox id="HBox" alignment="CENTER_LEFT" prefHeight="46.0" prefWidth="622.0" spacing="10.0" AnchorPane.bottomAnchor="29.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="16.0">
+                <HBox id="HBox" alignment="CENTER_LEFT" layoutX="15.0" layoutY="136.0" prefHeight="46.0" prefWidth="622.0" spacing="10.0" AnchorPane.bottomAnchor="23.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0">
                   <children>
                     <ProgressIndicator fx:id="progressIndicator" disable="false" opacity="1.0" progress="0.0" style="-fx-fill: null" visible="true" />
                     <Label text="" />
                     <Separator prefHeight="3.0" prefWidth="412.0" HBox.hgrow="SOMETIMES" />
-                    <Button fx:id="refreshButton" mnemonicParsing="false" text="Refresh/Reconnect" />
                   </children>
                 </HBox>
                         <HBox layoutX="15.0" layoutY="14.0" spacing="10.0" AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="17.0">
@@ -122,8 +121,9 @@
                 <Label fx:id="progressLabel" layoutX="15.0" layoutY="182.0" text="" />
                 <HBox alignment="CENTER_RIGHT" layoutX="34.0" layoutY="177.0" prefHeight="26.0" prefWidth="619.0000915527344" spacing="15.0" AnchorPane.bottomAnchor="4.0" AnchorPane.rightAnchor="14.0">
                   <children>
-                    <Button fx:id="runButton" defaultButton="true" mnemonicParsing="false" onAction="#designPrimersToGene" style="&#10;" text="Design" textAlignment="LEFT" />
+                    <Button fx:id="refreshButton" mnemonicParsing="false" text="Refresh/Reconnect" />
                     <Button fx:id="cancelButton" disable="false" mnemonicParsing="false" prefWidth="66.0" text="Cancel" />
+                    <Button fx:id="runButton" defaultButton="true" mnemonicParsing="false" onAction="#designPrimersToGene" style="&#10;" text="Design" textAlignment="LEFT" />
                   </children>
                 </HBox>
               </children>
@@ -132,7 +132,25 @@
         </Tab>
         <Tab fx:id="coordTab" text="Coordinates">
           <content>
-            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TextArea fx:id="regionsTextArea" layoutX="14.0" layoutY="38.0" prefHeight="101.0" prefWidth="277.0" />
+                        <Label layoutX="90.0" layoutY="14.0" text="Regions/Coordinates" />
+                        <Label fx:id="loadFileLabel" alignment="CENTER" layoutX="312.0" layoutY="136.0" prefHeight="16.0" prefWidth="310.0" text="No File Loaded" />
+                        <Button fx:id="loadFileButton" layoutX="407.0" layoutY="166.0" mnemonicParsing="false" text="Load file" />
+                        <ChoiceBox fx:id="genomeChoiceBox2" layoutX="308.0" layoutY="38.0" prefHeight="28.0" prefWidth="145.0" />
+                        <Label layoutX="353.0" layoutY="14.0" text="Genome" />
+                        <ChoiceBox fx:id="snpsChoiceBox2" layoutX="479.0" layoutY="38.0" prefHeight="28.0" prefWidth="147.0" />
+                        <Label layoutX="512.0" layoutY="14.0" text="Avoid SNPs?" />
+                        <Label layoutX="328.0" layoutY="79.0" text="Min distance (bp)" />
+                        <TextField fx:id="minDistanceTextField2" alignment="CENTER" layoutX="308.0" layoutY="100.0" prefHeight="28.0" prefWidth="145.0" text="50" />
+                        <TextField fx:id="flankingRegionsTextField2" alignment="CENTER" layoutX="479.0" layoutY="100.0" prefHeight="28.0" prefWidth="145.0" text="500" />
+                        <Label layoutX="500.0" layoutY="78.0" text="Flanking region (bp)" />
+                        <Button fx:id="runButton2" layoutX="561.0" layoutY="166.0" mnemonicParsing="false" text="Design" />
+                        <Button fx:id="cancelButton2" layoutX="487.0" layoutY="166.0" mnemonicParsing="false" text="Cancel" />
+                        <ProgressIndicator fx:id="progressIndicator2" layoutX="14.0" layoutY="148.0" progress="0.0" />
+                        <Label fx:id="progressLabel2" layoutX="68.0" layoutY="163.0" prefHeight="16.0" prefWidth="328.0" />
+                     </children></AnchorPane>
           </content>
         </Tab>
         <Tab fx:id="primerTab" text="Primer3 Settings">
@@ -267,8 +285,8 @@
                               </VBox>
                               <VBox spacing="10.0">
                                  <children>
-                                    <Label layoutX="285.0" layoutY="144.0" text="Split Regions Larger than..." />
-                                    <TextField fx:id="splitRegionsTextField" alignment="CENTER" layoutX="285.0" layoutY="173.0" prefHeight="27.0" prefWidth="181.0" text="500" />
+                                    <Label layoutX="285.0" layoutY="144.0" text="Split Targets Larger Than..." />
+                                    <TextField fx:id="splitRegionsTextField" alignment="CENTER" layoutX="285.0" layoutY="173.0" prefHeight="27.0" prefWidth="181.0" text="300" />
                                  </children>
                               </VBox>
                            </children>
