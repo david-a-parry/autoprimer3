@@ -27,8 +27,8 @@ import java.util.Iterator;
 * @author david
 */
 public class GenomicRegionSummary implements Comparable<GenomicRegionSummary>, Serializable{
-    private int startPos;
-    private int endPos;
+    private Integer startPos;
+    private Integer endPos;
     private Integer length;
     private String startId;
     private String endId;
@@ -108,7 +108,7 @@ public class GenomicRegionSummary implements Comparable<GenomicRegionSummary>, S
         return startPos == 0 && endPos == 0;
     }
     
-    public int getLength(){
+    public Integer getLength(){
         length = endPos - startPos;
         return length;
     }
