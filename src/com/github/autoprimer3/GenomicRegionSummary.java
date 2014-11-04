@@ -38,6 +38,9 @@ public class GenomicRegionSummary implements Comparable<GenomicRegionSummary>, S
     GenomicRegionSummary(){
         this(null, 0, 0, null, null, null, null);
     }
+    GenomicRegionSummary(String chrom, int sp, int ep){
+        this(chrom, sp, ep, null, null, null, null);
+    }
     GenomicRegionSummary(String chrom, int sp, int ep, String sd, String ed){
         this(chrom, sp, ep, sd, ed, null, null);
     }
