@@ -176,7 +176,7 @@ public class AutoPrimer3 extends Application implements Initializable{
     final GetUcscBuildsAndTables buildsAndTables = new GetUcscBuildsAndTables();
     LinkedHashMap<String, String> buildsToDescriptions = new LinkedHashMap<>();
     HashMap<String, String> buildToMap = new HashMap<>();
-    HashMap<String, ArrayList<String>> buildToTable = new HashMap<>();
+    HashMap<String, LinkedHashSet<String>> buildToTable = new HashMap<>();
     File primer3ex; 
     Path mispriming_libs;
     Path thermo_config;
@@ -559,9 +559,9 @@ public class AutoPrimer3 extends Application implements Initializable{
     }
     
     
-    private void setTables(ArrayList<String> tables){
-        ArrayList<String> genes = new ArrayList<>();
-        ArrayList<String> snps = new ArrayList<>();
+    private void setTables(LinkedHashSet<String> tables){
+        LinkedHashSet<String> genes = new LinkedHashSet<>();
+        LinkedHashSet<String> snps = new LinkedHashSet<>();
         for (String t: tables){
             if (t.equals("refGene") || t.equals("knownGene") || 
                     t.equals("ensGene") || t.equals("xenoRefGene")){
@@ -570,6 +570,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                 snps.add(t);
             }
         }
+        databaseChoiceBox.getItems().clear();
         if (genes.isEmpty()){
             databaseChoiceBox.getItems().add("No gene databases found - please choose another genome.");
             setCanRun(false);
@@ -604,9 +605,9 @@ public class AutoPrimer3 extends Application implements Initializable{
         setLoading(true);
         progressLabel.setText("Getting database information for " + id);
         progressLabel2.setText("Getting database information for " + id);
-        final Task<ArrayList<String>> getTablesTask = new Task<ArrayList<String>>(){
+        final Task<LinkedHashSet<String>> getTablesTask = new Task<LinkedHashSet<String>>(){
             @Override
-            protected ArrayList<String> call() {
+            protected LinkedHashSet<String> call() {
                 System.out.println("Called getTablesTask...");
                 return buildsAndTables.getAvailableTables(id);
             }
@@ -616,7 +617,7 @@ public class AutoPrimer3 extends Application implements Initializable{
             @Override
             public void handle (WorkerStateEvent e){
                 System.out.println("getTablesTask succeeded.");
-                ArrayList<String> tables = (ArrayList<String>) e.getSource().getValue();
+                LinkedHashSet<String> tables = (LinkedHashSet<String>) e.getSource().getValue();
                 if (! tables.equals(ap3Config.getBuildToTables().get(id))){
                     ap3Config.getBuildToTables().put(id, tables);
                     ap3Config.setBuildToDescription(ap3Config.getBuildToDescription());
@@ -1068,7 +1069,11 @@ public class AutoPrimer3 extends Application implements Initializable{
             if (r.getLength() > optSize){
                 //divide length by maxSize to determine no of products to make
                 Double products = Math.ceil(r.getLength().doubleValue()/ 
-                        (optSize.doubleValue() + buffer));
+                        optSize.doubleValue());
+                if (products.intValue() < 2){
+                    splitRegions.add(r);
+                    continue;
+                }
                 //divide length by no. products and make each product
                 Double productSize = r.getLength().doubleValue()/products;
                 for (int i = 0; i < products.intValue(); i++){
