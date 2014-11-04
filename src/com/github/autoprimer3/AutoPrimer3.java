@@ -830,11 +830,16 @@ public class AutoPrimer3 extends Application implements Initializable{
         LinkedHashSet<String> notFound = new LinkedHashSet<>();
         LinkedHashSet<String> nonCodingTargets = new LinkedHashSet<>();
         LinkedHashSet<GeneDetails> targets = new LinkedHashSet<>();
+        GetGeneCoordinates geneSearcher = getGeneSearcher();
+        if (geneSearcher == null){
+            //TO DO
+            return;
+        }
         for (String s : searchStrings){
             if (! s.matches(".*\\w.*")){
                 continue;
             }
-            ArrayList<GeneDetails> found = getGeneDetails(s);
+            ArrayList<GeneDetails> found = getGeneDetails(s, geneSearcher);
             if (found.isEmpty()){
                 notFound.add(s);
             }else{
@@ -916,7 +921,18 @@ public class AutoPrimer3 extends Application implements Initializable{
             String dna = seqFromDas.retrieveSequence(
                     genome, r.getChromosome(), r.getStartPos(), r.getEndPos());
             //System.out.println(dna);//debug only
-            
+            String snpDb = (String) snpsChoiceBox.getSelectionModel().getSelectedItem();
+            ArrayList<GenomicRegionSummary> snps = new ArrayList<>();
+            if (! snpDb.equals("No")){
+                try{
+                    snps = geneSearcher.GetSnpCoordinates
+                        (r.getChromosome(), r.getStartPos(), r.getEndPos(), 
+                        genome, snpDb);
+                }catch(SQLException ex){
+                    //TO DO
+                    ex.printStackTrace();
+                }
+            }
             ArrayList<GenomicRegionSummary> exonRegions = new ArrayList<>();
             int minus_strand = 0;
             int plus_strand = 0;
@@ -998,36 +1014,29 @@ public class AutoPrimer3 extends Application implements Initializable{
                 // to do - combine snp searching and gene finding to make
                 //more efficient(i.e. use same connection)
                 ArrayList<String> excludeRegions = new ArrayList<>();
-                String snpDb = (String) snpsChoiceBox.getSelectionModel().getSelectedItem();
-                if (! snpDb.equals("No")){
-                    try{
 
-                        GetGeneCoordinates snpSearcher = new GetGeneCoordinates();
-                        ArrayList<GenomicRegionSummary> snps = snpSearcher.GetSnpCoordinates
-                                (er.getChromosome(), r.getStartPos() + subsStart, 
-                                r.getStartPos() + subsEnd, 
-                                (String) genomeChoiceBox.getSelectionModel().getSelectedItem(),
-                                snpDb
-                                );
-                        for (GenomicRegionSummary s: snps){
-                            Integer excludeStart = s.getStartPos() - r.getStartPos()
-                                     - subsStart;
-                            Integer excludeEnd = s.getEndPos() - r.getStartPos()
-                                    - subsStart;
-                            Integer excludeLength = 1 +  excludeEnd - excludeStart;
-                            if (onMinusStrand){
-                                excludeStart = dnaTarget.length() - excludeStart
-                                        + excludeLength;
-                            }
-                            excludeRegions.add(excludeStart + "," + excludeLength);
-                            System.out.println("excluding " + excludeStart + 
-                                    " for coordinate" + s.getStartPos());
-
-                        }
-                    }catch(SQLException ex){
-                        //TO DO
-                        ex.printStackTrace();
+                for (GenomicRegionSummary s: snps){
+                    if (s.getStartPos() < r.getStartPos() + subsStart){
+                        continue;
+                    }else if(s.getEndPos() > r.getStartPos() + subsEnd){
+                        break;
                     }
+                    Integer excludeStart = s.getStartPos() - r.getStartPos()
+                             - subsStart - 1;
+                    Integer excludeEnd = s.getEndPos() - r.getStartPos()
+                            - subsStart - 1;
+                    Integer excludeLength = 1 +  excludeEnd - excludeStart;
+                    if (onMinusStrand){
+                        excludeStart = dnaTarget.length() - excludeStart
+                                - excludeLength;
+                    }
+                    excludeRegions.add(excludeStart + "," + excludeLength);
+                    System.out.println("excluding " + excludeStart + 
+                            " for coordinate " + s.getStartPos() + " for "
+                            + "exon start " + er.getStartPos() + " region"
+                                    + " start " + r.getStartPos());
+
+                    
                 }
                 //get info from text fields for primer3 options
                 String target = Integer.toString(flanks - designBuffer) + 
@@ -1393,12 +1402,24 @@ public class AutoPrimer3 extends Application implements Initializable{
         return end;
     }
 
+    private GetGeneCoordinates getGeneSearcher(){
+        if (databaseChoiceBox.getSelectionModel().getSelectedItem().equals("refGene") 
+                || databaseChoiceBox.getSelectionModel().getSelectedItem().equals("xenoRefGene")){
+            return new GetGeneCoordinates();
+        }else if (databaseChoiceBox.getSelectionModel().getSelectedItem().equals("knownGene")){
+            return new GetUcscGeneCoordinates();
+        }else if (databaseChoiceBox.getSelectionModel().getSelectedItem().equals("ensGene")){
+            return new GetEnsemblGeneCoordinates();
+        }else{
+            return null;
+        }
+    }
     
-    private ArrayList<GeneDetails> getGeneDetails(String searchString){
+    private ArrayList<GeneDetails> getGeneDetails(String searchString, 
+            GetGeneCoordinates geneSearcher){
         ArrayList<GeneDetails> genes = new ArrayList<>();
         if (databaseChoiceBox.getSelectionModel().getSelectedItem().equals("refGene") 
                 || databaseChoiceBox.getSelectionModel().getSelectedItem().equals("xenoRefGene")){
-            GetGeneCoordinates geneSearcher = new GetGeneCoordinates();
             if (searchString.matches("[NX][MR]_\\w+(.\\d)*")){
                 //is accession, need to remove the version number if present
                 searchString = searchString.replaceAll("\\.\\d$", "");
@@ -1423,7 +1444,6 @@ public class AutoPrimer3 extends Application implements Initializable{
             }
             
         }else if (databaseChoiceBox.getSelectionModel().getSelectedItem().equals("knownGene")){
-            GetUcscGeneCoordinates geneSearcher = new GetUcscGeneCoordinates();
             if (searchString.equals("uc\\d{3}[a-z]{3}\\.\\d")){
                 //is accession
                 try{
@@ -1446,7 +1466,6 @@ public class AutoPrimer3 extends Application implements Initializable{
                 }
             }
         }else if (databaseChoiceBox.getSelectionModel().getSelectedItem().equals("ensGene")){
-            GetEnsemblGeneCoordinates geneSearcher = new GetEnsemblGeneCoordinates();
             if (searchString.matches("ENS\\w*T\\d{11}.*\\d*")){
                 //is accession
                 try{
