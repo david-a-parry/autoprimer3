@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -84,11 +85,11 @@ public class GetUcscBuildsAndTables {
         return buildToDescription.get(genome);
     }
     
-    public ArrayList<String> getAvailableTables(String build){
+    public LinkedHashSet<String> getAvailableTables(String build){
         if (buildToDescription.isEmpty()){
            this.connectToUcsc();
         }
-        ArrayList<String> tables = new ArrayList<>();
+        LinkedHashSet<String> tables = new LinkedHashSet<>();
         try{
             SAXReader reader = new SAXReader();
             URL url = new URL("http://genome.ucsc.edu/cgi-bin/das/" + build + "/types");    
@@ -110,11 +111,11 @@ public class GetUcscBuildsAndTables {
         }
     }
     
-    public ArrayList<String> getAvailableTables(String build, String category){
+    public LinkedHashSet<String> getAvailableTables(String build, String category){
         if (buildToDescription.isEmpty()){
             this.connectToUcsc();
         }
-        ArrayList<String> tables = new ArrayList<>();
+        LinkedHashSet<String> tables = new LinkedHashSet<>();
         try{
             SAXReader reader = new SAXReader();
             URL url = new URL("http://genome.ucsc.edu/cgi-bin/das/" + build + "/types");    

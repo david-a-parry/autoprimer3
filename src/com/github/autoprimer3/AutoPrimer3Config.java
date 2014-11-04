@@ -33,6 +33,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
 /**
  *
@@ -48,7 +49,7 @@ public class AutoPrimer3Config implements Serializable{
 //a list of IDs so we can retrieve them in the same order they're given
     private LinkedHashMap<String, String> buildToDescription = new LinkedHashMap<>();
 //maps build name to description e.g. hg19 => 'Human Feb. 2009 (GRCh37/hg19) Genome at UCSC'
-    private HashMap<String, ArrayList<String>> buildToTables = new HashMap<>();
+    private HashMap<String, LinkedHashSet<String>> buildToTables = new HashMap<>();
     
     public File getConfigFile(){
         return configFile;
@@ -66,7 +67,7 @@ public class AutoPrimer3Config implements Serializable{
         return buildToDescription;
     }
     
-    public  HashMap<String, ArrayList<String>> getBuildToTables(){
+    public  HashMap<String, LinkedHashSet<String>> getBuildToTables(){
         return buildToTables;
     }
     
@@ -78,7 +79,7 @@ public class AutoPrimer3Config implements Serializable{
         buildToDescription = buildDesc;
     }
     
-    public  void setBuildToTables(HashMap<String, ArrayList<String>> buildTables){
+    public  void setBuildToTables(HashMap<String, LinkedHashSet<String>> buildTables){
         buildToTables = buildTables;
     }
     
@@ -88,7 +89,7 @@ public class AutoPrimer3Config implements Serializable{
     
     public void writeConfig(HashMap<String, String> buildToMap, 
             LinkedHashMap<String, String> buildToDescription,
-            HashMap<String, ArrayList<String>> buildToTable) throws IOException{
+            HashMap<String, LinkedHashSet<String>> buildToTable) throws IOException{
         if (! configDir.exists()){
             configDir.mkdir();
         }
@@ -115,6 +116,10 @@ public class AutoPrimer3Config implements Serializable{
             }
             InputStream inputStream = this.getClass().
                             getResourceAsStream("config.ser");
+            if (inputStream == null){
+                writeConfig();
+                return;
+            }
             OutputStream outputStream = new FileOutputStream(configFile);
             int read = 0;
             byte[] bytes = new byte[1024];
@@ -135,7 +140,7 @@ public class AutoPrimer3Config implements Serializable{
             (new FileInputStream(config)));
         buildToMapMaster = (HashMap<String, String>) ois.readObject();
         buildToDescription = (LinkedHashMap<String, String> ) ois.readObject();
-        buildToTables = (HashMap<String, ArrayList<String>>) ois.readObject();
+        buildToTables = (HashMap<String, LinkedHashSet<String>>) ois.readObject();
         ois.close();
     }
 }
