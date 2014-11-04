@@ -106,5 +106,21 @@ public class GetGeneCoordinates {//default handles RefSeq and Encode genes
         public GetGeneExonsException(String message, Throwable cause) { super(message, cause); }
         public GetGeneExonsException(Throwable cause) { super(cause); }
     }
+    
+    public ArrayList<GenomicRegionSummary> GetSnpCoordinates(
+            String chrom, int start, int end, String build, String db)
+            throws SQLException{
+        ArrayList<GenomicRegionSummary> snpCoordinates = new ArrayList<> ();
+        stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT chromStart,chromEnd from " + 
+                build+ "." + db + " where chrom='" + chrom + 
+                "' and chromEND >= " + start + " and chromStart < " + end);
+        while (rs.next()){
+            snpCoordinates.add(new GenomicRegionSummary(chrom,
+                    Integer.valueOf(rs.getString("chromStart")) + 1, 
+                    Integer.valueOf(rs.getString("chromEnd"))));
+        }
+        return snpCoordinates;
+    }
 
 }
