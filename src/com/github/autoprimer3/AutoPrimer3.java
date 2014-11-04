@@ -979,9 +979,6 @@ public class AutoPrimer3 extends Application implements Initializable{
             for (GenomicRegionSummary er: exonRegions){
                 int tStart = er.getStartPos() - r.getStartPos();
                 int tEnd = 1 + er.getEndPos() - r.getStartPos();
-                //TO DO
-                //get SNPs using mysql query like:
-                //select name,chrom,chromStart,chromEnd,observed from hg19.snp141Common where chrom='chr1' and chromEND >= 93992837 and chromStart < 94121149 ;
                 int subsStart = tStart - flanks > 0 ? tStart - flanks : 0;
                 int subsEnd = tEnd + flanks - 1 < dna.length() ?  tEnd + flanks - 1 : dna.length();
                 StringBuilder dnaTarget = new StringBuilder(
@@ -998,13 +995,47 @@ public class AutoPrimer3 extends Application implements Initializable{
                 //System.out.println(er.getName() + ": " + er.getId());//debug only
                 //System.out.println(dnaTarget.toString());//debug only
                 
+                // to do - combine snp searching and gene finding to make
+                //more efficient(i.e. use same connection)
+                ArrayList<String> excludeRegions = new ArrayList<>();
+                String snpDb = (String) snpsChoiceBox.getSelectionModel().getSelectedItem();
+                if (! snpDb.equals("No")){
+                    try{
+
+                        GetGeneCoordinates snpSearcher = new GetGeneCoordinates();
+                        ArrayList<GenomicRegionSummary> snps = snpSearcher.GetSnpCoordinates
+                                (er.getChromosome(), r.getStartPos() + subsStart, 
+                                r.getStartPos() + subsEnd, 
+                                (String) genomeChoiceBox.getSelectionModel().getSelectedItem(),
+                                snpDb
+                                );
+                        for (GenomicRegionSummary s: snps){
+                            Integer excludeStart = s.getStartPos() - r.getStartPos()
+                                     - subsStart;
+                            Integer excludeEnd = s.getEndPos() - r.getStartPos()
+                                    - subsStart;
+                            Integer excludeLength = 1 +  excludeEnd - excludeStart;
+                            if (onMinusStrand){
+                                excludeStart = dnaTarget.length() - excludeStart
+                                        + excludeLength;
+                            }
+                            excludeRegions.add(excludeStart + "," + excludeLength);
+                            System.out.println("excluding " + excludeStart + 
+                                    " for coordinate" + s.getStartPos());
+
+                        }
+                    }catch(SQLException ex){
+                        //TO DO
+                        ex.printStackTrace();
+                    }
+                }
                 //get info from text fields for primer3 options
-                
                 String target = Integer.toString(flanks - designBuffer) + 
                         "," + Integer.toString(tEnd - tStart + (designBuffer * 2));
                 String seqid = (er.getName() + ": " + er.getId());
+                //design primers
                 ArrayList<String> result = designPrimers(seqid, 
-                        dnaTarget.toString(), target);
+                        dnaTarget.toString(), target, String.join(" ", excludeRegions));
                 designs.add(String.join("\n", result));
                 
                 //parse primer3 output and write our output
@@ -1246,11 +1277,13 @@ public class AutoPrimer3 extends Application implements Initializable{
     
     
     //for given parameters design primers and return result as an array of strings
-    private ArrayList<String> designPrimers(String name, String dna, String target){
+    private ArrayList<String> designPrimers(String name, String dna, 
+            String target, String exclude){
         ArrayList<String> result = new ArrayList<>();
         StringBuilder error = new StringBuilder(); 
         StringBuilder p3_job = new StringBuilder("SEQUENCE_TARGET=");
             p3_job.append(target).append("\n");
+            p3_job.append("SEQUENCE_EXCLUDED_REGION=").append(exclude).append("\n");
             p3_job.append("SEQUENCE_ID=").append(name).append("\n");
             p3_job.append("SEQUENCE_TEMPLATE=").append(dna).append("\n");
             p3_job.append("PRIMER_TASK=pick_pcr_primers\n");
