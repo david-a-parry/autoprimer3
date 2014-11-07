@@ -211,6 +211,8 @@ public class AutoPrimer3 extends Application implements Initializable{
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         genesTextField.requestFocus();
+        progressLabel2.textProperty().bind(progressLabel.textProperty());
+        progressIndicator2.progressProperty().bind(progressIndicator.progressProperty());
         setLoading(true);
         try{
             ap3Config.readConfig();
@@ -530,7 +532,6 @@ public class AutoPrimer3 extends Application implements Initializable{
             @Override
             public void handle (WorkerStateEvent e){
                 progressIndicator.setProgress(0);
-                progressIndicator2.setProgress(0);
                 System.out.println(e.getSource().getException());
                 setLoading(false);
                 setCanRun(false);
@@ -540,7 +541,6 @@ public class AutoPrimer3 extends Application implements Initializable{
             @Override
             public void handle (WorkerStateEvent e){
                 progressIndicator.setProgress(0);                
-                progressIndicator2.setProgress(0);
                 progressLabel.setText("UCSC connection cancelled.");
                 setLoading(false);
                 setCanRun(false);
@@ -604,7 +604,6 @@ public class AutoPrimer3 extends Application implements Initializable{
         }
         setLoading(true);
         progressLabel.setText("Getting database information for " + id);
-        progressLabel2.setText("Getting database information for " + id);
         final Task<LinkedHashSet<String>> getTablesTask = new Task<LinkedHashSet<String>>(){
             @Override
             protected LinkedHashSet<String> call() {
@@ -632,8 +631,6 @@ public class AutoPrimer3 extends Application implements Initializable{
                 setTables(tables);
                 progressIndicator.setProgress(0);
                 progressLabel.setText("");
-                progressIndicator2.setProgress(0);
-                progressLabel2.setText("");
                 setLoading(false);
             }
         });
@@ -642,7 +639,6 @@ public class AutoPrimer3 extends Application implements Initializable{
             @Override
             public void handle (WorkerStateEvent e){
                 progressLabel.setText("Get Tables Task Failed");
-                progressLabel2.setText("Get Tables Task Failed");
                 System.out.println("getTablesTask failed.");
                 System.out.println(e.getSource().getException());
                 setLoading(false);
@@ -654,7 +650,6 @@ public class AutoPrimer3 extends Application implements Initializable{
             @Override
             public void handle (WorkerStateEvent e){
                 progressLabel.setText("Get Tables Task Cancelled");
-                progressLabel2.setText("Get Tables Task Cancelled");
                 System.out.println("getTablesTask cancelled.");
                 setLoading(false);
                 setCanRun(false);
@@ -670,7 +665,6 @@ public class AutoPrimer3 extends Application implements Initializable{
        });
 
         progressIndicator.setProgress(-1);
-        progressIndicator2.setProgress(-1);
         new Thread(getTablesTask).start();
     }
     
@@ -764,9 +758,9 @@ public class AutoPrimer3 extends Application implements Initializable{
             displaySizeRangeError();
             return;
         }
-        int optSize = Integer.valueOf(splitRegionsTextField.getText());
-        int flanks = Integer.valueOf(flankingRegionsTextField.getText());
-        int designBuffer = Integer.valueOf(minDistanceTextField.getText());
+        final int optSize = Integer.valueOf(splitRegionsTextField.getText());
+        final int flanks = Integer.valueOf(flankingRegionsTextField.getText());
+        final int designBuffer = Integer.valueOf(minDistanceTextField.getText());
         if (flanks <= (designBuffer + Integer.valueOf(maxSizeTextField.getText()))){
             Dialogs flanksError = Dialogs.create().title("Flanks Error").
                     masthead("Invalid values for 'Min distance'/"
@@ -823,269 +817,368 @@ public class AutoPrimer3 extends Application implements Initializable{
             return;
         }
         
-        //get our transcript targets using databaseChoiceBox and genesTextField
-        Integer pair = 0;
-        LinkedHashSet<String> searchStrings = new LinkedHashSet<>();
-        Collections.addAll(searchStrings, genesTextField.getText().split("\\s+"));
-        LinkedHashSet<String> notFound = new LinkedHashSet<>();
-        LinkedHashSet<String> nonCodingTargets = new LinkedHashSet<>();
-        LinkedHashSet<GeneDetails> targets = new LinkedHashSet<>();
-        GetGeneCoordinates geneSearcher = getGeneSearcher();
-        if (geneSearcher == null){
-            //TO DO
-            return;
-        }
-        for (String s : searchStrings){
-            if (! s.matches(".*\\w.*")){
-                continue;
-            }
-            ArrayList<GeneDetails> found = getGeneDetails(s, geneSearcher);
-            if (found.isEmpty()){
-                notFound.add(s);
-            }else{
-                if (designToChoiceBox.getSelectionModel().
-                        getSelectedItem().equals("Coding regions")){
-                    boolean matched = false;
-                    for (GeneDetails f : found){
-                        if (f.isCoding()){
-                            matched = true;
-                            targets.add(f);
+        //TO DO! Separate task for connecting and returning gene search results
+        //so that we can use Dialogs for any missing terms
+        final Task<HashMap<String, ArrayList>> designTask = 
+                new Task<HashMap<String, ArrayList>>(){
+            @Override
+            protected HashMap<String, ArrayList> call() {
+                      
+            //get our transcript targets using databaseChoiceBox and genesTextField
+                double prog = 0;
+                Integer pair = 0;
+                LinkedHashSet<String> searchStrings = new LinkedHashSet<>();
+                Collections.addAll(searchStrings, genesTextField.getText().split("\\s+"));
+                LinkedHashSet<String> notFound = new LinkedHashSet<>();
+                LinkedHashSet<String> nonCodingTargets = new LinkedHashSet<>();
+                LinkedHashSet<GeneDetails> targets = new LinkedHashSet<>();
+                updateMessage("Connecting to UCSC database...");
+                GetGeneCoordinates geneSearcher = getGeneSearcher();
+                if (geneSearcher == null){
+                    //TO DO
+                    updateMessage("Connection failed.");
+                    return null;
+                }
+                updateMessage("Connection succeeded.");
+                searchStrings.removeAll(Arrays.asList(null, ""));
+                for (String s : searchStrings){
+                    if (! s.matches(".*\\w.*")){
+                        continue;
+                    }
+                    updateMessage("searching for " + s + "...");
+                    ArrayList<GeneDetails> found = getGeneDetails(s, geneSearcher);
+                    if (found.isEmpty()){
+                        notFound.add(s);
+                    }else{
+                        if (designToChoiceBox.getSelectionModel().
+                                getSelectedItem().equals("Coding regions")){
+                            boolean matched = false;
+                            for (GeneDetails f : found){
+                                if (f.isCoding()){
+                                    matched = true;
+                                    targets.add(f);
+                                }else{
+                                    nonCodingTargets.add(f.getId());
+                                }
+                            }
+                            if (! matched){
+                                notFound.add(s);
+                            }
                         }else{
-                            nonCodingTargets.add(f.getId());
+                            targets.addAll(found);
                         }
                     }
-                    if (! matched){
-                        notFound.add(s);
-                    }
-                }else{
-                    targets.addAll(found);
                 }
-            }
-        }
-        
-        //check we've found at least one target and warn if any search term could not be found
-        if (targets.isEmpty()){
-            String message = "No targets found for your search terms.";
-            if (!nonCodingTargets.isEmpty()){
-                message = message + " " + nonCodingTargets.size() + 
-                        " non-coding transcripts were found.\n";
-            }
 
-            Dialogs noTargetsError = Dialogs.create().title("No Genes Found").
-                    masthead("No targets found.").
-                    message(message)
-                    .styleClass(Dialog.STYLE_CLASS_NATIVE);
-            noTargetsError.showError();
-            return;
-        }else if (! notFound.isEmpty()){
-            StringBuilder message = new StringBuilder("Matching transcripts could"
-                    + "not be found for the following genes using your search "
-                    + "parameters:\n" + String.join(", ", notFound) + ".\n\n");
-            if (!nonCodingTargets.isEmpty()){
-                message.append("The following transcripts were found but are "
-                        + "non-coding:\n"+ String.join(", ", nonCodingTargets) 
-                        + ".\n\n");
-            }
-            message.append("Continue anyway?");
-            Action response = Dialogs.create().title("").
-                    masthead("Could Not Find Some Genes").
-                    message(message.toString()).
-                    actions(Dialog.ACTION_YES, Dialog.ACTION_NO).
-                    styleClass(Dialog.STYLE_CLASS_NATIVE).
-                    showConfirm();
-            
-            if (response == Dialog.ACTION_NO){
-                return;
-            }
-        }
-        
-        //find 5' and 3' ends of transcripts/CDS + flanks
-        ArrayList<GenomicRegionSummary> genomicRegions = new ArrayList<>();
-        for (GeneDetails t : targets){
-            int start = getGeneStart(t, flanks);
-            int end = getGeneEnd(t, flanks);
-            GenomicRegionSummary r = new GenomicRegionSummary(t.getChromosome(), 
-                    start, end, null, null, t.getId(), t.getSymbol());
-            genomicRegions.add(r);
-        }
-        GenomicRegionSummary merger = new GenomicRegionSummary();
-        merger.mergeRegionsByPosition(genomicRegions);
-        
-        ArrayList<Primer3Result> primers = 
-                new ArrayList<Primer3Result>();
-        ArrayList<String> designs = new ArrayList<>();
-        //get FASTA sequence
-        for (GenomicRegionSummary r : genomicRegions){
-            String genome = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
-            SequenceFromDasUcsc seqFromDas = new SequenceFromDasUcsc();
-            String dna = seqFromDas.retrieveSequence(
-                    genome, r.getChromosome(), r.getStartPos(), r.getEndPos());
-            //System.out.println(dna);//debug only
-            String snpDb = (String) snpsChoiceBox.getSelectionModel().getSelectedItem();
-            ArrayList<GenomicRegionSummary> snps = new ArrayList<>();
-            if (! snpDb.equals("No")){
-                try{
-                    snps = geneSearcher.GetSnpCoordinates
-                        (r.getChromosome(), r.getStartPos(), r.getEndPos(), 
-                        genome, snpDb);
-                }catch(SQLException ex){
-                    //TO DO
-                    ex.printStackTrace();
+                //check we've found at least one target and warn if any search term could not be found
+                if (targets.isEmpty()){
+                    String message = "No targets found for your search terms.";
+                    if (!nonCodingTargets.isEmpty()){
+                        message = message + " " + nonCodingTargets.size() + 
+                                " non-coding transcripts were found.\n";
+                    }
+
+                    Dialogs noTargetsError = Dialogs.create().title("No Genes Found").
+                            masthead("No targets found.").
+                            message(message)
+                            .styleClass(Dialog.STYLE_CLASS_NATIVE);
+                    noTargetsError.showError();
+                    updateMessage("Cancelled");
+                    updateProgress(0, 100);
+                    this.cancel();
+                }else if (! notFound.isEmpty()){
+                    StringBuilder message = new StringBuilder("Matching transcripts could"
+                            + "not be found for the following genes using your search "
+                            + "parameters:\n" + String.join(", ", notFound) + ".\n\n");
+                    if (!nonCodingTargets.isEmpty()){
+                        message.append("The following transcripts were found but are "
+                                + "non-coding:\n"+ String.join(", ", nonCodingTargets) 
+                                + ".\n\n");
+                    }
+                    message.append("Continue anyway?");
+                    Action response = Dialogs.create().title("").
+                            masthead("Could Not Find Some Genes").
+                            message(message.toString()).
+                            actions(Dialog.ACTION_YES, Dialog.ACTION_NO).
+                            styleClass(Dialog.STYLE_CLASS_NATIVE).
+                            showConfirm();
+
+                    if (response == Dialog.ACTION_NO){
+                        updateMessage("Cancelled");
+                        updateProgress(0, 100);
+                        this.cancel();
+                    }
                 }
-            }
-            ArrayList<GenomicRegionSummary> exonRegions = new ArrayList<>();
-            int minus_strand = 0;
-            int plus_strand = 0;
-            for (GeneDetails t : targets){
-                if (! t.getChromosome().equals(r.getChromosome())){
-                    continue;
+
+                //find 5' and 3' ends of transcripts/CDS + flanks
+                ArrayList<GenomicRegionSummary> genomicRegions = new ArrayList<>();
+                for (GeneDetails t : targets){
+                    int start = getGeneStart(t, flanks);
+                    int end = getGeneEnd(t, flanks);
+                    GenomicRegionSummary r = new GenomicRegionSummary(t.getChromosome(), 
+                            start, end, null, null, t.getId(), t.getSymbol());
+                    genomicRegions.add(r);
                 }
-                int start = getGeneStart(t, flanks);
-                if (start > r.getEndPos()){
-                    continue;
-                }
-                int end = getGeneEnd(t, flanks);
-                if (end < r.getStartPos()){
-                    continue;
-                }
-                ArrayList<Exon> exons = t.getExons();
-                
-                if (t.getStrand().equals("-")){
-                    minus_strand++;
-                }else{
-                    plus_strand++;
-                }
-                for (Exon e : exons){
-                    if (designToChoiceBox.getSelectionModel().getSelectedItem()
-                        .equals("Coding regions")){
-                        if (! e.isCodingExon()){
+                GenomicRegionSummary merger = new GenomicRegionSummary();
+                merger.mergeRegionsByPosition(genomicRegions);
+
+                ArrayList<Primer3Result> primers = new ArrayList<>();
+                ArrayList<String> designs = new ArrayList<>();
+                //get FASTA sequence
+                int regionNumber = 0;
+                double incrementPerRegion = 100/genomicRegions.size();
+                for (GenomicRegionSummary r : genomicRegions){
+                    regionNumber++;
+                    updateMessage("Getting DNA for region " + regionNumber + 
+                            " of " + genomicRegions.size());
+                    updateProgress(-1, -1);
+                    String genome = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
+                    SequenceFromDasUcsc seqFromDas = new SequenceFromDasUcsc();
+                    String dna = seqFromDas.retrieveSequence(
+                            genome, r.getChromosome(), r.getStartPos(), r.getEndPos());
+                    //System.out.println(dna);//debug only
+                    String snpDb = (String) snpsChoiceBox.getSelectionModel().getSelectedItem();
+                    ArrayList<GenomicRegionSummary> snps = new ArrayList<>();
+                    if (! snpDb.equals("No")){
+                        try{
+                            updateMessage("Getting SNPs for region " + regionNumber + 
+                            " of " + genomicRegions.size());
+                            updateProgress(-1, -1);
+                            snps = geneSearcher.GetSnpCoordinates
+                                (r.getChromosome(), r.getStartPos(), r.getEndPos(), 
+                                genome, snpDb);
+                        }catch(SQLException ex){
+                            //TO DO
+                            ex.printStackTrace();
+                        }
+                    }
+                    
+                    ArrayList<GenomicRegionSummary> exonRegions = new ArrayList<>();
+                    int minus_strand = 0;
+                    int plus_strand = 0;
+                    for (GeneDetails t : targets){
+                        if (! t.getChromosome().equals(r.getChromosome())){
                             continue;
                         }
-                    }
-                    String id = t.getId().concat("_ex").
-                            concat(Integer.toString(e.getOrder()));
-                    String name = t.getSymbol();
-                    GenomicRegionSummary ex = new GenomicRegionSummary();
-                    if (designToChoiceBox.getSelectionModel().getSelectedItem()
-                        .equals("Coding regions")){
-                        Exon ce = e.getExonCodingRegion();
-                        ex = new GenomicRegionSummary(
-                                r.getChromosome(), ce.getStart(), 
-                                ce.getEnd(), null, null, id, name);
-                    }else{
-                        ex = new GenomicRegionSummary(
-                                r.getChromosome(), e.getStart(), 
-                                e.getEnd(), null, null, id, name);
-                    }
-                    exonRegions.add(ex);
-                }
-            }
-            boolean onMinusStrand = false;
-            if (minus_strand > plus_strand){
-                onMinusStrand = true;
-            }
-            merger.mergeRegionsByPosition(exonRegions);
-            numberExons(exonRegions, onMinusStrand);
-            exonRegions = splitLargeRegionsMergeSmallRegions(exonRegions, 
-                    optSize, designBuffer, onMinusStrand);
-            if (onMinusStrand){
-                Collections.reverse(exonRegions);
-            }
-            //get substring for each exon and design primers using primer3
-            for (GenomicRegionSummary er: exonRegions){
-                int tStart = er.getStartPos() - r.getStartPos();
-                int tEnd = 1 + er.getEndPos() - r.getStartPos();
-                int subsStart = tStart - flanks > 0 ? tStart - flanks : 0;
-                int subsEnd = tEnd + flanks - 1 < dna.length() ?  tEnd + flanks - 1 : dna.length();
-                StringBuilder dnaTarget = new StringBuilder(
-                        dna.substring(subsStart, tStart).toLowerCase());
-                dnaTarget.append(dna.substring(tStart, tEnd-1)
-                        .toUpperCase());
-                dnaTarget.append(dna.substring(tEnd -1, subsEnd)
-                        .toLowerCase());
-                if (minus_strand > plus_strand){
-                    dnaTarget = new StringBuilder(reverseComplement
-                            (dnaTarget.toString())
-                    );
-                }
-                //System.out.println(er.getName() + ": " + er.getId());//debug only
-                //System.out.println(dnaTarget.toString());//debug only
-                
-                // to do - combine snp searching and gene finding to make
-                //more efficient(i.e. use same connection)
-                ArrayList<String> excludeRegions = new ArrayList<>();
+                        int start = getGeneStart(t, flanks);
+                        if (start > r.getEndPos()){
+                            continue;
+                        }
+                        int end = getGeneEnd(t, flanks);
+                        if (end < r.getStartPos()){
+                            continue;
+                        }
+                        ArrayList<Exon> exons = t.getExons();
 
-                for (GenomicRegionSummary s: snps){
-                    if (s.getStartPos() < r.getStartPos() + subsStart){
-                        continue;
-                    }else if(s.getEndPos() > r.getStartPos() + subsEnd){
-                        break;
+                        if (t.getStrand().equals("-")){
+                            minus_strand++;
+                        }else{
+                            plus_strand++;
+                        }
+                        for (Exon e : exons){
+                            if (designToChoiceBox.getSelectionModel().getSelectedItem()
+                                .equals("Coding regions")){
+                                if (! e.isCodingExon()){
+                                    continue;
+                                }
+                            }
+                            String id = t.getId().concat("_ex").
+                                    concat(Integer.toString(e.getOrder()));
+                            String name = t.getSymbol();
+                            GenomicRegionSummary ex = new GenomicRegionSummary();
+                            if (designToChoiceBox.getSelectionModel().getSelectedItem()
+                                .equals("Coding regions")){
+                                Exon ce = e.getExonCodingRegion();
+                                ex = new GenomicRegionSummary(
+                                        r.getChromosome(), ce.getStart(), 
+                                        ce.getEnd(), null, null, id, name);
+                            }else{
+                                ex = new GenomicRegionSummary(
+                                        r.getChromosome(), e.getStart(), 
+                                        e.getEnd(), null, null, id, name);
+                            }
+                            exonRegions.add(ex);
+                        }
                     }
-                    Integer excludeStart = s.getStartPos() - r.getStartPos()
-                             - subsStart - 1;
-                    Integer excludeEnd = s.getEndPos() - r.getStartPos()
-                            - subsStart - 1;
-                    Integer excludeLength = 1 +  excludeEnd - excludeStart;
+                    boolean onMinusStrand = false;
+                    if (minus_strand > plus_strand){
+                        onMinusStrand = true;
+                    }
+                    merger.mergeRegionsByPosition(exonRegions);
+                    numberExons(exonRegions, onMinusStrand);
+                    exonRegions = splitLargeRegionsMergeSmallRegions(exonRegions, 
+                            optSize, designBuffer, onMinusStrand);
                     if (onMinusStrand){
-                        excludeStart = dnaTarget.length() - excludeStart
-                                - excludeLength;
+                        Collections.reverse(exonRegions);
                     }
-                    excludeRegions.add(excludeStart + "," + excludeLength);
-                    System.out.println("excluding " + excludeStart + 
-                            " for coordinate " + s.getStartPos() + " for "
-                            + "exon start " + er.getStartPos() + " region"
-                                    + " start " + r.getStartPos());
+                    //get substring for each exon and design primers using primer3
+                    double incrementPerExRegion = 
+                            incrementPerRegion /exonRegions.size();
+                    int exonNumber = 0;
+                    for (GenomicRegionSummary er: exonRegions){
+                        exonNumber++;
+                        prog += incrementPerExRegion;
+                        int tStart = er.getStartPos() - r.getStartPos();
+                        int tEnd = 1 + er.getEndPos() - r.getStartPos();
+                        int subsStart = tStart - flanks > 0 ? tStart - flanks : 0;
+                        int subsEnd = tEnd + flanks - 1 < dna.length() ?  tEnd + flanks - 1 : dna.length();
+                        StringBuilder dnaTarget = new StringBuilder(
+                                dna.substring(subsStart, tStart).toLowerCase());
+                        dnaTarget.append(dna.substring(tStart, tEnd-1)
+                                .toUpperCase());
+                        dnaTarget.append(dna.substring(tEnd -1, subsEnd)
+                                .toLowerCase());
+                        if (minus_strand > plus_strand){
+                            dnaTarget = new StringBuilder(reverseComplement
+                                    (dnaTarget.toString())
+                            );
+                        }
+                        //System.out.println(er.getName() + ": " + er.getId());//debug only
+                        //System.out.println(dnaTarget.toString());//debug only
 
-                    
+                        // to do - combine snp searching and gene finding to make
+                        //more efficient(i.e. use same connection)
+                        ArrayList<String> excludeRegions = new ArrayList<>();
+                        
+                        for (GenomicRegionSummary s: snps){
+                            if (s.getStartPos() < r.getStartPos() + subsStart){
+                                continue;
+                            }else if(s.getEndPos() > r.getStartPos() + subsEnd){
+                                break;
+                            }
+                            Integer excludeStart = s.getStartPos() - r.getStartPos()
+                                     - subsStart - 1;
+                            Integer excludeEnd = s.getEndPos() - r.getStartPos()
+                                    - subsStart - 1;
+                            Integer excludeLength = 1 +  excludeEnd - excludeStart;
+                            if (onMinusStrand){
+                                excludeStart = dnaTarget.length() - excludeStart
+                                        - excludeLength;
+                            }
+                            if (excludeStart + excludeLength < dnaTarget.length()){
+                                excludeRegions.add(excludeStart + "," + excludeLength);
+                            }else if (excludeStart < dnaTarget.length() - 1 ){
+                                int diff = dnaTarget.length() -1 - excludeStart;
+                                excludeRegions.add(excludeStart + "," + diff);
+                            }
+                        }
+                        //get info from text fields for primer3 options
+                        String target = Integer.toString(flanks - designBuffer) + 
+                                "," + Integer.toString(tEnd - tStart + (designBuffer * 2));
+                        String seqid = (er.getName() + ": " + er.getId());
+                        //design primers
+                        updateMessage("Designing primers for part " + exonNumber + 
+                                " of " + exonRegions.size() + "...");
+                        ArrayList<String> result = designPrimers(seqid, 
+                                dnaTarget.toString(), target, String.join(" ", excludeRegions));
+                        
+                        updateProgress(prog, 100);
+                        designs.add(String.join("\n", result));
+
+                        //parse primer3 output and write our output
+                        primers.add(parsePrimer3Output(++pair,  er.getName(), er.getId(), 
+                                r.getChromosome(), 1 + er.getStartPos() - flanks, result));
+
+                    }
+
                 }
-                //get info from text fields for primer3 options
-                String target = Integer.toString(flanks - designBuffer) + 
-                        "," + Integer.toString(tEnd - tStart + (designBuffer * 2));
-                String seqid = (er.getName() + ": " + er.getId());
-                //design primers
-                ArrayList<String> result = designPrimers(seqid, 
-                        dnaTarget.toString(), target, String.join(" ", excludeRegions));
-                designs.add(String.join("\n", result));
-                
-                //parse primer3 output and write our output
-                primers.add(parsePrimer3Output(++pair,  er.getName(), er.getId(), 
-                        r.getChromosome(), 1 + er.getStartPos() - flanks, result));
-                
+                HashMap<String, ArrayList> primerResult = new HashMap<>();
+                primerResult.put("primers", primers);
+                primerResult.put("design", designs);
+                return primerResult;
             }
-            
-        }
-        if (! primers.isEmpty()){
-            FXMLLoader tableLoader = new FXMLLoader(getClass().
+        };
+        progressIndicator.progressProperty().unbind();
+        progressIndicator.progressProperty().bind(designTask.progressProperty());
+        progressLabel.textProperty().bind(designTask.messageProperty());
+        designTask.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
+            @Override
+            public void handle (WorkerStateEvent e){
+                progressIndicator.progressProperty().unbind();
+                progressIndicator.progressProperty().set(100);
+                progressLabel.textProperty().unbind();
+                setRunning(false);
+                HashMap<String, ArrayList> result = 
+                        (HashMap<String, ArrayList>) e.getSource().getValue();
+                if (result == null){
+                    return;
+                }
+                if (result.get("primers").isEmpty()){
+                    progressLabel.setText("No primers designed.");
+                    Dialogs noPrimersError = Dialogs.create().title("No PrimersFound").
+                        masthead("No primers found for your targets.").
+                        message("No primer designs were attempted for your targets")
+                        .styleClass(Dialog.STYLE_CLASS_NATIVE);
+                        noPrimersError.showError();       
+                        progressIndicator.progressProperty().set(0);
+                    return;
+                }
+                if (result.get("design").isEmpty()){
+                    progressLabel.setText("No primers designed.");
+                    Dialogs noPrimersError = Dialogs.create().title("No PrimersFound").
+                        masthead("No primers found for your targets.").
+                        message("No primer designs were attempted for your targets")
+                        .styleClass(Dialog.STYLE_CLASS_NATIVE);
+                    noPrimersError.showError();       
+                    progressIndicator.progressProperty().set(0);
+                    return;
+                }
+                progressLabel.setText(result.get("primers").size() +
+                        " primer pairs designed.");
+                FXMLLoader tableLoader = new FXMLLoader(getClass().
                                        getResource("Primer3ResultView.fxml"));
-            try{
-                Pane tablePane = (Pane) tableLoader.load();
-                Primer3ResultViewController resultView = 
-                        (Primer3ResultViewController) tableLoader.getController();
-                Scene tableScene = new Scene(tablePane);
-                Stage tableStage = new Stage();
-                tableStage.setScene(tableScene);
-                //tableScene.getStylesheets().add(AutoPrimer3.class
-                //        .getResource("autoprimer3.css").toExternalForm());
-                resultView.displayData(primers, designs);
-                tableStage.setTitle("AutoPrimer3 Results");
-                tableStage.getIcons().add(new Image(this.getClass()
-                        .getResourceAsStream("icon.png")));
-                tableStage.initModality(Modality.NONE);
-                tableStage.show();
-           }catch (Exception ex){
-//               Dialogs.showErrorDialog(null, "Error displaying"
-//                       + " results from Find Regions Method.",
-//                       "Find Regions Error!", "SnpViewer", ex);
-               ex.printStackTrace();
-           }
-        }else{
-            Dialogs noPrimersError = Dialogs.create().title("No PrimersFound").
-                    masthead("No primers found for your targets.").
-                    message("No primer designs were attempted for your targets")
-                    .styleClass(Dialog.STYLE_CLASS_NATIVE);
-            noPrimersError.showError();        
-        }
-       
+                try{
+                    Pane tablePane = (Pane) tableLoader.load();
+                    Primer3ResultViewController resultView = 
+                            (Primer3ResultViewController) tableLoader.getController();
+                    Scene tableScene = new Scene(tablePane);
+                    Stage tableStage = new Stage();
+                    tableStage.setScene(tableScene);
+                    //tableScene.getStylesheets().add(AutoPrimer3.class
+                    //        .getResource("autoprimer3.css").toExternalForm());
+                    resultView.displayData(result.get("primers"), result.get("design"));
+                    tableStage.setTitle("AutoPrimer3 Results");
+                    tableStage.getIcons().add(new Image(this.getClass()
+                            .getResourceAsStream("icon.png")));
+                    tableStage.initModality(Modality.NONE);
+                    tableStage.show();
+               }catch (Exception ex){
+    //               Dialogs.showErrorDialog(null, "Error displaying"
+    //                       + " results from Find Regions Method.",
+    //                       "Find Regions Error!", "SnpViewer", ex);
+                   ex.printStackTrace();
+               }
+            }
+        });
+        designTask.setOnCancelled(new EventHandler<WorkerStateEvent>(){
+            @Override
+            public void handle (WorkerStateEvent e){
+                setRunning(false);
+                progressLabel.textProperty().unbind();
+                progressLabel.setText("Design cancelled");
+                progressIndicator.progressProperty().set(0);
+            }
+
+        });
+        designTask.setOnFailed(new EventHandler<WorkerStateEvent>(){
+            @Override
+            public void handle (WorkerStateEvent e){
+                setRunning(false);
+                progressLabel.textProperty().unbind();
+                progressLabel.setText("Design failed!");
+                progressIndicator.progressProperty().unbind();
+                progressIndicator.progressProperty().set(0);
+            }
+
+        });
+        cancelButton.setOnAction(new EventHandler<ActionEvent>(){
+           @Override
+           public void handle(ActionEvent actionEvent){
+                designTask.cancel();
+            }
+        });
+        setRunning(true);
+        new Thread(designTask).start();
     }
     
     private void numberExons(ArrayList<GenomicRegionSummary> exonRegions,
@@ -1510,25 +1603,28 @@ public class AutoPrimer3 extends Application implements Initializable{
         cancelButton2.setDisable(CANRUN);
     }
     
+    private void setRunning(boolean running){
+        setCanRun(!running);
+        refreshButton.setDisable(running);
+        genomeChoiceBox.setDisable(running);
+        genomeChoiceBox2.setDisable(running);
+        databaseChoiceBox.setDisable(running);
+        snpsChoiceBox.setDisable(running);
+        snpsChoiceBox2.setDisable(running);
+        designToChoiceBox.setDisable(running);
+        minDistanceTextField.setDisable(running);
+        flankingRegionsTextField.setDisable(running);
+        flankingRegionsTextField2.setDisable(running);
+        genesTextField.setDisable(running);
+    }
+    
     private void setLoading(boolean loading){
         setCanRun(!loading);
-        refreshButton.setDisable(loading);
-        genomeChoiceBox.setDisable(loading);
-        genomeChoiceBox2.setDisable(loading);
-        databaseChoiceBox.setDisable(loading);
-        snpsChoiceBox.setDisable(loading);
-        snpsChoiceBox2.setDisable(loading);
-        designToChoiceBox.setDisable(loading);
-        minDistanceTextField.setDisable(loading);
-        flankingRegionsTextField.setDisable(loading);
-        flankingRegionsTextField2.setDisable(loading);
-        genesTextField.setDisable(loading);
+        setRunning(loading);
         if (loading){
             progressIndicator.setProgress(-1);
-            progressIndicator2.setProgress(-1);
         }else{
             progressIndicator.setProgress(0);
-            progressIndicator2.setProgress(0);
         }
     }
     
