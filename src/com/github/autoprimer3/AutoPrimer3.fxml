@@ -148,8 +148,8 @@
                         <Label layoutX="500.0" layoutY="78.0" text="Flanking region (bp)" />
                         <Button fx:id="runButton2" layoutX="561.0" layoutY="166.0" mnemonicParsing="false" text="Design" />
                         <Button fx:id="cancelButton2" layoutX="487.0" layoutY="166.0" mnemonicParsing="false" text="Cancel" />
-                        <ProgressIndicator fx:id="progressIndicator2" layoutX="14.0" layoutY="148.0" progress="0.0" />
-                        <Label fx:id="progressLabel2" layoutX="68.0" layoutY="163.0" prefHeight="16.0" prefWidth="328.0" />
+                        <ProgressIndicator fx:id="progressIndicator2" disable="false" layoutX="14.0" layoutY="148.0" opacity="1.0" prefHeight="48.0" prefWidth="43.0" progress="0.0" style="-fx-fill: null" visible="true" />
+                        <Label fx:id="progressLabel2" layoutX="75.0" layoutY="183.0" prefHeight="16.0" prefWidth="320.0" />
                      </children></AnchorPane>
           </content>
         </Tab>
