@@ -213,6 +213,8 @@ public class AutoPrimer3 extends Application implements Initializable{
         genesTextField.requestFocus();
         progressLabel2.textProperty().bind(progressLabel.textProperty());
         progressIndicator2.progressProperty().bind(progressIndicator.progressProperty());
+        genomeChoiceBox2.selectionModelProperty().bind(genomeChoiceBox.selectionModelProperty());
+        snpsChoiceBox2.selectionModelProperty().bind(snpsChoiceBox.selectionModelProperty());
         setLoading(true);
         try{
             ap3Config.readConfig();
@@ -299,39 +301,10 @@ public class AutoPrimer3 extends Application implements Initializable{
                     final String id = (String) genomeChoiceBox.getItems().get(new_value.intValue());
                     genomeChoiceBox.setTooltip(new Tooltip (ap3Config.getBuildToDescription().get(id)));
                     getBuildTables(id);
-                    if (genomeChoiceBox2.getSelectionModel()
-                            .selectedIndexProperty().intValue() != new_value.intValue()){
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                genomeChoiceBox2.getSelectionModel().select(new_value.intValue());
-                            }
-                        });
-                    }
                 }
             }
         });
         
-        genomeChoiceBox2.getSelectionModel().selectedIndexProperty().addListener
-            (new ChangeListener<Number>(){
-            @Override
-            public void changed (ObservableValue ov, Number value, final Number new_value){ 
-                if (new_value.intValue() >= 0){
-                    final String id = (String) genomeChoiceBox2.getItems().get(new_value.intValue());
-                    genomeChoiceBox2.setTooltip(new Tooltip (ap3Config.getBuildToDescription().get(id)));
-                    getBuildTables(id);
-                    if (genomeChoiceBox.getSelectionModel()
-                            .selectedIndexProperty().intValue() != new_value.intValue()){
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                genomeChoiceBox.getSelectionModel().select(new_value.intValue());
-                            }
-                        });
-                    }
-                }
-            }
-        });
         
         genomeChoiceBox.getItems().clear();
         genomeChoiceBox.getItems().addAll(new ArrayList<>(buildsToDescriptions.keySet()));
@@ -554,7 +527,6 @@ public class AutoPrimer3 extends Application implements Initializable{
             }
        });
         progressLabel.setText("Connecting to UCSC...");
-        progressLabel2.setText("Connecting to UCSC...");
         new Thread(getBuildsTask).start();
     }
     
@@ -587,17 +559,11 @@ public class AutoPrimer3 extends Application implements Initializable{
         snpsChoiceBox.getItems().add("No");
         snpsChoiceBox.getItems().addAll(snps);
         snpsChoiceBox.getSelectionModel().selectFirst();
-        snpsChoiceBox2.getItems().clear();
-        snpsChoiceBox2.getItems().add("No");
-        snpsChoiceBox2.getItems().addAll(snps);
-        snpsChoiceBox2.getSelectionModel().selectFirst();
-
     }
     
     private void getBuildTables(final String id){
         databaseChoiceBox.getItems().clear();
         snpsChoiceBox.getItems().clear();
-        snpsChoiceBox2.getItems().clear();
         if (ap3Config.getBuildToTables().containsKey(id)){
             setTables(ap3Config.getBuildToTables().get(id));
             return;
@@ -894,6 +860,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                             message(message)
                             .styleClass(Dialog.STYLE_CLASS_NATIVE);
                     noTargetsError.showError();
+                    setRunning(false);
                     return;
                 }else if (! notFound.isEmpty()){
                     StringBuilder message = new StringBuilder("Matching transcripts could"
@@ -913,6 +880,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                             showConfirm();
 
                     if (response == Dialog.ACTION_NO){
+                        setRunning(false);
                         progressLabel.setText("Design cancelled");
                         progressIndicator.progressProperty().set(0);
                         return;
@@ -1004,7 +972,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                                     String id = t.getId().concat("_ex").
                                             concat(Integer.toString(e.getOrder()));
                                     String name = t.getSymbol();
-                                    GenomicRegionSummary ex = new GenomicRegionSummary();
+                                    GenomicRegionSummary ex; 
                                     if (designToChoiceBox.getSelectionModel().getSelectedItem()
                                         .equals("Coding regions")){
                                         Exon ce = e.getExonCodingRegion();
@@ -1175,6 +1143,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                         setRunning(false);
                         progressLabel.textProperty().unbind();
                         progressLabel.setText("Design cancelled");
+                        progressIndicator.progressProperty().unbind();
                         progressIndicator.progressProperty().set(0);
                     }
 
