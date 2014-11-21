@@ -83,6 +83,11 @@ public class Primer3ResultViewController implements Initializable {
    NumberFormat nf = NumberFormat.getNumberInstance();
    ChromComparator chromCompare = new ChromComparator();
    
+   
+   /*TO DO! 
+   Add feature for isPCR submission? e.g.
+   http://genome.ucsc.edu/cgi-bin/hgPcr?org=Human&db=hg38&wp_target=genome&wp_f=attgggtcagcagcaatgac&wp_r=catcctcccactcccctg&Submit=submit&wp_size=4000&wp_perfect=15&wp_good=15&boolshad.wp_flipReverse=0
+   */
    private final ObservableList<Primer3Result> data = FXCollections.observableArrayList();
    
    @Override
