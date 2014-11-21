@@ -213,7 +213,9 @@ public class AutoPrimer3 extends Application implements Initializable{
         genesTextField.requestFocus();
         progressLabel2.textProperty().bind(progressLabel.textProperty());
         progressIndicator2.progressProperty().bind(progressIndicator.progressProperty());
+        genomeChoiceBox2.itemsProperty().bind(genomeChoiceBox.itemsProperty());
         genomeChoiceBox2.selectionModelProperty().bind(genomeChoiceBox.selectionModelProperty());
+        snpsChoiceBox2.itemsProperty().bind(snpsChoiceBox.itemsProperty());
         snpsChoiceBox2.selectionModelProperty().bind(snpsChoiceBox.selectionModelProperty());
         setLoading(true);
         try{
@@ -309,9 +311,7 @@ public class AutoPrimer3 extends Application implements Initializable{
         genomeChoiceBox.getItems().clear();
         genomeChoiceBox.getItems().addAll(new ArrayList<>(buildsToDescriptions.keySet()));
         genomeChoiceBox.getSelectionModel().selectFirst();
-        genomeChoiceBox2.getItems().clear();
-        genomeChoiceBox2.getItems().addAll(new ArrayList<>(buildsToDescriptions.keySet()));
-        genomeChoiceBox2.getSelectionModel().selectFirst();
+        
         File misprimeDir = mispriming_libs.toFile();
         misprimingLibraryChoiceBox.getItems().add("none");
         for (File f: misprimeDir.listFiles()){
