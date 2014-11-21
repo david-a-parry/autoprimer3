@@ -34,11 +34,11 @@ public class ChromComparator implements Comparator<String>{
             return -1;
         }else if (s2.matches("^\\d+$")){
             return +1;
-        }else if (s1.matches("^[gG]\\S+") || s2.matches("^[gG]\\S+")){
-            if (s1.matches("^[gG]\\S+") && s2.matches("^[gG]\\S+")){
+        }else if (s1.matches("^[uU]\\S+") || s2.matches("^[uU]\\S+")){
+            if (s1.matches("^[uU]\\S+") && s2.matches("^[uU]\\S+")){
                 return s1.compareTo(s2);
             }
-            else if (s2.matches("^[gG]\\S+")){
+            else if (s2.matches("^[uU]\\S+")){
                 return +1;
             }else{
                 return -1;

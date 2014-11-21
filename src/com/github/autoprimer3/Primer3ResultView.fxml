@@ -20,10 +20,9 @@
                               <TableColumn fx:id="idCol" prefWidth="160.0" text="Other IDs" />
                             <TableColumn fx:id="leftPrimerCol" prefWidth="190.0" text="Left Primer" />
                               <TableColumn fx:id="rightPrimerCol" prefWidth="205.0" text="Right Primer" />
-                              <TableColumn fx:id="productSizeCol" prefWidth="90.0" text="Product Size" />
-                              <TableColumn fx:id="chromCol" prefWidth="98.0" text="Chromosome" />
-                              <TableColumn fx:id="leftPosCol" minWidth="0.0" prefWidth="126.0" text="Left Position" />
-                              <TableColumn fx:id="rightPosCol" prefWidth="134.0" text="Right Position" />
+                              <TableColumn fx:id="productSizeCol" prefWidth="114.0" text="Product Size" />
+                              <TableColumn fx:id="regionCol" prefWidth="147.0" text="Region" />
+                              <TableColumn fx:id="ispcrCol" prefWidth="101.0" text="in silico PCR" />
                           </columns>
                         </TableView>
                      </children>
