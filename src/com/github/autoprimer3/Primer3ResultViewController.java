@@ -30,6 +30,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
@@ -67,12 +68,9 @@ public class Primer3ResultViewController implements Initializable {
    @FXML
    TableColumn productSizeCol;
    @FXML
-   TableColumn chromCol;
+   TableColumn regionCol;
    @FXML
-   TableColumn leftPosCol;
-   @FXML
-   TableColumn rightPosCol;
-   
+   TableColumn ispcrCol;
    @FXML
    Button closeButton;
    @FXML 
@@ -81,8 +79,7 @@ public class Primer3ResultViewController implements Initializable {
    TextArea designTextSummary;
    
    NumberFormat nf = NumberFormat.getNumberInstance();
-   ChromComparator chromCompare = new ChromComparator();
-   
+   CoordComparator coordCompare = new CoordComparator();
    
    /*TO DO! 
    Add feature for isPCR submission? e.g.
@@ -104,19 +101,14 @@ public class Primer3ResultViewController implements Initializable {
                 PropertyValueFactory<Primer3Result, String>("rightPrimer"));
         productSizeCol.setCellValueFactory(new 
                 PropertyValueFactory<Primer3Result, Integer>("productSize"));
-        chromCol.setCellValueFactory(new 
-                PropertyValueFactory<Primer3Result, String>("chromosome"));
-        leftPosCol.setCellValueFactory(new 
-                PropertyValueFactory<Primer3Result, Integer>("leftPosition"));
-        rightPosCol.setCellValueFactory(new 
-                PropertyValueFactory<Primer3Result, Integer>("rightPosition"));
-        chromCol.setComparator(chromCompare);
+        regionCol.setCellValueFactory(new 
+                PropertyValueFactory<Primer3Result, String>("region"));
+        ispcrCol.setCellValueFactory(new 
+                PropertyValueFactory<Primer3Result, Hyperlink>("isPcrLink"));
         primerTable.getSortOrder().add(indexCol);
+        primerTable.getSortOrder().add(regionCol);
         primerTable.getSortOrder().add(productSizeCol);
-        primerTable.getSortOrder().add(chromCol);
-        primerTable.getSortOrder().add(leftPosCol);    
-        primerTable.getSortOrder().add(rightPosCol);
-        
+        regionCol.setComparator(coordCompare);
         primerTable.getSelectionModel().setCellSelectionEnabled(true);
         primerTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         

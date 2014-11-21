@@ -16,6 +16,9 @@
  */
 package com.github.autoprimer3;
 
+import javafx.scene.control.Hyperlink;
+
+
 /**
  *
  * @author David A. Parry <d.a.parry@leeds.ac.uk>
@@ -27,26 +30,25 @@ public class Primer3Result {
     private String leftPrimer;
     private String rightPrimer;
     private Integer productSize;
-    private String chromosome;
-    private Integer leftPosition;
-    private Integer rightPosition;
+    private String region;
+    private Hyperlink isPcrLink; 
+    
     Primer3Result(){
-        this(0, null, null, null, null, 0, null, 0, 0);
+        this(0, null, null, null, null, 0, null, null);
     }
     Primer3Result(Integer i, String id, String tr, String l, String r, Integer size){
-        this(i, id, tr, l, r, size, null, 0, 0);
+        this(i, id, tr, l, r, size, null, null);
     }
     Primer3Result(Integer i, String id, String tr, String l, String r, Integer size, 
-            String chr, Integer lPos, Integer rPos){
+            String reg, Hyperlink h){
         index = i;
         name = id;
         transcripts = tr;
         leftPrimer = l;
         rightPrimer = r;
         productSize = size;
-        chromosome = chr;
-        leftPosition = lPos;
-        rightPosition = rPos;
+        region = reg;
+        isPcrLink = h;
     }
     public void setIndex(int i){
         index = i;
@@ -66,14 +68,11 @@ public class Primer3Result {
     public void setProductSize(int size){
         productSize = size;
     }
-    public void setChromosome(String chr){
-        chromosome = chr;
+    public void setRegion(String r){
+        region = r;
     }
-    public void setLeftPosition(Integer i){
-        leftPosition = i;
-    }
-    public void setRightPosition(Integer i){
-        rightPosition = i;
+    public void setIsPcrLink(Hyperlink h){
+        isPcrLink = h;
     }
     public Integer getIndex(){
         return index;
@@ -93,13 +92,10 @@ public class Primer3Result {
     public Integer getProductSize(){
         return productSize;
     }
-    public String getChromosome(){
-        return chromosome;
+    public String getRegion(){
+        return region;
     }
-    public Integer getLeftPosition(){
-        return leftPosition;
-    }
-    public Integer getRightPosition(){
-        return rightPosition;
+    public Hyperlink getIsPcrLink(){
+        return isPcrLink;
     }
 }

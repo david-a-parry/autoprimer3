@@ -1,3 +1,11 @@
+/*things to add:
+    coordinates functionality
+    server choice
+    automatically select mispriming library for primates/rodents/insects
+    output reference sequence
+    write primers and primer3 output to file
+*/
+
 /*
  * Copyright (C) 2014 David A. Parry <d.a.parry@leeds.ac.uk>
  *
@@ -31,6 +39,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -61,6 +70,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Tab;
@@ -71,6 +81,8 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import net.lingala.zip4j.core.ZipFile;
@@ -183,7 +195,9 @@ public class AutoPrimer3 extends Application implements Initializable{
     String defaultSizeRange = "150-250 100-300 301-400 401-500 501-600 "
                 + "601-700 701-850 851-1000 1000-2000";
     HashMap<TextField, String> defaultPrimer3Values = new HashMap<>();
-        
+    String serverUrl = "http://genome-euro.ucsc.edu"; 
+    final WebView browser = new WebView();
+    final WebEngine webEngine = browser.getEngine();
         
     File configDirectory;
     AutoPrimer3Config ap3Config = new AutoPrimer3Config();
@@ -788,7 +802,6 @@ public class AutoPrimer3 extends Application implements Initializable{
                 new Task<GeneSearchResult>(){
             @Override
             protected GeneSearchResult call() {
-                HashMap<String, LinkedHashSet> searchResults = new HashMap<>();
                 updateMessage("Connecting to UCSC database...");
                 GetGeneCoordinates geneSearcher = getGeneSearcher();
                 if (geneSearcher == null){
@@ -1023,8 +1036,6 @@ public class AutoPrimer3 extends Application implements Initializable{
                                 //System.out.println(er.getName() + ": " + er.getId());//debug only
                                 //System.out.println(dnaTarget.toString());//debug only
 
-                                // to do - combine snp searching and gene finding to make
-                                //more efficient(i.e. use same connection)
                                 ArrayList<String> excludeRegions = new ArrayList<>();
 
                                 for (GenomicRegionSummary s: snps){
@@ -1363,11 +1374,17 @@ public class AutoPrimer3 extends Application implements Initializable{
     //get left and right primer from Primer3 output
     private Primer3Result parsePrimer3Output(int index, String name, String id,
             String chrom, int baseCoordinate, ArrayList<String> output){
+        String db = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
+        final Hyperlink pcrLink = new Hyperlink();
+        pcrLink.setText("in-silico PCR");
+        pcrLink.setDisable(true);
         String left = "NOT FOUND";
         String right = "NOT FOUND";
+        Integer lpos = 0;
+        Integer rpos = 0;
         Integer leftStart = 0;
         Integer rightStart = 0;
-       String productSize = "0";
+        String productSize = "0";
         for (String res: output){
             if (res.startsWith("LEFT PRIMER")){
                 List<String> split = Arrays.asList(res.split(" +"));
@@ -1389,15 +1406,30 @@ public class AutoPrimer3 extends Application implements Initializable{
         res.setName(name);
         res.setTranscripts(id);
         res.setIndex(index);
-        res.setChromosome(chrom);
         res.setProductSize(Integer.valueOf(productSize));
         if (Integer.valueOf(productSize) > 0){
-            res.setLeftPosition(baseCoordinate + leftStart);
-            res.setRightPosition(baseCoordinate + rightStart);
-        }else{
-            res.setLeftPosition(0);
-            res.setRightPosition(0);
+            Integer wpSize = 4000 > Integer.valueOf(productSize) * 2 ? 
+                    4000 : Integer.valueOf(productSize) * 2;
+            lpos = baseCoordinate + leftStart;
+            rpos = baseCoordinate + rightStart;
+            final String url = serverUrl + "/cgi-bin/hgPcr?db=" + db + 
+                    "&wp_target=genome&wp_f=" + left + "&wp_r=" + right + 
+                    "&wp_size=" + wpSize + 
+                    "&wp_perfect=15&wp_good=15&boolshad.wp_flipReverse=0";
+            pcrLink.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent e) {
+                    getHostServices().showDocument(url);
+                    pcrLink.setVisited(true);
+                    pcrLink.setUnderline(false);
+                }
+            });
+            pcrLink.setDisable(false);
+            pcrLink.setUnderline(true);
+            res.setIsPcrLink(pcrLink);
         }
+        String region = chrom + ":" + lpos + "-" + rpos;
+        res.setRegion(region);
         return res;
     }
     
