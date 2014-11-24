@@ -157,7 +157,7 @@
           <content>
             <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <HBox layoutX="30.0" layoutY="14.0" spacing="5.0">
+                        <HBox layoutX="30.0" layoutY="14.0" spacing="8.0">
                            <children>
                               <VBox alignment="TOP_CENTER" layoutX="36.0" layoutY="14.0" prefHeight="57.0" prefWidth="94.0" spacing="5.0">
                                  <children>
@@ -263,24 +263,24 @@
                               </VBox>
                            </children>
                         </HBox>
-                        <Label layoutX="231.0" layoutY="80.0" text="Primer Product Size Range" />
-                        <TextField fx:id="sizeRangeTextField" alignment="CENTER" layoutX="35.0" layoutY="104.0" prefHeight="27.0" prefWidth="566.0" text="150-250 100-300 301-400 401-500 501-600 601-700 701-850 851-1000 1000-2000" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="34.0">
+                        <Label layoutX="302.0" layoutY="77.0" text="Primer Product Size Range" />
+                        <TextField fx:id="sizeRangeTextField" alignment="CENTER" layoutX="145.0" layoutY="104.0" prefHeight="27.0" prefWidth="480.0" text="150-250 100-300 301-400 401-500 501-600 601-700 701-850 851-1000 1000-2000" AnchorPane.leftAnchor="145.0" AnchorPane.rightAnchor="27.0">
                            <font>
                               <Font size="12.0" />
                            </font>
                         </TextField>
+                        <VBox alignment="TOP_CENTER" layoutX="30.0" layoutY="77.0" spacing="10.0">
+                           <children>
+                              <Label alignment="CENTER" layoutX="278.0" layoutY="144.0" text="Max Mispriming" />
+                              <TextField fx:id="maxMisprimeTextField" alignment="CENTER" layoutX="279.0" layoutY="167.0" prefHeight="27.0" prefWidth="102.0" text="12" />
+                           </children>
+                        </VBox>
                         <HBox layoutX="28.0" layoutY="144.0" spacing="15.0" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="28.0">
                            <children>
                               <VBox alignment="TOP_CENTER" layoutX="28.0" layoutY="144.0" spacing="10.0">
                                  <children>
                                     <Label alignment="TOP_CENTER" layoutX="80.0" layoutY="144.0" text="Mispriming Library" />
                                     <ChoiceBox fx:id="misprimingLibraryChoiceBox" layoutX="28.0" layoutY="167.0" prefHeight="27.0" prefWidth="116.0" />
-                                 </children>
-                              </VBox>
-                              <VBox alignment="TOP_CENTER" layoutX="278.0" layoutY="144.0" spacing="10.0">
-                                 <children>
-                                    <Label alignment="CENTER" layoutX="278.0" layoutY="144.0" text="Max Mispriming" />
-                                    <TextField fx:id="maxMisprimeTextField" alignment="CENTER" layoutX="279.0" layoutY="167.0" prefHeight="27.0" prefWidth="102.0" text="12" />
                                  </children>
                               </VBox>
                               <VBox spacing="10.0">
@@ -291,7 +291,8 @@
                               </VBox>
                            </children>
                         </HBox>
-                        <Button fx:id="resetValuesButton" layoutX="484.0" layoutY="174.0" mnemonicParsing="false" text="Reset to default" AnchorPane.bottomAnchor="8.0" AnchorPane.rightAnchor="29.0" />
+                        <Button fx:id="resetValuesButton" layoutX="484.0" layoutY="174.0" mnemonicParsing="false" text="Reset" AnchorPane.bottomAnchor="8.0" AnchorPane.rightAnchor="29.0" />
+                        <CheckBox fx:id="autoSelectMisprimingLibraryCheckBox" layoutX="348.0" layoutY="175.0" mnemonicParsing="false" selected="true" text="Autoselect Mispriming Library" />
                      </children></AnchorPane>
           </content>
         </Tab>
