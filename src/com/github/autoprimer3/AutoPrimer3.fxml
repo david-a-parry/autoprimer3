@@ -9,7 +9,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" minHeight="207.0" prefHeight="268.0" prefWidth="656.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.autoprimer3.AutoPrimer3">
+<AnchorPane id="AnchorPane" fx:id="mainWindow" minHeight="207.0" prefHeight="268.0" prefWidth="656.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.autoprimer3.AutoPrimer3">
   <children>
     <MenuBar focusTraversable="true" prefWidth="600.0" style="" useSystemMenuBar="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <menus>
@@ -137,7 +137,14 @@
                         <TextArea fx:id="regionsTextArea" layoutX="14.0" layoutY="38.0" prefHeight="101.0" prefWidth="277.0" />
                         <Label layoutX="90.0" layoutY="14.0" text="Regions/Coordinates" />
                         <Label fx:id="loadFileLabel" alignment="CENTER" layoutX="312.0" layoutY="136.0" prefHeight="16.0" prefWidth="310.0" text="No File Loaded" />
-                        <Button fx:id="loadFileButton" layoutX="407.0" layoutY="166.0" mnemonicParsing="false" text="Load file" />
+                        <HBox layoutX="315.0" layoutY="166.0" spacing="10.0">
+                           <children>
+                              <Button fx:id="clearFileButton" disable="true" layoutX="315.0" layoutY="166.0" mnemonicParsing="false" text="Clear file" />
+                              <Button fx:id="loadFileButton" layoutX="407.0" layoutY="166.0" mnemonicParsing="false" text="Load file" />
+                              <Button fx:id="cancelButton2" cancelButton="true" layoutX="487.0" layoutY="166.0" mnemonicParsing="false" text="Cancel" />
+                              <Button fx:id="runButton2" layoutX="561.0" layoutY="166.0" mnemonicParsing="false" text="Design" />
+                           </children>
+                        </HBox>
                         <ChoiceBox fx:id="genomeChoiceBox2" layoutX="308.0" layoutY="38.0" prefHeight="28.0" prefWidth="145.0" />
                         <Label layoutX="353.0" layoutY="14.0" text="Genome" />
                         <ChoiceBox fx:id="snpsChoiceBox2" layoutX="479.0" layoutY="38.0" prefHeight="28.0" prefWidth="147.0" />
@@ -146,8 +153,6 @@
                         <TextField fx:id="minDistanceTextField2" alignment="CENTER" layoutX="308.0" layoutY="100.0" prefHeight="28.0" prefWidth="145.0" text="50" />
                         <TextField fx:id="flankingRegionsTextField2" alignment="CENTER" layoutX="479.0" layoutY="100.0" prefHeight="28.0" prefWidth="145.0" text="500" />
                         <Label layoutX="500.0" layoutY="78.0" text="Flanking region (bp)" />
-                        <Button fx:id="runButton2" layoutX="561.0" layoutY="166.0" mnemonicParsing="false" text="Design" />
-                        <Button fx:id="cancelButton2" layoutX="487.0" layoutY="166.0" mnemonicParsing="false" text="Cancel" />
                         <ProgressIndicator fx:id="progressIndicator2" disable="false" layoutX="14.0" layoutY="148.0" opacity="1.0" prefHeight="48.0" prefWidth="43.0" progress="0.0" style="-fx-fill: null" visible="true" />
                         <Label fx:id="progressLabel2" layoutX="75.0" layoutY="183.0" prefHeight="16.0" prefWidth="320.0" />
                      </children></AnchorPane>
