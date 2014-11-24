@@ -21,6 +21,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,10 +31,14 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.model.FileHeader;
 
 /**
  *
@@ -44,15 +49,135 @@ public class AutoPrimer3Config implements Serializable{
     File configDir =  new File(System.getProperty("user.home") + fileSeparator
                     + ".AutoPrimer3");
     File configFile = new File (configDir  + fileSeparator + "config.ser");
+    File misprimingDir = new File (configDir + fileSeparator + "mispriming_libs");
+    List<String> misprimingLibs = Arrays.asList("human", "rodent", "drosophila", "none");
+    File thermoDir = new File (configDir + fileSeparator + "thermo_config");
+    File primer3ex;
     private HashMap<String, String> buildToMapMaster = new HashMap<>();
 //maps build name to url e.g. hg19 => http://genome.cse.ucsc.edu:80/cgi-bin/das/hg19
 //a list of IDs so we can retrieve them in the same order they're given
     private LinkedHashMap<String, String> buildToDescription = new LinkedHashMap<>();
 //maps build name to description e.g. hg19 => 'Human Feb. 2009 (GRCh37/hg19) Genome at UCSC'
     private HashMap<String, LinkedHashSet<String>> buildToTables = new HashMap<>();
+
+    public AutoPrimer3Config() throws IOException {
+        this.primer3ex = File.createTempFile("primer3", "exe");
+        primer3ex.deleteOnExit();
+    }
     
     public File getConfigFile(){
         return configFile;
+    }
+    
+    public File extractP3Executable() throws FileNotFoundException, IOException{    
+        InputStream inputStream;
+        if (System.getProperty("os.name").equals("Mac OS X")){
+                inputStream = this.getClass().
+                        getResourceAsStream("primer3_core_macosx");
+        }else if (System.getProperty("os.name").equals("Linux")){
+            if (System.getProperty("os.arch").endsWith("64")){
+                inputStream = this.getClass().
+                        getResourceAsStream("primer3_core");
+            }else{
+                inputStream = this.getClass().
+                        getResourceAsStream("primer3_core32");
+            }
+        }else{
+            inputStream = this.getClass().
+                        getResourceAsStream("primer3_core");
+        }
+        OutputStream outputStream = new FileOutputStream(primer3ex);
+        int read = 0;
+        byte[] bytes = new byte[1024];
+        while ((read = inputStream.read(bytes)) != -1) {
+                outputStream.write(bytes, 0, read);
+        }
+        inputStream.close();
+        outputStream.close();
+        primer3ex.setExecutable(true);
+        return primer3ex;
+    }
+    
+    public File getP3Executable(){
+        return primer3ex;
+    }
+    
+    public File extractMisprimingLibs() throws IOException, ZipException{
+        boolean libsExist = true;
+        if (! misprimingDir.exists()){
+            misprimingDir.mkdir();
+            libsExist = false;
+        }
+        if (libsExist){
+            for (String s: misprimingLibs){
+                File f = new File(misprimingDir + fileSeparator + s);
+                if (! f.exists()){
+                    libsExist = false;
+                    break;
+                }
+            }
+        }
+        if (!libsExist){
+            File mispriming_zip = File.createTempFile("misprime", ".zip" );
+            mispriming_zip.deleteOnExit();
+            InputStream inputStream = this.getClass().
+                    getResourceAsStream("mispriming_libraries.zip");
+            OutputStream outputStream = new FileOutputStream(mispriming_zip);
+            int read = 0;
+            byte[] bytes = new byte[1024];    
+            while ((read = inputStream.read(bytes)) != -1) {
+                    outputStream.write(bytes, 0, read);
+            }
+            inputStream.close();
+            outputStream.close();
+            ZipFile zip = new ZipFile(mispriming_zip);
+            zip.extractAll(misprimingDir.toString());
+        }
+        return misprimingDir;
+    }
+    
+    public File getMisprimingDir(){
+        return misprimingDir;
+    }
+    
+    public File extractThermoConfig() throws IOException, ZipException{
+        boolean libsExist = true;
+        File thermoZip = File.createTempFile("primer_config", ".zip" );
+        thermoZip.deleteOnExit();
+        InputStream inputStream = this.getClass().
+                getResourceAsStream("primer3_config.zip");
+        OutputStream outputStream = new FileOutputStream(thermoZip);
+        int read = 0;
+        byte[] bytes = new byte[1024];    
+        while ((read = inputStream.read(bytes)) != -1) {
+                outputStream.write(bytes, 0, read);
+        }
+        inputStream.close();
+        outputStream.close();
+        ZipFile zip = new ZipFile(thermoZip);
+
+        if (! thermoDir.exists()){
+            thermoDir.mkdir();
+            libsExist = false;
+        }
+        if (libsExist){
+            List<FileHeader> fileHeaders = zip.getFileHeaders();
+            for (FileHeader fh: fileHeaders){
+                File f = new File(misprimingDir + fileSeparator + fh.getFileName());
+                if (! f.exists()){
+                    libsExist = false;
+                    break;
+                }
+            }
+        }
+        if (!libsExist){
+            zip.extractAll(thermoDir.toString());
+        }
+        return thermoDir;
+    }
+    
+    public File getThermoDir(){
+        return thermoDir;
     }
     
     public void setConfigFile(File file){

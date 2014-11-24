@@ -186,15 +186,15 @@ public class AutoPrimer3 extends Application implements Initializable{
     HashMap<String, String> buildToMap = new HashMap<>();
     HashMap<String, LinkedHashSet<String>> buildToTable = new HashMap<>();
     File primer3ex; 
-    Path mispriming_libs;
-    Path thermo_config;
+    File thermoConfig;
     String defaultSizeRange = "150-250 100-300 301-400 401-500 501-600 "
                 + "601-700 701-850 851-1000 1000-2000";
     HashMap<TextField, String> defaultPrimer3Values = new HashMap<>();
     String serverUrl = "http://genome-euro.ucsc.edu"; 
     
     File configDirectory;
-    AutoPrimer3Config ap3Config = new AutoPrimer3Config();
+    File misprimeDir;
+    AutoPrimer3Config ap3Config;
     
     @Override
     public void start(final Stage primaryStage) {
@@ -227,6 +227,7 @@ public class AutoPrimer3 extends Application implements Initializable{
         snpsChoiceBox2.selectionModelProperty().bind(snpsChoiceBox.selectionModelProperty());
         setLoading(true);
         try{
+            ap3Config = new AutoPrimer3Config();
             ap3Config.readConfig();
             buildsToDescriptions = ap3Config.getBuildToDescription();
             buildToMap = ap3Config.getBuildToMapMaster();
@@ -240,57 +241,9 @@ public class AutoPrimer3 extends Application implements Initializable{
             configError.showException(ex);
         }
         try{
-            primer3ex = File.createTempFile("primer3", "exe");
-            primer3ex.deleteOnExit();
-            InputStream inputStream;
-            if (System.getProperty("os.name").equals("Mac OS X")){
-                    inputStream = this.getClass().
-                            getResourceAsStream("primer3_core_macosx");
-            }else if (System.getProperty("os.name").equals("Linux")){
-                if (System.getProperty("os.arch").endsWith("64")){
-                    inputStream = this.getClass().
-                            getResourceAsStream("primer3_core");
-                }else{
-                    inputStream = this.getClass().
-                            getResourceAsStream("primer3_core32");
-                }
-            }else{
-                inputStream = this.getClass().
-                            getResourceAsStream("primer3_core");
-            }
-            OutputStream outputStream = new FileOutputStream(primer3ex);
-            int read = 0;
-            byte[] bytes = new byte[1024];
-            while ((read = inputStream.read(bytes)) != -1) {
-                    outputStream.write(bytes, 0, read);
-            }
-            inputStream.close();
-            outputStream.close();
-            primer3ex.setExecutable(true);
-            File mispriming_zip = File.createTempFile("misprime", ".zip" );
-            mispriming_libs = Files.createTempDirectory("mispriming_lib");
-            mispriming_zip.deleteOnExit();
-            inputStream = this.getClass().
-                    getResourceAsStream("mispriming_libraries.zip");
-            outputStream = new FileOutputStream(mispriming_zip);
-            while ((read = inputStream.read(bytes)) != -1) {
-                    outputStream.write(bytes, 0, read);
-            }
-            inputStream.close();
-            outputStream.close();
-            ZipFile zip = new ZipFile(mispriming_zip);
-            zip.extractAll(mispriming_libs.toString());
-            thermo_config = Files.createTempDirectory("thermo_config");
-            File thermo_zip = File.createTempFile("primer_config", ".zip");
-            thermo_zip.deleteOnExit();
-            inputStream = this.getClass().
-                    getResourceAsStream("primer3_config.zip");
-            outputStream = new FileOutputStream(thermo_zip);
-            while ((read = inputStream.read(bytes)) != -1) {
-                    outputStream.write(bytes, 0, read);
-            }
-            zip = new ZipFile(thermo_zip);
-            zip.extractAll(thermo_config.toString());
+            primer3ex = ap3Config.extractP3Executable();
+            misprimeDir = ap3Config.extractMisprimingLibs();
+            thermoConfig = ap3Config.extractThermoConfig();
         }catch(IOException|ZipException ex){
             //TO DO - catch this properly
             ex.printStackTrace();
@@ -348,7 +301,6 @@ public class AutoPrimer3 extends Application implements Initializable{
         genomeChoiceBox.getItems().addAll(new ArrayList<>(buildsToDescriptions.keySet()));
         genomeChoiceBox.getSelectionModel().selectFirst();
         
-        File misprimeDir = mispriming_libs.toFile();
         misprimingLibraryChoiceBox.getItems().add("none");
         for (File f: misprimeDir.listFiles()){
             misprimingLibraryChoiceBox.getItems().add(f.getName());
@@ -1490,14 +1442,14 @@ public class AutoPrimer3 extends Application implements Initializable{
             p3_job.append("PRIMER_PAIR_MAX_DIFF_TM=")
                     .append(maxDiffTextField.getText()).append("\n");
             p3_job.append("PRIMER_THERMODYNAMIC_PARAMETERS_PATH=").
-                    append(thermo_config.toString())
+                    append(thermoConfig.toString())
                     .append(System.getProperty("file.separator")).append("\n");
             String misprimeLibrary = (String) 
                 misprimingLibraryChoiceBox.getSelectionModel().getSelectedItem();
             if (!misprimeLibrary.isEmpty()){
                 if (! misprimeLibrary.matches("none")){
                     p3_job.append("PRIMER_MISPRIMING_LIBRARY=")
-                            .append(mispriming_libs.toString())
+                            .append(misprimeDir.toString())
                             .append(System.getProperty("file.separator"))
                             .append(misprimeLibrary).append("\n");
                     p3_job.append("PRIMER_MAX_LIBRARY_MISPRIMING=")
