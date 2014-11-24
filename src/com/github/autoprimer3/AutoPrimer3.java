@@ -185,6 +185,8 @@ public class AutoPrimer3 extends Application implements Initializable{
     Button resetValuesButton;
     
     Boolean CANRUN = false;
+    final BuildToMisprimingLibrary buildToMisprime = new BuildToMisprimingLibrary();
+    Boolean autoSelectMisprime = true;
     final GetUcscBuildsAndTables buildsAndTables = new GetUcscBuildsAndTables();
     LinkedHashMap<String, String> buildsToDescriptions = new LinkedHashMap<>();
     HashMap<String, String> buildToMap = new HashMap<>();
@@ -196,9 +198,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                 + "601-700 701-850 851-1000 1000-2000";
     HashMap<TextField, String> defaultPrimer3Values = new HashMap<>();
     String serverUrl = "http://genome-euro.ucsc.edu"; 
-    final WebView browser = new WebView();
-    final WebEngine webEngine = browser.getEngine();
-        
+    
     File configDirectory;
     AutoPrimer3Config ap3Config = new AutoPrimer3Config();
     
@@ -316,6 +316,18 @@ public class AutoPrimer3 extends Application implements Initializable{
                 if (new_value.intValue() >= 0){
                     final String id = (String) genomeChoiceBox.getItems().get(new_value.intValue());
                     genomeChoiceBox.setTooltip(new Tooltip (ap3Config.getBuildToDescription().get(id)));
+                    if (autoSelectMisprime){
+                        String stub = id.replaceAll("\\d*$", "");
+                        final String lib = buildToMisprime.getMisprimingLibrary(stub);
+                        System.out.println("Stub = " + stub + ", ID = " + id + ", lib = " + lib);
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                misprimingLibraryChoiceBox.getSelectionModel().select(lib);
+                            }
+                        });
+                        
+                    }
                     getBuildTables(id);
                 }
             }
