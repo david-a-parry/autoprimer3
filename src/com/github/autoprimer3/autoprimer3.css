@@ -45,7 +45,7 @@ linear-gradient(#eeeeee 0%, #cdcdcd 25%, #bebfbe 75%, #ffffff 100%),
     -fx-background-color: rgba(90%,90%,90%,0.3)
 }
 .check-box{
-    -fx-text-fill: white;
+    -fx-text-fill: black;
 }
 .check-box *.box{
     -fx-background-color: white
