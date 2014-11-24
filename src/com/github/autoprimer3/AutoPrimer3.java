@@ -1,7 +1,6 @@
 /*things to add:
     coordinates functionality
     server choice
-    automatically select mispriming library for primates/rodents/insects
     output reference sequence
     write primers and primer3 output to file
 */
@@ -44,12 +43,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -63,6 +65,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -75,13 +78,10 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
@@ -93,8 +93,7 @@ import org.controlsfx.dialog.Dialogs;
  */
 public class AutoPrimer3 extends Application implements Initializable{
     
-    @FXML
-    Window mainWindow;
+    
     @FXML
     AnchorPane mainPane;
     //tabs
@@ -184,25 +183,28 @@ public class AutoPrimer3 extends Application implements Initializable{
     ChoiceBox misprimingLibraryChoiceBox;
     @FXML
     Button resetValuesButton;
+    @FXML
+    CheckBox autoSelectMisprimingLibraryCheckBox;
     
     Boolean CANRUN = false;
+    final BuildToMisprimingLibrary buildToMisprime = new BuildToMisprimingLibrary();
+    Boolean autoSelectMisprime = true;
     final GetUcscBuildsAndTables buildsAndTables = new GetUcscBuildsAndTables();
     LinkedHashMap<String, String> buildsToDescriptions = new LinkedHashMap<>();
     HashMap<String, String> buildToMap = new HashMap<>();
     HashMap<String, LinkedHashSet<String>> buildToTable = new HashMap<>();
     File primer3ex; 
-    Path mispriming_libs;
-    Path thermo_config;
+    File thermoConfig;
     String defaultSizeRange = "150-250 100-300 301-400 401-500 501-600 "
                 + "601-700 701-850 851-1000 1000-2000";
     HashMap<TextField, String> defaultPrimer3Values = new HashMap<>();
     String serverUrl = "http://genome-euro.ucsc.edu"; 
-    final WebView browser = new WebView();
-    final WebEngine webEngine = browser.getEngine();
-        
+    
     File configDirectory;
-    AutoPrimer3Config ap3Config = new AutoPrimer3Config();
+    AutoPrimer3Config ap3Config;
     File regionsFile;
+    File misprimeDir;
+    
     
     @Override
     public void start(final Stage primaryStage) {
@@ -235,6 +237,7 @@ public class AutoPrimer3 extends Application implements Initializable{
         snpsChoiceBox2.selectionModelProperty().bind(snpsChoiceBox.selectionModelProperty());
         setLoading(true);
         try{
+            ap3Config = new AutoPrimer3Config();
             ap3Config.readConfig();
             buildsToDescriptions = ap3Config.getBuildToDescription();
             buildToMap = ap3Config.getBuildToMapMaster();
@@ -248,57 +251,9 @@ public class AutoPrimer3 extends Application implements Initializable{
             configError.showException(ex);
         }
         try{
-            primer3ex = File.createTempFile("primer3", "exe");
-            primer3ex.deleteOnExit();
-            InputStream inputStream;
-            if (System.getProperty("os.name").equals("Mac OS X")){
-                    inputStream = this.getClass().
-                            getResourceAsStream("primer3_core_macosx");
-            }else if (System.getProperty("os.name").equals("Linux")){
-                if (System.getProperty("os.arch").endsWith("64")){
-                    inputStream = this.getClass().
-                            getResourceAsStream("primer3_core");
-                }else{
-                    inputStream = this.getClass().
-                            getResourceAsStream("primer3_core32");
-                }
-            }else{
-                inputStream = this.getClass().
-                            getResourceAsStream("primer3_core");
-            }
-            OutputStream outputStream = new FileOutputStream(primer3ex);
-            int read = 0;
-            byte[] bytes = new byte[1024];
-            while ((read = inputStream.read(bytes)) != -1) {
-                    outputStream.write(bytes, 0, read);
-            }
-            inputStream.close();
-            outputStream.close();
-            primer3ex.setExecutable(true);
-            File mispriming_zip = File.createTempFile("misprime", ".zip" );
-            mispriming_libs = Files.createTempDirectory("mispriming_lib");
-            mispriming_zip.deleteOnExit();
-            inputStream = this.getClass().
-                    getResourceAsStream("mispriming_libraries.zip");
-            outputStream = new FileOutputStream(mispriming_zip);
-            while ((read = inputStream.read(bytes)) != -1) {
-                    outputStream.write(bytes, 0, read);
-            }
-            inputStream.close();
-            outputStream.close();
-            ZipFile zip = new ZipFile(mispriming_zip);
-            zip.extractAll(mispriming_libs.toString());
-            thermo_config = Files.createTempDirectory("thermo_config");
-            File thermo_zip = File.createTempFile("primer_config", ".zip");
-            thermo_zip.deleteOnExit();
-            inputStream = this.getClass().
-                    getResourceAsStream("primer3_config.zip");
-            outputStream = new FileOutputStream(thermo_zip);
-            while ((read = inputStream.read(bytes)) != -1) {
-                    outputStream.write(bytes, 0, read);
-            }
-            zip = new ZipFile(thermo_zip);
-            zip.extractAll(thermo_config.toString());
+            primer3ex = ap3Config.extractP3Executable();
+            misprimeDir = ap3Config.extractMisprimingLibs();
+            thermoConfig = ap3Config.extractThermoConfig();
         }catch(IOException|ZipException ex){
             //TO DO - catch this properly
             ex.printStackTrace();
@@ -318,17 +273,44 @@ public class AutoPrimer3 extends Application implements Initializable{
                 if (new_value.intValue() >= 0){
                     final String id = (String) genomeChoiceBox.getItems().get(new_value.intValue());
                     genomeChoiceBox.setTooltip(new Tooltip (ap3Config.getBuildToDescription().get(id)));
+                    if (autoSelectMisprime){
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                selectMisprimingLibrary(id);
+                            }
+                        });
+                        
+                    }
                     getBuildTables(id);
                 }
             }
         });
         
+        autoSelectMisprimingLibraryCheckBox.selectedProperty().addListener(
+                new ChangeListener<Boolean>(){
+            @Override
+            public void changed (ObservableValue ov, Boolean value, final Boolean newValue){
+                autoSelectMisprime = newValue;
+                final String id = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (newValue){
+                            selectMisprimingLibrary(id);
+                        }else{
+                            misprimingLibraryChoiceBox.getSelectionModel().select("none");
+                        }
+                    }
+                });
+   
+            }
+        });
         
         genomeChoiceBox.getItems().clear();
         genomeChoiceBox.getItems().addAll(new ArrayList<>(buildsToDescriptions.keySet()));
         genomeChoiceBox.getSelectionModel().selectFirst();
         
-        File misprimeDir = mispriming_libs.toFile();
         misprimingLibraryChoiceBox.getItems().add("none");
         for (File f: misprimeDir.listFiles()){
             misprimingLibraryChoiceBox.getItems().add(f.getName());
@@ -475,6 +457,12 @@ public class AutoPrimer3 extends Application implements Initializable{
                 }
             }
         );
+    }
+    
+    private void selectMisprimingLibrary(String id){
+        String stub = id.replaceAll("\\d*$", "");
+        String lib = buildToMisprime.getMisprimingLibrary(stub);
+        misprimingLibraryChoiceBox.getSelectionModel().select(lib);
     }
     
     private void connectToUcsc(){
@@ -732,21 +720,22 @@ public class AutoPrimer3 extends Application implements Initializable{
     
     public void loadRegionsFile(){
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Choose input file");
+        fileChooser.setTitle("Select input file");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
                 "BED file", "*.bed", "VCF file", "*.vcf*", "text file", "*.txt"));
         setCanRun(false);
-        File inFile = fileChooser.showOpenDialog(mainWindow);
+        File inFile = fileChooser.showOpenDialog(mainPane.getScene().getWindow());
         if (inFile != null){
             regionsFile = inFile;
             loadFileLabel.setText(inFile.getName());
             clearFileButton.setDisable(false);
         }
+        setCanRun(true);
     }
     
     public void clearRegionsFile(){
         regionsFile = null;
-        loadFileLabel.setText("No File Loaded");
+        loadFileLabel.setText("No File Selected");
         clearFileButton.setDisable(true);
     }
     
@@ -839,7 +828,7 @@ public class AutoPrimer3 extends Application implements Initializable{
             return;
         }
         
-        
+        setRunning(true);
         final Task<GeneSearchResult> geneSearchTask = 
                 new Task<GeneSearchResult>(){
             @Override
@@ -966,14 +955,21 @@ public class AutoPrimer3 extends Application implements Initializable{
 
                         ArrayList<Primer3Result> primers = new ArrayList<>();
                         ArrayList<String> designs = new ArrayList<>();
-                        //get FASTA sequence
+                        HashMap<String, Integer> geneExonOffsets = new HashMap<>();
+                        //get DNA
                         int regionNumber = 0;
                         double incrementPerRegion = 100/genomicRegions.size();
+                        HashSet<String> geneSymbolTracker = new HashSet<>();
+                        HashSet<String> transcriptTracker = new HashSet<>();
                         for (GenomicRegionSummary r : genomicRegions){
                             regionNumber++;
                             updateMessage("Getting DNA for region " + regionNumber + 
                                     " of " + genomicRegions.size());
                             updateProgress(-1, -1);
+                            HashSet<String> checkedName = new HashSet<>();
+                            HashSet<String> checkedTranscript = new HashSet<>();
+                                //only want to check names/ID has already been 
+                                //used once per region i.e. for previous regions
                             String genome = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
                             SequenceFromDasUcsc seqFromDas = new SequenceFromDasUcsc();
                             String dna = seqFromDas.retrieveSequence(
@@ -1010,23 +1006,44 @@ public class AutoPrimer3 extends Application implements Initializable{
                                 if (end < r.getStartPos()){
                                     continue;
                                 }
+                                if (! geneExonOffsets.containsKey(t.getSymbol())){
+                                    geneExonOffsets.put(t.getSymbol(), 0);
+                                }
                                 ArrayList<Exon> exons = t.getExons();
-
                                 if (t.getStrand().equals("-")){
                                     minus_strand++;
                                 }else{
                                     plus_strand++;
                                 }
                                 for (Exon e : exons){
+                                    //TO DO - link exon numbering to symbol
                                     if (designToChoiceBox.getSelectionModel().getSelectedItem()
                                         .equals("Coding regions")){
                                         if (! e.isCodingExon()){
+                                            if (t.getStrand().equals("-") && 
+                                                    e.getEnd() > t.getCdsEnd()){
+                                                geneExonOffsets.put(t.getSymbol(), 
+                                                        geneExonOffsets.get(t.getSymbol()) + 1);
+                                            }else if (t.getStrand().equals("+") && 
+                                                    e.getStart() < t.getCdsStart()){
+                                                   geneExonOffsets.put(t.getSymbol(), 
+                                                        geneExonOffsets.get(t.getSymbol()) + 1);
+                                            }
                                             continue;
                                         }
                                     }
-                                    String id = t.getId().concat("_ex").
-                                            concat(Integer.toString(e.getOrder()));
                                     String name = t.getSymbol();
+                                    if (! checkedName.contains(name)){
+                                        checkedName.add(name);
+                                        name = checkDuplicate(name, geneSymbolTracker);
+                                    }
+                                    String transcript = t.getId();
+                                    if (!checkedTranscript.contains(transcript)){
+                                        checkedTranscript.add(transcript);
+                                        transcript = checkDuplicate(transcript, transcriptTracker);
+                                    }
+                                    String id = transcript.concat("_ex").
+                                            concat(Integer.toString(e.getOrder()));
                                     GenomicRegionSummary ex; 
                                     if (designToChoiceBox.getSelectionModel().getSelectedItem()
                                         .equals("Coding regions")){
@@ -1047,7 +1064,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                                 onMinusStrand = true;
                             }
                             merger.mergeRegionsByPosition(exonRegions);
-                            numberExons(exonRegions, onMinusStrand);
+                            numberExons(exonRegions, onMinusStrand, geneExonOffsets);
                             exonRegions = splitLargeRegionsMergeSmallRegions(exonRegions, 
                                     optSize, designBuffer, onMinusStrand);
                             if (onMinusStrand){
@@ -1254,18 +1271,55 @@ public class AutoPrimer3 extends Application implements Initializable{
             }
         });
         setRunning(true);
+        progressIndicator.progressProperty().unbind();
+        progressIndicator.progressProperty().bind(geneSearchTask.progressProperty());
+        progressLabel.textProperty().unbind(); 
+        progressLabel.textProperty().bind(geneSearchTask.messageProperty());
         new Thread(geneSearchTask).start();   
     
     }
     
+    /*dup will always be an unedited gene name
+    we need to check whether we already have made an '(alt)' version
+    by checking in dupStorer
+    */
+    private String checkDuplicate(String dup, HashSet<String> dupStorer){
+        String dedupped;
+        System.out.println("Dedupping " + dup);
+        if (dupStorer.contains(dup)){
+           dedupped =  dup + "(alt)";
+           System.out.println("Trying " + dedupped);
+           if (dupStorer.contains(dedupped)){
+               for (int i = 1; i < 999; i++){
+                   dedupped = dup + "(alt" + i + ")";
+                   System.out.println("Trying " + dedupped);
+                   if (!dupStorer.contains(dedupped)){
+                       break;
+                   }
+               }
+           }
+           System.out.println("Using " + dedupped + "\\n");
+           dupStorer.add(dedupped);
+           return dedupped;
+        }else{
+            dupStorer.add(dup);
+            System.out.println("Using " + dup + "\\n");
+            return dup;
+        }
+    }
+    
     private void numberExons(ArrayList<GenomicRegionSummary> exonRegions,
-            boolean minusStrand){
+            boolean minusStrand, HashMap<String, Integer> symbolToOffset){
         int n = 0;
         for (GenomicRegionSummary e: exonRegions){
+            int offset = 0;
+            if (symbolToOffset.containsKey(e.getName())){
+                offset = symbolToOffset.get(e.getName());
+            }
             if (minusStrand){
-                e.setName(e.getName() + "_ex" + (exonRegions.size() - n));
+                e.setName(e.getName() + "_ex" + (exonRegions.size() - n + offset));
             }else{
-                e.setName(e.getName() + "_ex" + (n+1));
+                e.setName(e.getName() + "_ex" + (n+1 + offset));
             }
             n++;
         }
@@ -1396,7 +1450,7 @@ public class AutoPrimer3 extends Application implements Initializable{
         List<String> geneName1 = Arrays.asList(name1.split("_ex"));
         List<String> geneName2 = Arrays.asList(name2.split("_ex"));
         if (geneName1.size() >= 2 && geneName2.size() >= 2 && 
-                geneName1.get(0).equals(geneName2.get(0))){
+                geneName1.get(0).equalsIgnoreCase(geneName2.get(0))){
             ArrayList<Integer> sizes = new ArrayList<>();
             for (int i = 1; i < geneName1.size(); i++){
                 sizes.add(Integer.valueOf(geneName1.get(i)));
@@ -1504,14 +1558,14 @@ public class AutoPrimer3 extends Application implements Initializable{
             p3_job.append("PRIMER_PAIR_MAX_DIFF_TM=")
                     .append(maxDiffTextField.getText()).append("\n");
             p3_job.append("PRIMER_THERMODYNAMIC_PARAMETERS_PATH=").
-                    append(thermo_config.toString())
+                    append(thermoConfig.toString())
                     .append(System.getProperty("file.separator")).append("\n");
             String misprimeLibrary = (String) 
                 misprimingLibraryChoiceBox.getSelectionModel().getSelectedItem();
             if (!misprimeLibrary.isEmpty()){
                 if (! misprimeLibrary.matches("none")){
                     p3_job.append("PRIMER_MISPRIMING_LIBRARY=")
-                            .append(mispriming_libs.toString())
+                            .append(misprimeDir.toString())
                             .append(System.getProperty("file.separator"))
                             .append(misprimeLibrary).append("\n");
                     p3_job.append("PRIMER_MAX_LIBRARY_MISPRIMING=")

@@ -3,21 +3,21 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/meddap/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/GetGeneCoordinates.java</file>
-            <file>file:/Users/meddap/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/autoprimer3.css</file>
-            <file>file:/Users/meddap/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/SequenceFromDasUcsc.java</file>
-            <file>file:/Users/meddap/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/Primer3ResultViewController.java</file>
-            <file>file:/Users/meddap/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/Primer3Result.java</file>
-            <file>file:/Users/meddap/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/GenomicRegionSummary.java</file>
-            <file>file:/Users/meddap/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/GetSequenceFromFasta.java</file>
-            <file>file:/Users/meddap/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/ReverseComplementDNA.java</file>
-            <file>file:/Users/meddap/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/GetUcscBuildsAndTables.java</file>
-            <file>file:/Users/meddap/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/GetUcscGeneCoordinates.java</file>
-            <file>file:/Users/meddap/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/GeneTableReader.java</file>
-            <file>file:/Users/meddap/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/GeneDetails.java</file>
-            <file>file:/Users/meddap/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/GetEnsemblGeneCoordinates.java</file>
-            <file>file:/Users/meddap/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/AutoPrimer3.java</file>
-            <file>file:/Users/meddap/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/ChromComparator.java</file>
+            <file>file:/home/david/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/AutoPrimer3.java</file>
+            <file>file:/home/david/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/GenomicRegionSummary.java</file>
+            <file>file:/home/david/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/Primer3Result.java</file>
+            <file>file:/home/david/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/GetUcscBuildsAndTables.java</file>
+            <file>file:/home/david/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/CoordComparator.java</file>
+            <file>file:/home/david/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/SequenceFromDasUcsc.java</file>
+            <file>file:/home/david/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/GetUcscGeneCoordinates.java</file>
+            <file>file:/home/david/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/AutoPrimer3Config.java</file>
+            <file>file:/home/david/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/ReverseComplementDNA.java</file>
+            <file>file:/home/david/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/Primer3ResultViewController.java</file>
+            <file>file:/home/david/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/AutoPrimer3.fxml</file>
+            <file>file:/home/david/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/GeneDetails.java</file>
+            <file>file:/home/david/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/autoprimer3.css</file>
+            <file>file:/home/david/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/ChromComparator.java</file>
+            <file>file:/home/david/NetBeansProjects/autoprimer3/src/com/github/autoprimer3/GetGeneCoordinates.java</file>
         </group>
     </open-files>
 </project-private>

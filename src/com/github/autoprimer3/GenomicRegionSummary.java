@@ -19,8 +19,10 @@ package com.github.autoprimer3;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 /**
 *
@@ -169,9 +171,12 @@ public class GenomicRegionSummary implements Comparable<GenomicRegionSummary>, S
                 if (previousRegion.getEndPos() >= r.getStartPos()){
                     if (previousRegion.getEndPos() < r.getEndPos()){
                         previousRegion.setEndPos(r.getEndPos());
-                        previousRegion.setName(previousRegion.getName().concat("/").concat(r.getName()));
-                        previousRegion.setId(previousRegion.getId().concat("/").concat(r.getId()));
-
+                        if (!previousRegion.getName().equalsIgnoreCase(r.getName())){
+                            previousRegion.setName(previousRegion.getName().concat("/").concat(r.getName()));
+                        }
+                        if (!previousRegion.getId().equalsIgnoreCase(r.getId())){
+                            previousRegion.setId(previousRegion.getId().concat("/").concat(r.getId()));
+                        }
                     }
                 }else{
                     merged.add(previousRegion);
@@ -186,11 +191,15 @@ public class GenomicRegionSummary implements Comparable<GenomicRegionSummary>, S
                         && previousRegion.getEndPos() >= r.getStartPos()){
                     if (previousRegion.getEndPos() <= r.getEndPos()){
                         previousRegion.setEndPos(r.getEndPos());
-                        if (!previousRegion.getName().equals(r.getName())){
+                        if (!previousRegion.getName().equalsIgnoreCase(r.getName())){//don't natch case insensitive
                             previousRegion.setName(previousRegion.getName().
                                     concat("/").concat(r.getName()));
+                        }else if (!previousRegion.getName().equals(r.getName())){//match case insensitive but not case sensistive
+                            List<String> nameSort = Arrays.asList(previousRegion.getName(), r.getName());
+                            Collections.sort(nameSort);
+                            previousRegion.setName(nameSort.get(0));
                         }
-                        if (!previousRegion.getId().equals(r.getId())){
+                        if (!previousRegion.getId().equalsIgnoreCase(r.getId())){
                             previousRegion.setId(previousRegion.getId().
                                     concat("/").concat(r.getId()));
                         }
