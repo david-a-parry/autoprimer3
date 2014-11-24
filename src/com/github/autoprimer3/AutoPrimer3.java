@@ -26,7 +26,6 @@ package com.github.autoprimer3;
 
 import com.github.autoprimer3.GeneDetails.Exon;
 import static com.github.autoprimer3.ReverseComplementDNA.reverseComplement;
-import java.io.BufferedInputStream;
 import javafx.scene.input.KeyEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -35,11 +34,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -52,7 +48,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -63,7 +58,6 @@ import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -83,8 +77,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.controlsfx.control.action.Action;
@@ -97,6 +93,8 @@ import org.controlsfx.dialog.Dialogs;
  */
 public class AutoPrimer3 extends Application implements Initializable{
     
+    @FXML
+    Window mainWindow;
     @FXML
     AnchorPane mainPane;
     //tabs
@@ -156,7 +154,10 @@ public class AutoPrimer3 extends Application implements Initializable{
     @FXML
     Button loadFileButton;
     @FXML
+    Button clearFileButton;
+    @FXML
     Label loadFileLabel;
+    
     
     //Primer3 Settings tab components
     @FXML
@@ -201,6 +202,7 @@ public class AutoPrimer3 extends Application implements Initializable{
         
     File configDirectory;
     AutoPrimer3Config ap3Config = new AutoPrimer3Config();
+    File regionsFile;
     
     @Override
     public void start(final Stage primaryStage) {
@@ -725,6 +727,46 @@ public class AutoPrimer3 extends Application implements Initializable{
         }else{//we've got a connection to UCSC but want to refresh the database info for current build
             final String id = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
                 getBuildTables(id);
+        }
+    }
+    
+    public void loadRegionsFile(){
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Choose input file");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
+                "BED file", "*.bed", "VCF file", "*.vcf*", "text file", "*.txt"));
+        setCanRun(false);
+        File inFile = fileChooser.showOpenDialog(mainWindow);
+        if (inFile != null){
+            regionsFile = inFile;
+            loadFileLabel.setText(inFile.getName());
+            clearFileButton.setDisable(false);
+        }
+    }
+    
+    public void clearRegionsFile(){
+        regionsFile = null;
+        loadFileLabel.setText("No File Loaded");
+        clearFileButton.setDisable(true);
+    }
+    
+    public void designPrimersToCoordinates(){
+        String regionsInput = regionsTextArea.getText();
+        List<String> regions; 
+        if (! regionsInput.isEmpty()){
+            List<String> tempRegions = Arrays.asList(regionsInput.split("\\n"));
+            for (String r: tempRegions){
+                if (! r.matches(".*\\w.*")){
+                    continue;
+                }
+                // TO DO!
+                //use abstract region parser methods
+            }
+        }
+        if (regionsFile != null){
+            // TO DO!
+            //open as text or gzip stream if bgzipped VCF
+            //use abstract region parser methods
         }
     }
     
