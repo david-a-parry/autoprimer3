@@ -723,6 +723,7 @@ public class AutoPrimer3 extends Application implements Initializable{
         fileChooser.setTitle("Select input file");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
                 "BED file", "*.bed", "VCF file", "*.vcf*", "text file", "*.txt"));
+        fileChooser.setInitialDirectory(new File (System.getProperty("user.home")));
         setCanRun(false);
         File inFile = fileChooser.showOpenDialog(mainPane.getScene().getWindow());
         if (inFile != null){
@@ -904,6 +905,10 @@ public class AutoPrimer3 extends Application implements Initializable{
                             message(message)
                             .styleClass(Dialog.STYLE_CLASS_NATIVE);
                     noTargetsError.showError();
+                    progressIndicator.progressProperty().unbind();
+                    progressLabel.textProperty().unbind();
+                    progressIndicator.progressProperty().set(0);
+                    progressLabel.setText("No targets found");
                     setRunning(false);
                     return;
                 }else if (! notFound.isEmpty()){
@@ -925,6 +930,8 @@ public class AutoPrimer3 extends Application implements Initializable{
 
                     if (response == Dialog.ACTION_NO){
                         setRunning(false);
+                        progressIndicator.progressProperty().unbind();
+                        progressLabel.textProperty().unbind();        
                         progressLabel.setText("Design cancelled");
                         progressIndicator.progressProperty().set(0);
                         return;
@@ -966,8 +973,8 @@ public class AutoPrimer3 extends Application implements Initializable{
                             updateMessage("Getting DNA for region " + regionNumber + 
                                     " of " + genomicRegions.size());
                             updateProgress(-1, -1);
-                            HashSet<String> checkedName = new HashSet<>();
-                            HashSet<String> checkedTranscript = new HashSet<>();
+                            HashMap<String, String> checkedName = new HashMap<>();
+                            HashMap<String, String> checkedTranscript = new HashMap<>();
                                 //only want to check names/ID has already been 
                                 //used once per region i.e. for previous regions
                             String genome = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
@@ -1033,15 +1040,16 @@ public class AutoPrimer3 extends Application implements Initializable{
                                         }
                                     }
                                     String name = t.getSymbol();
-                                    if (! checkedName.contains(name)){
-                                        checkedName.add(name);
-                                        name = checkDuplicate(name, geneSymbolTracker);
+                                    if (! checkedName.containsKey(name)){
+                                        checkedName.put(name, checkDuplicate(name, geneSymbolTracker));
                                     }
+                                    name = checkedName.get(name);
                                     String transcript = t.getId();
-                                    if (!checkedTranscript.contains(transcript)){
-                                        checkedTranscript.add(transcript);
-                                        transcript = checkDuplicate(transcript, transcriptTracker);
+                                    if (!checkedTranscript.containsKey(transcript)){
+                                        checkedTranscript.put(transcript, 
+                                                checkDuplicate(transcript, transcriptTracker));
                                     }
+                                    transcript = checkedTranscript.get(transcript);
                                     String id = transcript.concat("_ex").
                                             concat(Integer.toString(e.getOrder()));
                                     GenomicRegionSummary ex; 
@@ -1249,6 +1257,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                 setRunning(false);
                 progressLabel.textProperty().unbind();
                 progressLabel.setText("Design cancelled");
+                progressIndicator.progressProperty().unbind();
                 progressIndicator.progressProperty().set(0);
             }
 
