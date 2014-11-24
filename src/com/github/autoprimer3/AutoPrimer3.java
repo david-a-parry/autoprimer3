@@ -1,7 +1,6 @@
 /*things to add:
     coordinates functionality
     server choice
-    automatically select mispriming library for primates/rodents/insects
     output reference sequence
     write primers and primer3 output to file
 */
@@ -26,7 +25,6 @@ package com.github.autoprimer3;
 
 import com.github.autoprimer3.GeneDetails.Exon;
 import static com.github.autoprimer3.ReverseComplementDNA.reverseComplement;
-import java.io.BufferedInputStream;
 import javafx.scene.input.KeyEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -35,11 +33,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -52,7 +47,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -63,12 +57,12 @@ import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -81,8 +75,6 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import net.lingala.zip4j.core.ZipFile;
@@ -183,6 +175,8 @@ public class AutoPrimer3 extends Application implements Initializable{
     ChoiceBox misprimingLibraryChoiceBox;
     @FXML
     Button resetValuesButton;
+    @FXML
+    CheckBox autoSelectMisprimingLibraryCheckBox;
     
     Boolean CANRUN = false;
     final BuildToMisprimingLibrary buildToMisprime = new BuildToMisprimingLibrary();
@@ -317,13 +311,10 @@ public class AutoPrimer3 extends Application implements Initializable{
                     final String id = (String) genomeChoiceBox.getItems().get(new_value.intValue());
                     genomeChoiceBox.setTooltip(new Tooltip (ap3Config.getBuildToDescription().get(id)));
                     if (autoSelectMisprime){
-                        String stub = id.replaceAll("\\d*$", "");
-                        final String lib = buildToMisprime.getMisprimingLibrary(stub);
-                        System.out.println("Stub = " + stub + ", ID = " + id + ", lib = " + lib);
                         Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
-                                misprimingLibraryChoiceBox.getSelectionModel().select(lib);
+                                selectMisprimingLibrary(id);
                             }
                         });
                         
@@ -333,6 +324,25 @@ public class AutoPrimer3 extends Application implements Initializable{
             }
         });
         
+        autoSelectMisprimingLibraryCheckBox.selectedProperty().addListener(
+                new ChangeListener<Boolean>(){
+            @Override
+            public void changed (ObservableValue ov, Boolean value, final Boolean newValue){
+                autoSelectMisprime = newValue;
+                final String id = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (newValue){
+                            selectMisprimingLibrary(id);
+                        }else{
+                            misprimingLibraryChoiceBox.getSelectionModel().select("none");
+                        }
+                    }
+                });
+   
+            }
+        });
         
         genomeChoiceBox.getItems().clear();
         genomeChoiceBox.getItems().addAll(new ArrayList<>(buildsToDescriptions.keySet()));
@@ -485,6 +495,12 @@ public class AutoPrimer3 extends Application implements Initializable{
                 }
             }
         );
+    }
+    
+    private void selectMisprimingLibrary(String id){
+        String stub = id.replaceAll("\\d*$", "");
+        String lib = buildToMisprime.getMisprimingLibrary(stub);
+        misprimingLibraryChoiceBox.getSelectionModel().select(lib);
     }
     
     private void connectToUcsc(){
