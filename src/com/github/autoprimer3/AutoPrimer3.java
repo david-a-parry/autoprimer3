@@ -777,7 +777,7 @@ public class AutoPrimer3 extends Application implements Initializable{
             return;
         }
         
-        
+        setRunning(true);
         final Task<GeneSearchResult> geneSearchTask = 
                 new Task<GeneSearchResult>(){
             @Override
@@ -904,7 +904,8 @@ public class AutoPrimer3 extends Application implements Initializable{
 
                         ArrayList<Primer3Result> primers = new ArrayList<>();
                         ArrayList<String> designs = new ArrayList<>();
-                        //get FASTA sequence
+                        HashMap<String, Integer> geneExonOffsets = new HashMap<>();
+                        //get DNA
                         int regionNumber = 0;
                         double incrementPerRegion = 100/genomicRegions.size();
                         for (GenomicRegionSummary r : genomicRegions){
@@ -948,17 +949,29 @@ public class AutoPrimer3 extends Application implements Initializable{
                                 if (end < r.getStartPos()){
                                     continue;
                                 }
+                                if (! geneExonOffsets.containsKey(t.getSymbol())){
+                                    geneExonOffsets.put(t.getSymbol(), 0);
+                                }
                                 ArrayList<Exon> exons = t.getExons();
-
                                 if (t.getStrand().equals("-")){
                                     minus_strand++;
                                 }else{
                                     plus_strand++;
                                 }
                                 for (Exon e : exons){
+                                    //TO DO - link exon numbering to symbol
                                     if (designToChoiceBox.getSelectionModel().getSelectedItem()
                                         .equals("Coding regions")){
                                         if (! e.isCodingExon()){
+                                            if (t.getStrand().equals("-") && 
+                                                    e.getEnd() > t.getCdsEnd()){
+                                                geneExonOffsets.put(t.getSymbol(), 
+                                                        geneExonOffsets.get(t.getSymbol()) + 1);
+                                            }else if (t.getStrand().equals("+") && 
+                                                    e.getStart() < t.getCdsStart()){
+                                                   geneExonOffsets.put(t.getSymbol(), 
+                                                        geneExonOffsets.get(t.getSymbol()) + 1);
+                                            }
                                             continue;
                                         }
                                     }
@@ -985,7 +998,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                                 onMinusStrand = true;
                             }
                             merger.mergeRegionsByPosition(exonRegions);
-                            numberExons(exonRegions, onMinusStrand);
+                            numberExons(exonRegions, onMinusStrand, geneExonOffsets);
                             exonRegions = splitLargeRegionsMergeSmallRegions(exonRegions, 
                                     optSize, designBuffer, onMinusStrand);
                             if (onMinusStrand){
@@ -1192,14 +1205,19 @@ public class AutoPrimer3 extends Application implements Initializable{
             }
         });
         setRunning(true);
+        progressIndicator.progressProperty().unbind();
+        progressIndicator.progressProperty().bind(geneSearchTask.progressProperty());
+        progressLabel.textProperty().unbind(); 
+        progressLabel.textProperty().bind(geneSearchTask.messageProperty());
         new Thread(geneSearchTask).start();   
     
     }
     
     private void numberExons(ArrayList<GenomicRegionSummary> exonRegions,
-            boolean minusStrand){
+            boolean minusStrand, HashMap<String, Integer> symbolToOffset){
         int n = 0;
         for (GenomicRegionSummary e: exonRegions){
+            
             if (minusStrand){
                 e.setName(e.getName() + "_ex" + (exonRegions.size() - n));
             }else{
@@ -1334,7 +1352,7 @@ public class AutoPrimer3 extends Application implements Initializable{
         List<String> geneName1 = Arrays.asList(name1.split("_ex"));
         List<String> geneName2 = Arrays.asList(name2.split("_ex"));
         if (geneName1.size() >= 2 && geneName2.size() >= 2 && 
-                geneName1.get(0).equals(geneName2.get(0))){
+                geneName1.get(0).equalsIgnoreCase(geneName2.get(0))){
             ArrayList<Integer> sizes = new ArrayList<>();
             for (int i = 1; i < geneName1.size(); i++){
                 sizes.add(Integer.valueOf(geneName1.get(i)));
