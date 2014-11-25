@@ -222,9 +222,11 @@ public class AutoPrimer3Config implements Serializable{
         FileOutputStream fos = new FileOutputStream(temp);
         ObjectOutputStream out = new ObjectOutputStream(
                 new BufferedOutputStream(fos));
+        /*debug
         System.out.println(buildToMap.toString());
         System.out.println(buildToDescription.toString());
         System.out.println(buildToTable.toString());
+        */
         out.writeObject(buildToMap);
         out.writeObject(buildToDescription);
         out.writeObject(buildToTable);
