@@ -718,7 +718,7 @@ public class AutoPrimer3 extends Application implements Initializable{
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select input file");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
-                "BED file", "*.bed", "VCF file", "*.vcf*", "text file", "*.txt"));
+                "BED file", "*.bed", "VCF file", "*.vcf", "*vcf.gz", "text file", "*.txt", "*txt.gz"));
         fileChooser.setInitialDirectory(new File (System.getProperty("user.home")));
         setCanRun(false);
         final File inFile = fileChooser.showOpenDialog(mainPane.getScene().getWindow());
@@ -729,6 +729,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                 protected ArrayList<String> call() {
                     ArrayList<String> regionStrings = new ArrayList<>();
                     try{
+                        updateMessage("Opening " + inFile.getName());
                         BufferedReader br;
                         if (inFile.getName().endsWith(".gz")){
                             InputStream gzipStream = new GZIPInputStream(new FileInputStream(inFile));
@@ -738,7 +739,12 @@ public class AutoPrimer3 extends Application implements Initializable{
                             br = new BufferedReader(new FileReader(inFile));
                         }
                         String line;
+                        int n = 0;
                         while ((line = br.readLine()) != null) {
+                           if (line.matches("^#")){//skip header lines
+                               continue;
+                           }
+                           updateMessage("Parsing line " + n + "...");
                            GenomicRegionSummary region = RegionParser.readRegion(line);
                            if (region != null){
                                String r = region.getChromosome() + ":" + 
@@ -761,11 +767,19 @@ public class AutoPrimer3 extends Application implements Initializable{
             loadFileTask.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
                 @Override
                 public void handle (WorkerStateEvent e){
+                    setRunning(false);
                     progressIndicator.progressProperty().unbind();
+                    progressIndicator.progressProperty().set(0);
                     progressLabel.textProperty().unbind();
                     ArrayList<String> loadedRegions = (ArrayList<String>) 
                             e.getSource().getValue();
-                    
+                    int n = 0;
+                    for (String r: loadedRegions){
+                        n++;
+                        regionsTextArea.appendText(r + "\n");
+                    }
+                    progressLabel.setText("Added " + n + " regions from " 
+                            + inFile.getName() + ".");
                 }
             });
             loadFileTask.setOnCancelled(new EventHandler<WorkerStateEvent>(){
@@ -795,14 +809,18 @@ public class AutoPrimer3 extends Application implements Initializable{
                     loadFileTask.cancel();
                 }
             });
+            progressIndicator.progressProperty().unbind();
+            progressLabel.textProperty().unbind();
+            progressIndicator.progressProperty().bind(loadFileTask.progressProperty());
+            progressLabel.textProperty().bind(loadFileTask.messageProperty());
             setRunning(true);
             new Thread(loadFileTask).start();
         }
-        setCanRun(true);
     }
     
     public void clearRegions(){
         regionsTextArea.clear();
+        progressLabel.setText("");
     }
     
     public void designPrimersToCoordinates(){
