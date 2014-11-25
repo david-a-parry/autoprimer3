@@ -43,12 +43,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -75,9 +78,10 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import net.lingala.zip4j.core.ZipFile;
+import javafx.stage.Window;
 import net.lingala.zip4j.exception.ZipException;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
@@ -88,6 +92,7 @@ import org.controlsfx.dialog.Dialogs;
  * @author david
  */
 public class AutoPrimer3 extends Application implements Initializable{
+    
     
     @FXML
     AnchorPane mainPane;
@@ -148,7 +153,10 @@ public class AutoPrimer3 extends Application implements Initializable{
     @FXML
     Button loadFileButton;
     @FXML
+    Button clearFileButton;
+    @FXML
     Label loadFileLabel;
+    
     
     //Primer3 Settings tab components
     @FXML
@@ -193,8 +201,10 @@ public class AutoPrimer3 extends Application implements Initializable{
     String serverUrl = "http://genome-euro.ucsc.edu"; 
     
     File configDirectory;
-    File misprimeDir;
     AutoPrimer3Config ap3Config;
+    File regionsFile;
+    File misprimeDir;
+    
     
     @Override
     public void start(final Stage primaryStage) {
@@ -708,6 +718,48 @@ public class AutoPrimer3 extends Application implements Initializable{
         }
     }
     
+    public void loadRegionsFile(){
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select input file");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
+                "BED file", "*.bed", "VCF file", "*.vcf*", "text file", "*.txt"));
+        fileChooser.setInitialDirectory(new File (System.getProperty("user.home")));
+        setCanRun(false);
+        File inFile = fileChooser.showOpenDialog(mainPane.getScene().getWindow());
+        if (inFile != null){
+            regionsFile = inFile;
+            loadFileLabel.setText(inFile.getName());
+            clearFileButton.setDisable(false);
+        }
+        setCanRun(true);
+    }
+    
+    public void clearRegionsFile(){
+        regionsFile = null;
+        loadFileLabel.setText("No File Selected");
+        clearFileButton.setDisable(true);
+    }
+    
+    public void designPrimersToCoordinates(){
+        String regionsInput = regionsTextArea.getText();
+        List<String> regions; 
+        if (! regionsInput.isEmpty()){
+            List<String> tempRegions = Arrays.asList(regionsInput.split("\\n"));
+            for (String r: tempRegions){
+                if (! r.matches(".*\\w.*")){
+                    continue;
+                }
+                // TO DO!
+                //use abstract region parser methods
+            }
+        }
+        if (regionsFile != null){
+            // TO DO!
+            //open as text or gzip stream if bgzipped VCF
+            //use abstract region parser methods
+        }
+    }
+    
     public void designPrimersToGene(){
         //check that we've got at least one gene in our input box
         if (!genesTextField.getText().matches(".*\\w.*")){
@@ -853,6 +905,10 @@ public class AutoPrimer3 extends Application implements Initializable{
                             message(message)
                             .styleClass(Dialog.STYLE_CLASS_NATIVE);
                     noTargetsError.showError();
+                    progressIndicator.progressProperty().unbind();
+                    progressLabel.textProperty().unbind();
+                    progressIndicator.progressProperty().set(0);
+                    progressLabel.setText("No targets found");
                     setRunning(false);
                     return;
                 }else if (! notFound.isEmpty()){
@@ -874,6 +930,8 @@ public class AutoPrimer3 extends Application implements Initializable{
 
                     if (response == Dialog.ACTION_NO){
                         setRunning(false);
+                        progressIndicator.progressProperty().unbind();
+                        progressLabel.textProperty().unbind();        
                         progressLabel.setText("Design cancelled");
                         progressIndicator.progressProperty().set(0);
                         return;
@@ -908,11 +966,17 @@ public class AutoPrimer3 extends Application implements Initializable{
                         //get DNA
                         int regionNumber = 0;
                         double incrementPerRegion = 100/genomicRegions.size();
+                        HashSet<String> geneSymbolTracker = new HashSet<>();
+                        HashSet<String> transcriptTracker = new HashSet<>();
                         for (GenomicRegionSummary r : genomicRegions){
                             regionNumber++;
                             updateMessage("Getting DNA for region " + regionNumber + 
                                     " of " + genomicRegions.size());
                             updateProgress(-1, -1);
+                            HashMap<String, String> checkedName = new HashMap<>();
+                            HashMap<String, String> checkedTranscript = new HashMap<>();
+                                //only want to check names/ID has already been 
+                                //used once per region i.e. for previous regions
                             String genome = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
                             SequenceFromDasUcsc seqFromDas = new SequenceFromDasUcsc();
                             String dna = seqFromDas.retrieveSequence(
@@ -975,9 +1039,19 @@ public class AutoPrimer3 extends Application implements Initializable{
                                             continue;
                                         }
                                     }
-                                    String id = t.getId().concat("_ex").
-                                            concat(Integer.toString(e.getOrder()));
                                     String name = t.getSymbol();
+                                    if (! checkedName.containsKey(name)){
+                                        checkedName.put(name, checkDuplicate(name, geneSymbolTracker));
+                                    }
+                                    name = checkedName.get(name);
+                                    String transcript = t.getId();
+                                    if (!checkedTranscript.containsKey(transcript)){
+                                        checkedTranscript.put(transcript, 
+                                                checkDuplicate(transcript, transcriptTracker));
+                                    }
+                                    transcript = checkedTranscript.get(transcript);
+                                    String id = transcript.concat("_ex").
+                                            concat(Integer.toString(e.getOrder()));
                                     GenomicRegionSummary ex; 
                                     if (designToChoiceBox.getSelectionModel().getSelectedItem()
                                         .equals("Coding regions")){
@@ -1183,6 +1257,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                 setRunning(false);
                 progressLabel.textProperty().unbind();
                 progressLabel.setText("Design cancelled");
+                progressIndicator.progressProperty().unbind();
                 progressIndicator.progressProperty().set(0);
             }
 
@@ -1213,15 +1288,47 @@ public class AutoPrimer3 extends Application implements Initializable{
     
     }
     
+    /*dup will always be an unedited gene name
+    we need to check whether we already have made an '(alt)' version
+    by checking in dupStorer
+    */
+    private String checkDuplicate(String dup, HashSet<String> dupStorer){
+        String dedupped;
+        System.out.println("Dedupping " + dup);
+        if (dupStorer.contains(dup)){
+           dedupped =  dup + "(alt)";
+           System.out.println("Trying " + dedupped);
+           if (dupStorer.contains(dedupped)){
+               for (int i = 1; i < 999; i++){
+                   dedupped = dup + "(alt" + i + ")";
+                   System.out.println("Trying " + dedupped);
+                   if (!dupStorer.contains(dedupped)){
+                       break;
+                   }
+               }
+           }
+           System.out.println("Using " + dedupped + "\\n");
+           dupStorer.add(dedupped);
+           return dedupped;
+        }else{
+            dupStorer.add(dup);
+            System.out.println("Using " + dup + "\\n");
+            return dup;
+        }
+    }
+    
     private void numberExons(ArrayList<GenomicRegionSummary> exonRegions,
             boolean minusStrand, HashMap<String, Integer> symbolToOffset){
         int n = 0;
         for (GenomicRegionSummary e: exonRegions){
-            
+            int offset = 0;
+            if (symbolToOffset.containsKey(e.getName())){
+                offset = symbolToOffset.get(e.getName());
+            }
             if (minusStrand){
-                e.setName(e.getName() + "_ex" + (exonRegions.size() - n));
+                e.setName(e.getName() + "_ex" + (exonRegions.size() - n + offset));
             }else{
-                e.setName(e.getName() + "_ex" + (n+1));
+                e.setName(e.getName() + "_ex" + (n+1 + offset));
             }
             n++;
         }
