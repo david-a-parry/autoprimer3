@@ -29,15 +29,14 @@ import javafx.scene.input.KeyEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,8 +49,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -81,7 +79,6 @@ import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import net.lingala.zip4j.exception.ZipException;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
@@ -153,9 +150,9 @@ public class AutoPrimer3 extends Application implements Initializable{
     @FXML
     Button loadFileButton;
     @FXML
-    Button clearFileButton;
+    Button clearButton;
     @FXML
-    Label loadFileLabel;
+    Label regionsLabel;
     
     
     //Primer3 Settings tab components
@@ -202,7 +199,6 @@ public class AutoPrimer3 extends Application implements Initializable{
     
     File configDirectory;
     AutoPrimer3Config ap3Config;
-    File regionsFile;
     File misprimeDir;
     
     
@@ -725,38 +721,109 @@ public class AutoPrimer3 extends Application implements Initializable{
                 "BED file", "*.bed", "VCF file", "*.vcf*", "text file", "*.txt"));
         fileChooser.setInitialDirectory(new File (System.getProperty("user.home")));
         setCanRun(false);
-        File inFile = fileChooser.showOpenDialog(mainPane.getScene().getWindow());
+        final File inFile = fileChooser.showOpenDialog(mainPane.getScene().getWindow());
         if (inFile != null){
-            regionsFile = inFile;
-            loadFileLabel.setText(inFile.getName());
-            clearFileButton.setDisable(false);
+            final Task<ArrayList<String>> loadFileTask = 
+                        new Task<ArrayList<String>>(){
+                @Override
+                protected ArrayList<String> call() {
+                    ArrayList<String> regionStrings = new ArrayList<>();
+                    try{
+                        BufferedReader br;
+                        if (inFile.getName().endsWith(".gz")){
+                            InputStream gzipStream = new GZIPInputStream(new FileInputStream(inFile));
+                            Reader decoder = new InputStreamReader(gzipStream);
+                            br = new BufferedReader(decoder);
+                        }else{
+                            br = new BufferedReader(new FileReader(inFile));
+                        }
+                        String line;
+                        while ((line = br.readLine()) != null) {
+                           GenomicRegionSummary region = RegionParser.readRegion(line);
+                           if (region != null){
+                               String r = region.getChromosome() + ":" + 
+                                       region.getStartPos() + "-" + region.getEndPos();
+                               regionStrings.add(r);
+                           }else{
+                               //TO DO 
+                                //display error!!!!
+                                System.out.println("Invalid region:\t" + line);
+                           }
+                        }
+                        br.close();
+                    }catch(IOException ex){
+                        //TO DO - display error
+                        ex.printStackTrace();
+                    }
+                    return regionStrings;
+                }
+            };
+            loadFileTask.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
+                @Override
+                public void handle (WorkerStateEvent e){
+                    progressIndicator.progressProperty().unbind();
+                    progressLabel.textProperty().unbind();
+                    ArrayList<String> loadedRegions = (ArrayList<String>) 
+                            e.getSource().getValue();
+                    
+                }
+            });
+            loadFileTask.setOnCancelled(new EventHandler<WorkerStateEvent>(){
+                @Override
+                public void handle (WorkerStateEvent e){
+                    setRunning(false);
+                    progressLabel.textProperty().unbind();
+                    progressLabel.setText("Loading cancelled");
+                    progressIndicator.progressProperty().unbind();
+                    progressIndicator.progressProperty().set(0);
+                }
+            });
+            loadFileTask.setOnFailed(new EventHandler<WorkerStateEvent>(){
+                @Override
+                public void handle (WorkerStateEvent e){
+                    setRunning(false);
+                    progressLabel.textProperty().unbind();
+                    progressLabel.setText("Loading failed!");
+                    progressIndicator.progressProperty().unbind();
+                    progressIndicator.progressProperty().set(0);
+                }
+
+            });
+            cancelButton.setOnAction(new EventHandler<ActionEvent>(){
+               @Override
+               public void handle(ActionEvent actionEvent){
+                    loadFileTask.cancel();
+                }
+            });
+            setRunning(true);
+            new Thread(loadFileTask).start();
         }
         setCanRun(true);
     }
     
-    public void clearRegionsFile(){
-        regionsFile = null;
-        loadFileLabel.setText("No File Selected");
-        clearFileButton.setDisable(true);
+    public void clearRegions(){
+        regionsTextArea.clear();
     }
     
     public void designPrimersToCoordinates(){
         String regionsInput = regionsTextArea.getText();
-        List<String> regions; 
+        ArrayList<GenomicRegionSummary> regions = new ArrayList<>(); 
         if (! regionsInput.isEmpty()){
             List<String> tempRegions = Arrays.asList(regionsInput.split("\\n"));
             for (String r: tempRegions){
                 if (! r.matches(".*\\w.*")){
                     continue;
                 }
-                // TO DO!
-                //use abstract region parser methods
+                //region parser methods
+                GenomicRegionSummary region = RegionParser.readRegion(r);
+                if (region != null){
+                    regions.add(region);
+                }else{
+                    //TO DO 
+                    //display error!!!!
+                    System.out.println("Invalid region:\t" + r);
+                }
             }
-        }
-        if (regionsFile != null){
-            // TO DO!
-            //open as text or gzip stream if bgzipped VCF
-            //use abstract region parser methods
         }
     }
     
@@ -1294,25 +1361,20 @@ public class AutoPrimer3 extends Application implements Initializable{
     */
     private String checkDuplicate(String dup, HashSet<String> dupStorer){
         String dedupped;
-        System.out.println("Dedupping " + dup);
         if (dupStorer.contains(dup)){
            dedupped =  dup + "(alt)";
-           System.out.println("Trying " + dedupped);
            if (dupStorer.contains(dedupped)){
                for (int i = 1; i < 999; i++){
                    dedupped = dup + "(alt" + i + ")";
-                   System.out.println("Trying " + dedupped);
                    if (!dupStorer.contains(dedupped)){
                        break;
                    }
                }
            }
-           System.out.println("Using " + dedupped + "\\n");
            dupStorer.add(dedupped);
            return dedupped;
         }else{
             dupStorer.add(dup);
-            System.out.println("Using " + dup + "\\n");
             return dup;
         }
     }
