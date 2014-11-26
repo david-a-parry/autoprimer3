@@ -826,7 +826,15 @@ public class AutoPrimer3 extends Application implements Initializable{
     public void designPrimersToCoordinates(){
         String regionsInput = regionsTextArea.getText();
         ArrayList<GenomicRegionSummary> regions = new ArrayList<>(); 
+        int n = 1;
+        GetGeneCoordinates geneSearcher = null;
+        final int optSize = Integer.valueOf(splitRegionsTextField.getText());
+        final int flanks = Integer.valueOf(flankingRegionsTextField.getText());
+        final int designBuffer = Integer.valueOf(minDistanceTextField.getText());    
         if (! regionsInput.isEmpty()){
+            if (! checkDesignParameters()){
+                return;
+            }
             List<String> tempRegions = Arrays.asList(regionsInput.split("\\n"));
             for (String r: tempRegions){
                 if (! r.matches(".*\\w.*")){
@@ -835,6 +843,9 @@ public class AutoPrimer3 extends Application implements Initializable{
                 //region parser methods
                 GenomicRegionSummary region = RegionParser.readRegion(r);
                 if (region != null){
+                    region.setName("Region_" + n);
+                    region.setId(region.getChromosome() + ":" + region.getStartPos()
+                            + "-" + region.getEndPos());
                     regions.add(region);
                 }else{
                     //TO DO 
@@ -842,7 +853,105 @@ public class AutoPrimer3 extends Application implements Initializable{
                     System.out.println("Invalid region:\t" + r);
                 }
             }
+            if (regions.isEmpty()){
+                //TO DO - complain about empty regions
+                return;
+            }
+            SequenceFromDasUcsc seqFromDas = new SequenceFromDasUcsc();
+            GenomicRegionSummary merger = new GenomicRegionSummary();
+            merger.mergeRegionsByPosition(regions);
+            regions = splitLargeRegionsMergeSmallRegions(regions, optSize, 
+                    designBuffer, false);
+            ArrayList<Primer3Result> primers = new ArrayList<>();
+            ArrayList<String> designs = new ArrayList<>();
+            for (GenomicRegionSummary r: regions){
+                int start = r.getStartPos() - flanks > 0 ? 
+                            r.getStartPos() - flanks : 0;
+                int end = r.getEndPos() + flanks;
+                String genome = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
+                String dna = seqFromDas.retrieveSequence(
+                        genome, r.getChromosome(), start, end);
+                //System.out.println(dna);//debug only
+                String snpDb = (String) snpsChoiceBox.getSelectionModel().getSelectedItem();
+                ArrayList<GenomicRegionSummary> snps = new ArrayList<>();
+                if (! snpDb.equals("No")){
+                    try{
+                        if (geneSearcher == null){
+                            geneSearcher = new GetGeneCoordinates();
+                        }
+                        snps = geneSearcher.GetSnpCoordinates
+                            (r.getChromosome(), r.getStartPos(), r.getEndPos(), 
+                            genome, snpDb);
+                    }catch(SQLException ex){
+                        //TO DO
+                        ex.printStackTrace();
+                    }
+                }
+                ArrayList<String> excludeRegions = new ArrayList<>();
+
+            }
         }
+    }
+    
+    public boolean checkDesignParameters(){
+        if (Integer.valueOf(flankingRegionsTextField.getText())
+                <= (Integer.valueOf(minDistanceTextField.getText()) 
+                + Integer.valueOf(maxSizeTextField.getText()))){
+            Dialogs flanksError = Dialogs.create().title("Flanks Error").
+                    masthead("Invalid values for 'Min distance'/"
+                            + "'Flanking region' fields.").
+                    message("Flanking region value must be greater than Min "
+                            + "distance value  plus maximum primer size.")
+                    .styleClass(Dialog.STYLE_CLASS_NATIVE);
+            flanksError.showError();
+            return false;
+        }
+        
+        if (Integer.valueOf(optSizeTextField.getText()) < 
+                Integer.valueOf(minSizeTextField.getText())){
+            Dialogs sizeError = Dialogs.create().title("Primer Size Error").
+                    masthead("Invalid values for primer size fields.").
+                    message("Min Primer Size can not be greater than Opt "
+                            + "Primer Size.")
+                    .styleClass(Dialog.STYLE_CLASS_NATIVE);
+            sizeError.showError();
+            return false;
+        }
+        
+        if (Integer.valueOf(maxSizeTextField.getText()) < 
+                Integer.valueOf(optSizeTextField.getText())){
+            Dialogs sizeError = Dialogs.create().title("Primer Size Error").
+                    masthead("Invalid values for primer size fields.").
+                    message("Max Primer Size can not be less than Opt "
+                            + "Primer Size.")
+                    .styleClass(Dialog.STYLE_CLASS_NATIVE);
+            sizeError.showError();
+            return false;
+        }
+        
+        
+        if (Double.valueOf(optTmTextField.getText()) < 
+                Double.valueOf(minTmTextField.getText())){
+            Dialogs sizeError = Dialogs.create().title("Primer TM Error").
+                    masthead("Invalid values for primer TM fields.").
+                    message("Min Primer TM can not be greater than Opt "
+                            + "Primer TM.")
+                    .styleClass(Dialog.STYLE_CLASS_NATIVE);
+            sizeError.showError();
+            return false;
+        }
+        
+        if (Double.valueOf(maxTmTextField.getText()) < 
+                Double.valueOf(optTmTextField.getText())){
+            Dialogs sizeError = Dialogs.create().title("Primer TM Error").
+                    masthead("Invalid values for primer TM fields.").
+                    message("Max Primer TM can not be less than Opt "
+                            + "Primer TM.")
+                    .styleClass(Dialog.STYLE_CLASS_NATIVE);
+            sizeError.showError();
+            return false;
+        }
+        return true;
     }
     
     public void designPrimersToGene(){
@@ -858,59 +967,7 @@ public class AutoPrimer3 extends Application implements Initializable{
         final int optSize = Integer.valueOf(splitRegionsTextField.getText());
         final int flanks = Integer.valueOf(flankingRegionsTextField.getText());
         final int designBuffer = Integer.valueOf(minDistanceTextField.getText());
-        if (flanks <= (designBuffer + Integer.valueOf(maxSizeTextField.getText()))){
-            Dialogs flanksError = Dialogs.create().title("Flanks Error").
-                    masthead("Invalid values for 'Min distance'/"
-                            + "'Flanking region' fields.").
-                    message("Flanking region value must be greater than Min "
-                            + "distance value  plus maximum primer size.")
-                    .styleClass(Dialog.STYLE_CLASS_NATIVE);
-            flanksError.showError();
-            return;
-        }
-        
-        if (Integer.valueOf(optSizeTextField.getText()) < 
-                Integer.valueOf(minSizeTextField.getText())){
-            Dialogs sizeError = Dialogs.create().title("Primer Size Error").
-                    masthead("Invalid values for primer size fields.").
-                    message("Min Primer Size can not be greater than Opt "
-                            + "Primer Size.")
-                    .styleClass(Dialog.STYLE_CLASS_NATIVE);
-            sizeError.showError();
-            return;
-        }
-        
-        if (Integer.valueOf(maxSizeTextField.getText()) < 
-                Integer.valueOf(optSizeTextField.getText())){
-            Dialogs sizeError = Dialogs.create().title("Primer Size Error").
-                    masthead("Invalid values for primer size fields.").
-                    message("Max Primer Size can not be less than Opt "
-                            + "Primer Size.")
-                    .styleClass(Dialog.STYLE_CLASS_NATIVE);
-            sizeError.showError();
-            return;
-        }
-        
-        
-        if (Double.valueOf(optTmTextField.getText()) < 
-                Double.valueOf(minTmTextField.getText())){
-            Dialogs sizeError = Dialogs.create().title("Primer TM Error").
-                    masthead("Invalid values for primer TM fields.").
-                    message("Min Primer TM can not be greater than Opt "
-                            + "Primer TM.")
-                    .styleClass(Dialog.STYLE_CLASS_NATIVE);
-            sizeError.showError();
-            return;
-        }
-        
-        if (Double.valueOf(maxTmTextField.getText()) < 
-                Double.valueOf(optTmTextField.getText())){
-            Dialogs sizeError = Dialogs.create().title("Primer TM Error").
-                    masthead("Invalid values for primer TM fields.").
-                    message("Max Primer TM can not be less than Opt "
-                            + "Primer TM.")
-                    .styleClass(Dialog.STYLE_CLASS_NATIVE);
-            sizeError.showError();
+        if (! checkDesignParameters()){
             return;
         }
         
@@ -1053,6 +1110,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                         double incrementPerRegion = 100/genomicRegions.size();
                         HashSet<String> geneSymbolTracker = new HashSet<>();
                         HashSet<String> transcriptTracker = new HashSet<>();
+                        SequenceFromDasUcsc seqFromDas = new SequenceFromDasUcsc();
                         for (GenomicRegionSummary r : genomicRegions){
                             regionNumber++;
                             updateMessage("Getting DNA for region " + regionNumber + 
@@ -1063,7 +1121,6 @@ public class AutoPrimer3 extends Application implements Initializable{
                                 //only want to check names/ID has already been 
                                 //used once per region i.e. for previous regions
                             String genome = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
-                            SequenceFromDasUcsc seqFromDas = new SequenceFromDasUcsc();
                             String dna = seqFromDas.retrieveSequence(
                                     genome, r.getChromosome(), r.getStartPos(), r.getEndPos());
                             //System.out.println(dna);//debug only
