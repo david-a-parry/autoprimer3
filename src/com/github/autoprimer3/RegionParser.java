@@ -56,7 +56,7 @@ public class RegionParser {
         String end;
         if (posSplit.length == 1){
             start = posSplit[0].replaceAll(",", "");
-            end = start;
+            end = start + 1;
         }else if (posSplit.length == 2){
             start = posSplit[0];
             end = posSplit[1];
@@ -81,7 +81,7 @@ public class RegionParser {
             return null;
         }
         return new GenomicRegionSummary(split[0], 
-                Integer.parseInt(start), Integer.parseInt(end));
+                Integer.parseInt(start) + 1, Integer.parseInt(end));
     }
 //------------------------------------------------------------------------------
     
