@@ -61,7 +61,7 @@ public class GenomicRegionSummary implements Comparable<GenomicRegionSummary>, S
         chromosome = chrom;
         startId = sd;
         endId = ed;
-        length = endPos - startPos;
+        length = endPos - startPos + 1;
         id = d;
         name = nm;
     }
@@ -114,7 +114,7 @@ public class GenomicRegionSummary implements Comparable<GenomicRegionSummary>, S
     }
     
     public Integer getLength(){
-        length = endPos - startPos;
+        length = endPos - startPos + 1;
         return length;
     }
     public String getCoordinateString(){
