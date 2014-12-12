@@ -112,9 +112,24 @@ public class GetGeneCoordinates {//default handles RefSeq and Encode genes
             throws SQLException{
         ArrayList<GenomicRegionSummary> snpCoordinates = new ArrayList<> ();
         stmt = conn.createStatement();
+        //user may not have preceded chromosome with 'chr' which is fine for
+        //sequence retrieval but not for snp retrieval in genomes which use it
+        ArrayList<String> chromosomes = new ArrayList<>();
+        ResultSet chromSet = stmt.executeQuery("SELECT DISTINCT(chrom) AS chrom "
+                + "FROM " + build + "." + db);
+        while (chromSet.next()){
+            chromosomes.add(chromSet.getString("chrom"));
+        }
+        if (! chromosomes.contains(chrom)){
+            chrom = "chr" + chrom;
+            if (!chromosomes.contains(chrom)){
+                return snpCoordinates;
+            }
+        }
         ResultSet rs = stmt.executeQuery("SELECT chromStart,chromEnd from " + 
                 build+ "." + db + " where chrom='" + chrom + 
                 "' and chromEND >= " + start + " and chromStart < " + end);
+        
         while (rs.next()){
             snpCoordinates.add(new GenomicRegionSummary(chrom,
                     Integer.valueOf(rs.getString("chromStart")) + 1, 
