@@ -232,6 +232,7 @@ public class AutoPrimer3 extends Application implements Initializable{
         snpsChoiceBox2.itemsProperty().bind(snpsChoiceBox.itemsProperty());
         snpsChoiceBox2.selectionModelProperty().bind(snpsChoiceBox.selectionModelProperty());
         cancelButton2.cancelButtonProperty().bind(cancelButton.cancelButtonProperty());
+        cancelButton2.onActionProperty().bind(cancelButton.onActionProperty());
         setLoading(true);
         try{
             ap3Config = new AutoPrimer3Config();
@@ -742,7 +743,8 @@ public class AutoPrimer3 extends Application implements Initializable{
                         String line;
                         int n = 0;
                         while ((line = br.readLine()) != null) {
-                           if (line.matches("^#")){//skip header lines
+                           n++;
+                           if (line.startsWith("#")){//skip header lines
                                continue;
                            }
                            updateMessage("Parsing line " + n + "...");
@@ -890,8 +892,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                                 geneSearcher = new GetGeneCoordinates();
                             }
                             snps = geneSearcher.GetSnpCoordinates
-                                (r.getChromosome(), r.getStartPos(), r.getEndPos(), 
-                                genome, snpDb);
+                                (r.getChromosome(), start, end, genome, snpDb);
                         }catch(SQLException ex){
                             //TO DO
                             ex.printStackTrace();
@@ -904,8 +905,8 @@ public class AutoPrimer3 extends Application implements Initializable{
                         }else if(s.getEndPos() > end){
                             break;
                         }
-                        Integer excludeStart = s.getStartPos() - r.getStartPos() - 1;
-                        Integer excludeEnd = s.getEndPos() - r.getStartPos() - 1;
+                        Integer excludeStart = s.getStartPos() - start - 1;
+                        Integer excludeEnd = s.getEndPos() - start - 1;
                         Integer excludeLength = 1 +  excludeEnd - excludeStart;
                         if (excludeStart + excludeLength < dna.length()){
                             excludeRegions.add(excludeStart + "," + excludeLength);
