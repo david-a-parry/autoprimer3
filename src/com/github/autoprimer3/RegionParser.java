@@ -32,12 +32,12 @@ public class RegionParser {
         if (r != null){
             return r;
         }
-        String[] tabSplit = s.split("\\t");
-        r = parseAsBed(tabSplit);
+        String[] spaceSplit = s.split("\\s");
+        r = parseAsBed(spaceSplit);
         if (r != null){
             return r;
         }
-        r = parseAsVcf(tabSplit);//finally we just return null if we can't parse this region
+        r = parseAsVcf(spaceSplit);//finally we just return null if we can't parse this region
         return r;
     }
 //------------------------------------------------------------------------------    
@@ -56,7 +56,7 @@ public class RegionParser {
         String end;
         if (posSplit.length == 1){
             start = posSplit[0].replaceAll(",", "");
-            end = start + 1;
+            end = start;
         }else if (posSplit.length == 2){
             start = posSplit[0];
             end = posSplit[1];
@@ -105,19 +105,19 @@ public class RegionParser {
             Pattern p = Pattern.compile("^(([ATGCN]+),*)+$");
             Matcher m = p.matcher(split[3]);
             if (m.find()){
-                String end = m.group(1);
+                Integer length = m.group(1).length();
                 for (int i = 2; i <= m.groupCount(); i++){
-                    end = m.group(i).length() > end.length() ? m.group(i) : end;
+                    length = m.group(i).length() > length ? m.group(i).length() : length;
                 }
                 return new GenomicRegionSummary(split[0], 
-                        Integer.parseInt(start), Integer.parseInt(end));
+                        Integer.parseInt(start), Integer.parseInt(start) + length -1);
             }
         }
         if (split.length == 2){
             //we can take regions that are just chromosome and coordinate if
             //no other fields are present
             return new GenomicRegionSummary(split[0], 
-                Integer.parseInt(start), Integer.parseInt(start));
+                Integer.parseInt(start), Integer.parseInt(start) );
         }
         return null;        
     }
