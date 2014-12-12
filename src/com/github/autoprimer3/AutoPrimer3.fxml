@@ -141,7 +141,7 @@
                               <Button fx:id="clearButton" layoutX="315.0" layoutY="166.0" mnemonicParsing="false" onAction="#clearRegions" text="Clear Regions" />
                               <Button fx:id="loadFileButton" layoutX="407.0" layoutY="166.0" mnemonicParsing="false" onAction="#loadRegionsFile" text="Load File" />
                               <Button fx:id="cancelButton2" cancelButton="true" layoutX="487.0" layoutY="166.0" mnemonicParsing="false" text="Cancel" />
-                              <Button fx:id="runButton2" layoutX="561.0" layoutY="166.0" mnemonicParsing="false" text="Design" />
+                              <Button fx:id="runButton2" layoutX="561.0" layoutY="166.0" mnemonicParsing="false" onAction="#designPrimersToCoordinates" text="Design" />
                            </children>
                         </HBox>
                         <ChoiceBox fx:id="genomeChoiceBox2" layoutX="308.0" layoutY="38.0" prefHeight="28.0" prefWidth="145.0" />
