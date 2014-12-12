@@ -231,6 +231,7 @@ public class AutoPrimer3 extends Application implements Initializable{
         genomeChoiceBox2.selectionModelProperty().bind(genomeChoiceBox.selectionModelProperty());
         snpsChoiceBox2.itemsProperty().bind(snpsChoiceBox.itemsProperty());
         snpsChoiceBox2.selectionModelProperty().bind(snpsChoiceBox.selectionModelProperty());
+        cancelButton2.cancelButtonProperty().bind(cancelButton.cancelButtonProperty());
         setLoading(true);
         try{
             ap3Config = new AutoPrimer3Config();
@@ -824,10 +825,7 @@ public class AutoPrimer3 extends Application implements Initializable{
     }
     
     public void designPrimersToCoordinates(){
-        String regionsInput = regionsTextArea.getText();
-        ArrayList<GenomicRegionSummary> regions = new ArrayList<>(); 
-        int n = 1;
-        GetGeneCoordinates geneSearcher = null;
+        final String regionsInput = regionsTextArea.getText();
         final int optSize = Integer.valueOf(splitRegionsTextField.getText());
         final int flanks = Integer.valueOf(flankingRegionsTextField.getText());
         final int designBuffer = Integer.valueOf(minDistanceTextField.getText());    
@@ -835,62 +833,212 @@ public class AutoPrimer3 extends Application implements Initializable{
             if (! checkDesignParameters()){
                 return;
             }
-            List<String> tempRegions = Arrays.asList(regionsInput.split("\\n"));
-            for (String r: tempRegions){
-                if (! r.matches(".*\\w.*")){
-                    continue;
-                }
-                //region parser methods
-                GenomicRegionSummary region = RegionParser.readRegion(r);
-                if (region != null){
-                    region.setName("Region_" + n);
-                    region.setId(region.getChromosome() + ":" + region.getStartPos()
-                            + "-" + region.getEndPos());
-                    regions.add(region);
-                }else{
-                    //TO DO 
-                    //display error!!!!
-                    System.out.println("Invalid region:\t" + r);
-                }
-            }
-            if (regions.isEmpty()){
-                //TO DO - complain about empty regions
-                return;
-            }
-            SequenceFromDasUcsc seqFromDas = new SequenceFromDasUcsc();
-            GenomicRegionSummary merger = new GenomicRegionSummary();
-            merger.mergeRegionsByPosition(regions);
-            regions = splitLargeRegionsMergeSmallRegions(regions, optSize, 
-                    designBuffer, false);
-            ArrayList<Primer3Result> primers = new ArrayList<>();
-            ArrayList<String> designs = new ArrayList<>();
-            for (GenomicRegionSummary r: regions){
-                int start = r.getStartPos() - flanks > 0 ? 
-                            r.getStartPos() - flanks : 0;
-                int end = r.getEndPos() + flanks;
-                String genome = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
-                String dna = seqFromDas.retrieveSequence(
-                        genome, r.getChromosome(), start, end);
-                //System.out.println(dna);//debug only
-                String snpDb = (String) snpsChoiceBox.getSelectionModel().getSelectedItem();
-                ArrayList<GenomicRegionSummary> snps = new ArrayList<>();
-                if (! snpDb.equals("No")){
-                    try{
-                        if (geneSearcher == null){
-                            geneSearcher = new GetGeneCoordinates();
-                        }
-                        snps = geneSearcher.GetSnpCoordinates
-                            (r.getChromosome(), r.getStartPos(), r.getEndPos(), 
-                            genome, snpDb);
-                    }catch(SQLException ex){
-                        //TO DO
-                        ex.printStackTrace();
+            final Task<HashMap<String, ArrayList>> designTask = 
+                    new Task<HashMap<String, ArrayList>>(){
+                @Override
+                protected HashMap<String, ArrayList> call() {
+                ArrayList<GenomicRegionSummary> regions = new ArrayList<>();
+                GetGeneCoordinates geneSearcher = null;
+                ArrayList<Primer3Result> primers = new ArrayList<>();
+                ArrayList<String> designs = new ArrayList<>();
+                List<String> tempRegions = Arrays.asList(regionsInput.split("\\n"));
+                int n = 1;
+                for (String r: tempRegions){
+                    if (! r.matches(".*\\w.*")){
+                        continue;
+                    }
+                    //region parser methods
+                    GenomicRegionSummary region = RegionParser.readRegion(r);
+                    if (region != null){
+                        region.setName("Region_" + n++);
+                        region.setId(region.getChromosome() + ":" + region.getStartPos()
+                                + "-" + region.getEndPos());
+                        regions.add(region);
+                    }else{
+                        //TO DO 
+                        //display error!!!!
+                        System.out.println("Invalid region:\t" + r);
                     }
                 }
-                ArrayList<String> excludeRegions = new ArrayList<>();
+                if (regions.isEmpty()){
+                    //TO DO - complain about empty regions
+                    return null;
+                }
+                SequenceFromDasUcsc seqFromDas = new SequenceFromDasUcsc();
+                GenomicRegionSummary merger = new GenomicRegionSummary();
+                merger.mergeRegionsByPosition(regions);
+                regions = splitLargeRegionsMergeSmallRegions(regions, optSize, 
+                        designBuffer, false);
+                int pair = 0;
+                for (GenomicRegionSummary r: regions){
+                    int start = r.getStartPos() - flanks > 0 ? 
+                                r.getStartPos() - flanks : 0;
+                    int end = r.getEndPos() + flanks;
+                    System.out.println("Region " + r.getChromosome() + ":" + 
+                            r.getStartPos() + "-" + r.getEndPos());
+                    System.out.println("Using start = " + start + " and end = "
+                            + end);
+                    String genome = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
+                    String dna = seqFromDas.retrieveSequence(
+                            genome, r.getChromosome(), start, end);
+                    //System.out.println(dna);//debug only
+                    String snpDb = (String) snpsChoiceBox.getSelectionModel().getSelectedItem();
+                    ArrayList<GenomicRegionSummary> snps = new ArrayList<>();
+                    if (! snpDb.equals("No")){
+                        try{
+                            if (geneSearcher == null){
+                                geneSearcher = new GetGeneCoordinates();
+                            }
+                            snps = geneSearcher.GetSnpCoordinates
+                                (r.getChromosome(), r.getStartPos(), r.getEndPos(), 
+                                genome, snpDb);
+                        }catch(SQLException ex){
+                            //TO DO
+                            ex.printStackTrace();
+                        }
+                    }
+                    ArrayList<String> excludeRegions = new ArrayList<>();
+                    for (GenomicRegionSummary s: snps){
+                        if (s.getStartPos() < start){
+                            continue;
+                        }else if(s.getEndPos() > end){
+                            break;
+                        }
+                        Integer excludeStart = s.getStartPos() - r.getStartPos() - 1;
+                        Integer excludeEnd = s.getEndPos() - r.getStartPos() - 1;
+                        Integer excludeLength = 1 +  excludeEnd - excludeStart;
+                        if (excludeStart + excludeLength < dna.length()){
+                            excludeRegions.add(excludeStart + "," + excludeLength);
+                        }else if (excludeStart < dna.length() - 1 ){
+                            int diff = dna.length() -1 - excludeStart;
+                            excludeRegions.add(excludeStart + "," + diff);
+                        }
+                    }
+                    //get info from text fields for primer3 options
+                    String target = Integer.toString(flanks - designBuffer - 1) + 
+                            "," + Integer.toString(r.getLength() + 2*designBuffer);
+                    StringBuilder dnaTarget = new StringBuilder(
+                            dna.substring(0, flanks -1).toLowerCase());
+                    dnaTarget.append(dna.substring(flanks -1, flanks 
+                            + r.getLength() - 1).toUpperCase());
+                    dnaTarget.append(dna.substring(flanks + r.getLength() -1)
+                            .toLowerCase());
+                    String seqid = (r.getName() + ": " + r.getId());
+                    //design primers
+                    //updateMessage("Designing primers for part " + exonNumber + 
+                      //      " of " + exonRegions.size() + "...");
+                    ArrayList<String> result = designPrimers(seqid, 
+                            dnaTarget.toString(), target, String.join(" ", excludeRegions));
 
+                    //updateProgress(prog, 100);
+                    designs.add(String.join("\n", result));
+
+                    //parse primer3 output and write our output
+                    primers.add(parsePrimer3Output(++pair,  r.getName(), r.getId(), 
+                            r.getChromosome(), 1 + r.getStartPos() - flanks, result));
+
+                    }
+                
+                    HashMap<String, ArrayList> primerResult = new HashMap<>();
+                    primerResult.put("primers", primers);
+                    primerResult.put("design", designs);
+                    return primerResult;
+                }
+            };
+            progressIndicator.progressProperty().unbind();
+                progressIndicator.progressProperty().bind(designTask.progressProperty());
+                progressLabel.textProperty().bind(designTask.messageProperty());
+                designTask.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
+                    @Override
+                    public void handle (WorkerStateEvent e){
+                        progressIndicator.progressProperty().unbind();
+                        progressIndicator.progressProperty().set(100);
+                        progressLabel.textProperty().unbind();
+                        setRunning(false);
+                        HashMap<String, ArrayList> result = 
+                                (HashMap<String, ArrayList>) e.getSource().getValue();
+                        if (result == null){
+                            return;
+                        }
+                        if (result.get("primers").isEmpty()){
+                            progressLabel.setText("No primers designed.");
+                            Dialogs noPrimersError = Dialogs.create().title("No PrimersFound").
+                                masthead("No primers found for your targets.").
+                                message("No primer designs were attempted for your targets")
+                                .styleClass(Dialog.STYLE_CLASS_NATIVE);
+                                noPrimersError.showError();       
+                                progressIndicator.progressProperty().set(0);
+                            return;
+                        }
+                        if (result.get("design").isEmpty()){
+                            progressLabel.setText("No primers designed.");
+                            Dialogs noPrimersError = Dialogs.create().title("No PrimersFound").
+                                masthead("No primers found for your targets.").
+                                message("No primer designs were attempted for your targets")
+                                .styleClass(Dialog.STYLE_CLASS_NATIVE);
+                            noPrimersError.showError();       
+                            progressIndicator.progressProperty().set(0);
+                            return;
+                        }
+                        progressLabel.setText(result.get("primers").size() +
+                                " primer pairs designed.");
+                        FXMLLoader tableLoader = new FXMLLoader(getClass().
+                                               getResource("Primer3ResultView.fxml"));
+                        try{
+                            Pane tablePane = (Pane) tableLoader.load();
+                            Primer3ResultViewController resultView = 
+                                    (Primer3ResultViewController) tableLoader.getController();
+                            Scene tableScene = new Scene(tablePane);
+                            Stage tableStage = new Stage();
+                            tableStage.setScene(tableScene);
+                            //tableScene.getStylesheets().add(AutoPrimer3.class
+                            //        .getResource("autoprimer3.css").toExternalForm());
+                            resultView.displayData(result.get("primers"), result.get("design"));
+                            tableStage.setTitle("AutoPrimer3 Results");
+                            tableStage.getIcons().add(new Image(this.getClass()
+                                    .getResourceAsStream("icon.png")));
+                            tableStage.initModality(Modality.NONE);
+                            tableStage.show();
+                       }catch (Exception ex){
+            //               Dialogs.showErrorDialog(null, "Error displaying"
+            //                       + " results from Find Regions Method.",
+            //                       "Find Regions Error!", "SnpViewer", ex);
+                           ex.printStackTrace();
+                       }
+                    }
+                });
+                designTask.setOnCancelled(new EventHandler<WorkerStateEvent>(){
+                    @Override
+                    public void handle (WorkerStateEvent e){
+                        setRunning(false);
+                        progressLabel.textProperty().unbind();
+                        progressLabel.setText("Design cancelled");
+                        progressIndicator.progressProperty().unbind();
+                        progressIndicator.progressProperty().set(0);
+                    }
+
+                });
+                designTask.setOnFailed(new EventHandler<WorkerStateEvent>(){
+                    @Override
+                    public void handle (WorkerStateEvent e){
+                        setRunning(false);
+                        e.getSource().getException().printStackTrace();
+                        progressLabel.textProperty().unbind();
+                        progressLabel.setText("Design failed!");
+                        progressIndicator.progressProperty().unbind();
+                        progressIndicator.progressProperty().set(0);
+                    }
+
+                });
+                cancelButton.setOnAction(new EventHandler<ActionEvent>(){
+                   @Override
+                   public void handle(ActionEvent actionEvent){
+                        designTask.cancel();
+                    }
+                });
+                setRunning(true);
+                new Thread(designTask).start();
             }
-        }
     }
     
     public boolean checkDesignParameters(){
@@ -1524,6 +1672,11 @@ public class AutoPrimer3 extends Application implements Initializable{
             splitAndMergedRegions.clear();
             for (int i = 0; i < splitRegions.size() - 1; i++){
                 //merge any small and close regions
+                if (! splitRegions.get(i).getChromosome().equals(
+                        splitRegions.get(i+1).getChromosome())){
+                    splitAndMergedRegions.add(splitRegions.get(i));
+                    continue;
+                }
                 int gap = splitRegions.get(i+1).getEndPos() - splitRegions.get(i).getStartPos();
                 if (gap + (2*buffer)  <= optSize){
                     smallRegion = true;
@@ -1721,7 +1874,7 @@ public class AutoPrimer3 extends Application implements Initializable{
             }
             
             p3_job.append("=");
-            //System.out.println(p3_job.toString());//debug only
+            System.out.println(p3_job.toString());//debug only
             ArrayList<String> command = new ArrayList<>();
             command.add(primer3ex.getAbsolutePath());
             command.add("-format_output");
