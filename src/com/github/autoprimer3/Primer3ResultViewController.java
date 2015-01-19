@@ -20,8 +20,11 @@ package com.github.autoprimer3;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -29,11 +32,13 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
@@ -77,14 +82,16 @@ public class Primer3ResultViewController implements Initializable {
    Label summaryLabel;
    @FXML
    TextArea designTextSummary;
+   @FXML
+   TextArea referenceTextArea;
+   @FXML
+   Tab refTab;
+   @FXML
+   ChoiceBox refChoiceBox;
    
    NumberFormat nf = NumberFormat.getNumberInstance();
    CoordComparator coordCompare = new CoordComparator();
    
-   /*TO DO! 
-   Add feature for isPCR submission? e.g.
-   http://genome.ucsc.edu/cgi-bin/hgPcr?org=Human&db=hg38&wp_target=genome&wp_f=attgggtcagcagcaatgac&wp_r=catcctcccactcccctg&Submit=submit&wp_size=4000&wp_perfect=15&wp_good=15&boolshad.wp_flipReverse=0
-   */
    private final ObservableList<Primer3Result> data = FXCollections.observableArrayList();
    
    @Override
@@ -111,8 +118,17 @@ public class Primer3ResultViewController implements Initializable {
         regionCol.setComparator(coordCompare);
         primerTable.getSelectionModel().setCellSelectionEnabled(true);
         primerTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        
-
+        refTab.selectedProperty().addListener(new ChangeListener<Boolean>(){
+            @Override
+            public void changed (ObservableValue ov, Boolean value, final Boolean newValue){
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        refChoiceBox.setVisible(newValue);
+                    }
+                });
+            }
+        });
         
         MenuItem item = new MenuItem("Copy");
         item.setOnAction(new EventHandler<ActionEvent>() {
@@ -161,9 +177,36 @@ public class Primer3ResultViewController implements Initializable {
         
     }
     
-    public void displayData(ArrayList<Primer3Result> regions, ArrayList<String> design){
+    public void displayData(ArrayList<Primer3Result> regions, 
+            ArrayList<String> design, final HashMap<String, String> ref){
         int totalPairs = 0;
         int failures = 0;
+        if (ref != null){
+            refTab.setDisable(false);
+            refChoiceBox.getItems().clear();
+            refChoiceBox.getItems().addAll(ref.keySet());
+            refChoiceBox.getSelectionModel().selectedIndexProperty().addListener
+                (new ChangeListener<Number>(){
+                @Override
+                public void changed (ObservableValue ov, Number value, final Number new_value){ 
+                    if (new_value.intValue() >= 0){
+                        final String id = (String) refChoiceBox.getItems().get(new_value.intValue());
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                System.out.println("Selecting " + id );
+                                System.out.println("Seq =  " + ref.get(id) );
+                                referenceTextArea.setText(ref.get(id));
+                            }
+                        });
+                    }
+
+                }
+            });
+            refChoiceBox.getSelectionModel().selectFirst();
+        }else{
+            refTab.setDisable(true);
+        }
         StringBuilder designString = new StringBuilder();
         for (Primer3Result r: regions){
             data.add(r);
