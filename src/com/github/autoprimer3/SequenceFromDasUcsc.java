@@ -36,8 +36,8 @@ public class SequenceFromDasUcsc {
     SequenceFromDasUcsc(){//get build names and DAS urls
         try{
             SAXReader reader = new SAXReader();
-            //URL url = new URL("http://genome.ucsc.edu/cgi-bin/das/dsn");//usa    
-            URL url = new URL("http://genome-euro.ucsc.edu/cgi-bin/das/dsn");    
+            URL url = new URL("http://genome.ucsc.edu/cgi-bin/das/dsn");//usa    
+            //URL url = new URL("http://genome-euro.ucsc.edu/cgi-bin/das/dsn");    
             Document dasXml;
             dasXml  = reader.read(url);
             Element root = dasXml.getRootElement();

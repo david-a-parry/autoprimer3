@@ -1,5 +1,4 @@
 /*things to add:
-    coordinates functionality
     server choice
     output reference sequence
     write primers and primer3 output to file
@@ -994,7 +993,8 @@ public class AutoPrimer3 extends Application implements Initializable{
                             tableStage.setScene(tableScene);
                             //tableScene.getStylesheets().add(AutoPrimer3.class
                             //        .getResource("autoprimer3.css").toExternalForm());
-                            resultView.displayData(result.get("primers"), result.get("design"));
+                            resultView.displayData(result.get("primers"), 
+                                    result.get("design"), null);
                             tableStage.setTitle("AutoPrimer3 Results");
                             tableStage.getIcons().add(new Image(this.getClass()
                                     .getResourceAsStream("icon.png")));
@@ -1254,6 +1254,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                         ArrayList<Primer3Result> primers = new ArrayList<>();
                         ArrayList<String> designs = new ArrayList<>();
                         HashMap<String, Integer> geneExonOffsets = new HashMap<>();
+                        HashMap<String, String> referenceSeqs = new HashMap<>();
                         //get DNA
                         int regionNumber = 0;
                         double incrementPerRegion = 100/genomicRegions.size();
@@ -1314,7 +1315,6 @@ public class AutoPrimer3 extends Application implements Initializable{
                                     plus_strand++;
                                 }
                                 for (Exon e : exons){
-                                    //TO DO - link exon numbering to symbol
                                     if (designToChoiceBox.getSelectionModel().getSelectedItem()
                                         .equals("Coding regions")){
                                         if (! e.isCodingExon()){
@@ -1363,6 +1363,13 @@ public class AutoPrimer3 extends Application implements Initializable{
                                 onMinusStrand = true;
                             }
                             merger.mergeRegionsByPosition(exonRegions);
+                            referenceSeqs.put(r.getName(), 
+                                    createRefserenceSequence(dna, r.getStartPos(),
+                                            flanks, exonRegions));
+                            //DEBUG
+                            System.out.println("Ref " + r.getName() + ":");
+                            System.out.println(referenceSeqs.get(r.getName()));
+                            
                             numberExons(exonRegions, onMinusStrand, geneExonOffsets);
                             exonRegions = splitLargeRegionsMergeSmallRegions(exonRegions, 
                                     optSize, designBuffer, onMinusStrand);
@@ -1439,8 +1446,11 @@ public class AutoPrimer3 extends Application implements Initializable{
 
                         }
                         HashMap<String, ArrayList> primerResult = new HashMap<>();
+                        ArrayList<HashMap<String, String>> refList = new ArrayList<>();
+                        refList.add(referenceSeqs);
                         primerResult.put("primers", primers);
                         primerResult.put("design", designs);
+                        primerResult.put("ref", refList);
                         return primerResult;
                     }
                 };
@@ -1492,7 +1502,9 @@ public class AutoPrimer3 extends Application implements Initializable{
                             tableStage.setScene(tableScene);
                             //tableScene.getStylesheets().add(AutoPrimer3.class
                             //        .getResource("autoprimer3.css").toExternalForm());
-                            resultView.displayData(result.get("primers"), result.get("design"));
+                            resultView.displayData(result.get("primers"), 
+                                    result.get("design"), 
+                                    (HashMap<String, String>) result.get("ref").get(0));
                             tableStage.setTitle("AutoPrimer3 Results");
                             tableStage.getIcons().add(new Image(this.getClass()
                                     .getResourceAsStream("icon.png")));
@@ -1577,6 +1589,37 @@ public class AutoPrimer3 extends Application implements Initializable{
         progressLabel.textProperty().bind(geneSearchTask.messageProperty());
         new Thread(geneSearchTask).start();   
     
+    }
+    
+    private String createRefserenceSequence(String dna, int offset, int flanks,
+            ArrayList<GenomicRegionSummary> exons){
+        StringBuilder dnaTarget = new StringBuilder();
+        int prevEnd = 0;
+        for (int i = 0; i < exons.size(); i++){
+            int tStart = exons.get(i).getStartPos() - offset;
+            int tEnd = 1 + exons.get(i).getEndPos() - offset;
+            int subsStart = tStart - flanks > 0 ? tStart - flanks : 0;
+            int subsEnd = tEnd + flanks - 1 < dna.length() ?  tEnd + flanks - 1 : dna.length();
+            //make sure we don't overlap end with next exon region
+            if (i < exons.size() -1){
+                subsEnd = subsEnd < exons.get(i + 1).getStartPos() - offset ? 
+                        subsEnd : exons.get(i + 1).getStartPos() - offset;
+            }
+            //make sure we don't overlap current flanks with previous flanks
+            if (prevEnd > 0){
+                if (prevEnd > subsStart){
+                    subsStart = prevEnd;
+                }
+            }
+            prevEnd = subsEnd;
+            dnaTarget.append(
+                    dna.substring(subsStart, tStart).toLowerCase());
+            dnaTarget.append(dna.substring(tStart, tEnd-1)
+                    .toUpperCase());
+            dnaTarget.append(dna.substring(tEnd -1, subsEnd)
+                    .toLowerCase());
+        }
+        return dnaTarget.toString();
     }
     
     /*dup will always be an unedited gene name
