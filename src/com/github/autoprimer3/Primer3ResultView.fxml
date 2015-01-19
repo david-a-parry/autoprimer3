@@ -42,9 +42,28 @@
                   </AnchorPane>
             </content>
           </Tab>
+            <Tab fx:id="refTab" text="Gene Reference Sequences">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TextArea fx:id="referenceTextArea" editable="false" prefHeight="741.0" prefWidth="1210.0" promptText="Gene Reference Sequences" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <font>
+                              <Font name="Monospaced Regular" size="12.0" />
+                           </font>
+                        </TextArea>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
         </tabs>
       </TabPane>
-      <Button fx:id="closeButton" layoutX="1138.0" layoutY="775.0" mnemonicParsing="false" text="Close" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="20.0" />
-      <Label fx:id="summaryLabel" layoutX="14.0" layoutY="793.0" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="14.0" />
+      <HBox alignment="BASELINE_RIGHT" layoutX="14.0" layoutY="775.0" prefHeight="26.0" prefWidth="1191.0" spacing="15.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="5.0">
+         <children>
+            <Label fx:id="summaryLabel" layoutX="14.0" layoutY="793.0" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="14.0" HBox.hgrow="SOMETIMES" />
+            <Separator prefHeight="17.0" prefWidth="614.0" HBox.hgrow="ALWAYS" />
+            <ChoiceBox fx:id="refChoiceBox" layoutX="726.0" layoutY="780.0" prefHeight="26.0" prefWidth="217.0" visible="false" HBox.hgrow="SOMETIMES" />
+            <Button fx:id="closeButton" layoutX="1138.0" layoutY="775.0" mnemonicParsing="false" text="Close" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="20.0" HBox.hgrow="NEVER" />
+         </children>
+      </HBox>
    </children>
 </AnchorPane>
