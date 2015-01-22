@@ -2,6 +2,7 @@
     server choice
     output reference sequence
     write primers and primer3 output to file
+    limit size of regions, number of genes per run
 */
 
 /*
@@ -66,6 +67,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -92,6 +94,8 @@ public class AutoPrimer3 extends Application implements Initializable{
     
     @FXML
     AnchorPane mainPane;
+    @FXML
+    MenuBar menuBar;
     //tabs
     @FXML
     TabPane mainTabPane;
@@ -215,7 +219,6 @@ public class AutoPrimer3 extends Application implements Initializable{
             primaryStage.getIcons().add(new Image(this.getClass().
                     getResourceAsStream("icon.png")));
             
-            
         } catch (Exception ex) {
             Logger.getLogger(AutoPrimer3.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -223,6 +226,7 @@ public class AutoPrimer3 extends Application implements Initializable{
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        menuBar.setUseSystemMenuBar(true);
         genesTextField.requestFocus();
         progressLabel2.textProperty().bind(progressLabel.textProperty());
         progressIndicator2.progressProperty().bind(progressIndicator.progressProperty());
@@ -1365,7 +1369,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                             merger.mergeRegionsByPosition(exonRegions);
                             referenceSeqs.put(r.getName(), 
                                     createRefserenceSequence(dna, r.getStartPos(),
-                                            flanks, exonRegions));
+                                            flanks, exonRegions, onMinusStrand));
                             //DEBUG
                             System.out.println("Ref " + r.getName() + ":");
                             System.out.println(referenceSeqs.get(r.getName()));
@@ -1592,7 +1596,7 @@ public class AutoPrimer3 extends Application implements Initializable{
     }
     
     private String createRefserenceSequence(String dna, int offset, int flanks,
-            ArrayList<GenomicRegionSummary> exons){
+            ArrayList<GenomicRegionSummary> exons, boolean revComp){
         StringBuilder dnaTarget = new StringBuilder();
         int prevEnd = 0;
         for (int i = 0; i < exons.size(); i++){
@@ -1619,7 +1623,11 @@ public class AutoPrimer3 extends Application implements Initializable{
             dnaTarget.append(dna.substring(tEnd -1, subsEnd)
                     .toLowerCase());
         }
-        return dnaTarget.toString();
+        if (revComp){
+            return reverseComplement(dnaTarget.toString());
+        }else{
+            return dnaTarget.toString();
+        }
     }
     
     /*dup will always be an unedited gene name

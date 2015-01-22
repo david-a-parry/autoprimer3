@@ -36,6 +36,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tab;
@@ -58,6 +59,9 @@ import javafx.stage.Stage;
  */
 public class Primer3ResultViewController implements Initializable {
 
+   
+   @FXML
+   MenuBar menuBar;
    @FXML
    TableView<Primer3Result> primerTable;
    @FXML
@@ -96,6 +100,7 @@ public class Primer3ResultViewController implements Initializable {
    
    @Override
     public void initialize(URL url, ResourceBundle rb) {
+        menuBar.setUseSystemMenuBar(true);
         indexCol.setCellValueFactory(new 
                 PropertyValueFactory<Primer3Result, Integer>("index"));
         leftPrimerCol.setCellValueFactory(new 
