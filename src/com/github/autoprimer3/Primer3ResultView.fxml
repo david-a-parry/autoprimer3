@@ -7,7 +7,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="815.0" prefWidth="1210.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.autoprimer3.Primer3ResultViewController">
    <children>
-      <TabPane layoutX="90.0" layoutY="117.0" prefHeight="359.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="41.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <TabPane layoutX="90.0" layoutY="27.0" prefHeight="747.0" prefWidth="1210.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="41.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="27.0">
         <tabs>
           <Tab text="Primers">
             <content>
@@ -65,5 +65,23 @@
             <Button fx:id="closeButton" layoutX="1138.0" layoutY="775.0" mnemonicParsing="false" text="Close" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="20.0" HBox.hgrow="NEVER" />
          </children>
       </HBox>
+      <MenuBar fx:id="menuBar" prefHeight="29.0" prefWidth="1210.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+            <items>
+                  <MenuItem mnemonicParsing="false" text="Save Primers to File" />
+                  <MenuItem mnemonicParsing="false" text="Save Design Details  to File" />
+                  <MenuItem mnemonicParsing="false" text="Save Reference Sequences  to File" />
+                  <MenuItem mnemonicParsing="false" text="Save All to File" />
+              <MenuItem mnemonicParsing="false" text="Close" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Edit">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Delete" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
    </children>
 </AnchorPane>
