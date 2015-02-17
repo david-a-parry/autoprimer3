@@ -11,7 +11,7 @@
 
 <AnchorPane id="AnchorPane" fx:id="mainPane" minHeight="207.0" prefHeight="268.0" prefWidth="656.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.autoprimer3.AutoPrimer3">
   <children>
-    <MenuBar focusTraversable="true" prefWidth="600.0" style="" useSystemMenuBar="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <MenuBar fx:id="menuBar" focusTraversable="true" prefWidth="600.0" style="" useSystemMenuBar="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
