@@ -466,6 +466,18 @@ public class AutoPrimer3 extends Application implements Initializable{
         misprimingLibraryChoiceBox.getSelectionModel().select(lib);
     }
     
+    private void checkUcscGenomes(){
+        //TO DO
+        //Background check that genome list is up to date
+       
+    }
+    
+    private void checkUcscTables(String table){
+        //TO DO
+        //Background check that tables for given genome is up to date
+       
+    }
+    
     private void connectToUcsc(){
         progressIndicator.setProgress(-1);
         final Task<LinkedHashMap<String, String>> getBuildsTask = 
