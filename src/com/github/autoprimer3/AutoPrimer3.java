@@ -190,9 +190,7 @@ public class AutoPrimer3 extends Application implements Initializable{
     final BuildToMisprimingLibrary buildToMisprime = new BuildToMisprimingLibrary();
     Boolean autoSelectMisprime = true;
     final GetUcscBuildsAndTables buildsAndTables = new GetUcscBuildsAndTables();
-    LinkedHashMap<String, String> buildsToDescriptions = new LinkedHashMap<>();
-    HashMap<String, String> buildToMap = new HashMap<>();
-    HashMap<String, LinkedHashSet<String>> buildToTable = new HashMap<>();
+    
     File primer3ex; 
     File thermoConfig;
     String defaultSizeRange = "150-250 100-300 301-400 401-500 501-600 "
@@ -240,9 +238,6 @@ public class AutoPrimer3 extends Application implements Initializable{
         try{
             ap3Config = new AutoPrimer3Config();
             ap3Config.readConfig();
-            buildsToDescriptions = ap3Config.getBuildToDescription();
-            buildToMap = ap3Config.getBuildToMapMaster();
-            buildToTable = ap3Config.getBuildToTables();
         }catch (IOException|ClassNotFoundException ex){
             Dialogs configError = Dialogs.create().title("Config Error").
             masthead("Error Reading AutoPrimer3 Config").
@@ -309,7 +304,7 @@ public class AutoPrimer3 extends Application implements Initializable{
         });
         
         genomeChoiceBox.getItems().clear();
-        genomeChoiceBox.getItems().addAll(new ArrayList<>(buildsToDescriptions.keySet()));
+        genomeChoiceBox.getItems().addAll(new ArrayList<>(ap3Config.getBuildToDescription().keySet()));
         genomeChoiceBox.getSelectionModel().selectFirst();
         
         misprimingLibraryChoiceBox.getItems().add("none");
@@ -467,8 +462,63 @@ public class AutoPrimer3 extends Application implements Initializable{
     }
     
     private void checkUcscGenomes(){
-        //TO DO
-        //Background check that genome list is up to date
+        final Task<LinkedHashMap<String, String>> getGenomesTask = 
+                new Task<LinkedHashMap<String, String>>(){
+            @Override
+            protected LinkedHashMap<String, String> call() {
+                buildsAndTables.connectToUcsc();
+                return buildsAndTables.getBuildToDescription();
+            }
+        };
+        getGenomesTask.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
+            @Override
+            public void handle (WorkerStateEvent e){
+                LinkedHashMap<String, String> buildIds = 
+                        (LinkedHashMap<String, String>) e.getSource().getValue();
+                boolean rewriteConfig = false;
+                if (! ap3Config.getBuildToDescription().equals(buildIds)){
+                    //warn and repopulate genome choicebox
+                    //TO DO WARN!
+                    
+                    rewriteConfig = true;
+                    String currentSel = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
+                    genomeChoiceBox.getItems().clear();
+                    genomeChoiceBox.getItems().addAll(buildIds.keySet());
+                    genomeChoiceBox2.getItems().addAll(buildIds.keySet());
+                    if (genomeChoiceBox.getItems().contains(currentSel)){
+                        genomeChoiceBox.getSelectionModel().select(currentSel);
+                        genomeChoiceBox2.getSelectionModel().select(currentSel);
+                    }else{
+                        genomeChoiceBox.getSelectionModel().selectFirst();
+                        genomeChoiceBox2.getSelectionModel().selectFirst();
+                    }
+                    ap3Config.setBuildToDescription(buildIds);
+                }
+                
+                if (!ap3Config.getBuildToMapMaster().equals(buildsAndTables.getBuildToMapMaster())){
+                    ap3Config.setBuildToMapMaster(buildsAndTables.getBuildToMapMaster());
+                    rewriteConfig = true;
+                }
+                if (rewriteConfig){
+                    try{
+                        System.out.println("Writing output");
+                        ap3Config.writeConfig();
+                    }catch (IOException ex){
+                        //TO DO - handle this error!
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        getGenomesTask.setOnFailed(new EventHandler<WorkerStateEvent>(){
+            @Override
+            public void handle (WorkerStateEvent e){
+                progressIndicator.setProgress(0);
+                //TO DO - HANDLE THIS EXCEPTION
+                System.out.println(e.getSource().getException());
+            }
+        });
        
     }
     
@@ -494,27 +544,19 @@ public class AutoPrimer3 extends Application implements Initializable{
                 LinkedHashMap<String, String> buildIds = 
                         (LinkedHashMap<String, String>) e.getSource().getValue();
                 genomeChoiceBox.getItems().clear();
-                if (! buildsToDescriptions.equals(buildIds)){
-                    genomeChoiceBox.getItems().addAll(buildIds.keySet());
-                    genomeChoiceBox.getSelectionModel().selectFirst();
-                    genomeChoiceBox2.getItems().addAll(buildIds.keySet());
-                    genomeChoiceBox2.getSelectionModel().selectFirst();
-                    ap3Config.setBuildToDescription(buildIds);
-                    ap3Config.setBuildToMapMaster(buildsAndTables.getBuildToMapMaster());
-                    ap3Config.setBuildToTables(buildToTable);
-                    try{
-                        System.out.println("Writing output");
-                        ap3Config.writeConfig();
-                    }catch (IOException ex){
-                        ex.printStackTrace();
-                    }
+                genomeChoiceBox.getItems().addAll(buildIds.keySet());
+                genomeChoiceBox.getSelectionModel().selectFirst();
+                genomeChoiceBox2.getItems().addAll(buildIds.keySet());
+                genomeChoiceBox2.getSelectionModel().selectFirst();
+                ap3Config.setBuildToDescription(buildIds);
+                ap3Config.setBuildToMapMaster(buildsAndTables.getBuildToMapMaster());
+                try{
+                    System.out.println("Writing output");
+                    ap3Config.writeConfig();
+                }catch (IOException ex){
+                    ex.printStackTrace();
                 }
                 setLoading(false);
-                
-//                    progressIndicator.setProgress(0);
-                /*keep progress running as we have just indirectly called the
-                 * getTablesTask by selecting our first genome
-                 */
             }
         });
 
