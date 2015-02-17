@@ -20,7 +20,9 @@ package com.github.autoprimer3;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -201,7 +203,8 @@ public class Primer3ResultViewController implements Initializable {
                             public void run() {
                                 System.out.println("Selecting " + id );
                                 System.out.println("Seq =  " + ref.get(id) );
-                                referenceTextArea.setText(ref.get(id));
+                                referenceTextArea.setText(splitStringOnLength(
+                                        ref.get(id), 60));
                             }
                         });
                     }
@@ -235,5 +238,13 @@ public class Primer3ResultViewController implements Initializable {
             labelText.append(" failed.");
         }
         summaryLabel.setText(labelText.toString());
+    }
+    private String splitStringOnLength(String s, Integer n){
+        StringBuilder split = new StringBuilder();
+        for (int i = 0; i < s.length(); i += n){
+            split.append(s.substring(i, Math.min(i + n, s.length())));
+            split.append("\n");
+        }
+        return split.toString();
     }
 }
