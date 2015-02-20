@@ -487,13 +487,10 @@ public class AutoPrimer3 extends Application implements Initializable{
                     String currentSel = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
                     genomeChoiceBox.getItems().clear();
                     genomeChoiceBox.getItems().addAll(buildIds.keySet());
-                    genomeChoiceBox2.getItems().addAll(buildIds.keySet());
                     if (genomeChoiceBox.getItems().contains(currentSel)){
                         genomeChoiceBox.getSelectionModel().select(currentSel);
-                        genomeChoiceBox2.getSelectionModel().select(currentSel);
                     }else{
                         genomeChoiceBox.getSelectionModel().selectFirst();
-                        genomeChoiceBox2.getSelectionModel().selectFirst();
                     }
                     ap3Config.setBuildToDescription(buildIds);
                 }else{
@@ -675,8 +672,6 @@ public class AutoPrimer3 extends Application implements Initializable{
                 genomeChoiceBox.getItems().clear();
                 genomeChoiceBox.getItems().addAll(buildIds.keySet());
                 genomeChoiceBox.getSelectionModel().selectFirst();
-                genomeChoiceBox2.getItems().addAll(buildIds.keySet());
-                genomeChoiceBox2.getSelectionModel().selectFirst();
                 ap3Config.setBuildToDescription(buildIds);
                 ap3Config.setBuildToMapMaster(buildsAndTables.getBuildToMapMaster());
                 try{
