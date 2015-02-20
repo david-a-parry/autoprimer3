@@ -1917,7 +1917,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                     String name = mergeNames(splitRegions.get(i).getName(), 
                             splitRegions.get(i+1).getName());
                     String id = mergeIds(splitRegions.get(i).getId(), 
-                            splitRegions.get(i).getId());
+                            splitRegions.get(i + 1).getId());
                     splitAndMergedRegions.add(new GenomicRegionSummary(chrom, 
                             start, end, null, null, id, name));
                     for (int j = i +2; j < splitRegions.size(); j++){
@@ -1960,14 +1960,22 @@ public class AutoPrimer3 extends Application implements Initializable{
         }
         for (String d: idToEx1.keySet()){
             if (idToEx2.containsKey(d)){
-                merged.add(d + "_ex" + idToEx1.get(d) + idToEx2.get(d));
+                merged.add(d + "_ex" + idToEx1.get(d) + "-" + idToEx2.get(d));
             }else{
-                merged.add(d + "_ex" + idToEx1.get(d));
+                if (d.equals(idToEx1.get(d))){//if regions key and value will be identical
+                    merged.add(d);
+                }else{//if exons value will be exon number
+                    merged.add(d + "_ex" + idToEx1.get(d));
+                }
             }
         }
         for (String d: idToEx2.keySet()){
-            if (! idToEx1.containsKey(d)){
-                merged.add(d + "_ex" + idToEx2.get(d));
+            if (! idToEx1.containsKey(d)){   
+                if (d.equals(idToEx2.get(d))){//if regions key and value will be identical
+                    merged.add(d);
+                }else{//if exons value will be exon number
+                    merged.add(d + "_ex" + idToEx2.get(d));
+                }
             }
         }
         return String.join("/", merged);
