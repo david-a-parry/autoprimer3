@@ -445,6 +445,7 @@ public class AutoPrimer3 extends Application implements Initializable{
             connectToUcsc();   
         }else{
             setLoading(false);
+            checkUcscGenomes();
         }
         Platform.runLater(new Runnable() {
                 @Override
@@ -466,6 +467,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                 new Task<LinkedHashMap<String, String>>(){
             @Override
             protected LinkedHashMap<String, String> call() {
+                System.out.println("Checking genome list.");
                 buildsAndTables.connectToUcsc();
                 return buildsAndTables.getBuildToDescription();
             }
@@ -479,7 +481,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                 if (! ap3Config.getBuildToDescription().equals(buildIds)){
                     //warn and repopulate genome choicebox
                     //TO DO WARN!
-                    
+                    System.out.println("Genome list has changed - repopulating genome choice box");
                     rewriteConfig = true;
                     String currentSel = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
                     genomeChoiceBox.getItems().clear();
@@ -493,6 +495,8 @@ public class AutoPrimer3 extends Application implements Initializable{
                         genomeChoiceBox2.getSelectionModel().selectFirst();
                     }
                     ap3Config.setBuildToDescription(buildIds);
+                }else{
+                    System.out.println("Genome list is the same.");
                 }
                 
                 if (!ap3Config.getBuildToMapMaster().equals(buildsAndTables.getBuildToMapMaster())){
@@ -519,13 +523,73 @@ public class AutoPrimer3 extends Application implements Initializable{
                 System.out.println(e.getSource().getException());
             }
         });
-       
+       new Thread(getGenomesTask).start();
     }
     
-    private void checkUcscTables(String table){
-        //TO DO
-        //Background check that tables for given genome is up to date
-       
+    
+    
+    
+    
+    private void checkUcscTables(final String genome){
+        //Background check that tables for given genome are up to date
+        final Task<LinkedHashSet<String>> checkUcscTablesTask = 
+            new Task<LinkedHashSet<String>>(){
+            @Override
+            protected LinkedHashSet<String> call() {
+                return buildsAndTables.getAvailableTables(genome);
+            }
+        };
+        checkUcscTablesTask.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
+            @Override
+            public void handle (WorkerStateEvent e){
+                LinkedHashSet<String> tables = 
+                        (LinkedHashSet<String>) e.getSource().getValue();
+                if (! ap3Config.getBuildToTables().get(genome).equals(tables)){
+                    /*Tables differ, but we need to check whether it affects
+                    relevant tables (i.e. genes or SNPs)
+                    */
+                    if (configTablesDiffer(tables, 
+                            ap3Config.getBuildToTables().get(genome))){
+                        /*if available genes or snps differ we need to alert
+                        user and change fields in choiceboxes
+                        */
+                        // TO DO!
+                    }else{
+                        /*if available genes and snps are the same we just
+                        rewrite the config file silently
+                        */
+                        // TO DO !
+                    }
+                }
+            }
+        });
+    }
+    
+    //only checks snp and gene tables in lists to see if they are the same
+    private boolean configTablesDiffer(LinkedHashSet<String> tables, 
+            LinkedHashSet<String> configTables){
+        ArrayList<String> tableComp = new ArrayList<>();
+        ArrayList<String> configComp = new ArrayList<>();
+        for (String t: tables){
+            if (matchesGeneTable(t) || matchesSnpTable(t)){
+                tableComp.add(t);
+            }
+        }
+        for (String t: configTables){
+            if (matchesGeneTable(t) || matchesSnpTable(t)){
+                configComp.add(t);
+            }
+        }
+        return (tableComp.containsAll(configComp) && configComp.containsAll(tableComp));
+    }
+    
+    private boolean matchesGeneTable(String t){
+        return (t.equals("refGene") || t.equals("knownGene") || 
+                t.equals("ensGene") || t.equals("xenoRefGene"));
+    }
+    
+    private boolean matchesSnpTable(String t){
+        return t.matches("^snp\\d+(\\w+)*");
     }
     
     private void connectToUcsc(){
@@ -594,10 +658,9 @@ public class AutoPrimer3 extends Application implements Initializable{
         LinkedHashSet<String> genes = new LinkedHashSet<>();
         LinkedHashSet<String> snps = new LinkedHashSet<>();
         for (String t: tables){
-            if (t.equals("refGene") || t.equals("knownGene") || 
-                    t.equals("ensGene") || t.equals("xenoRefGene")){
+            if (matchesGeneTable(t)){
                 genes.add(t);
-            }else if (t.matches("^snp\\d+(\\w+)*")){
+            }else if (matchesSnpTable(t)){
                 snps.add(t);
             }
         }
@@ -625,6 +688,7 @@ public class AutoPrimer3 extends Application implements Initializable{
         snpsChoiceBox.getItems().clear();
         if (ap3Config.getBuildToTables().containsKey(id)){
             setTables(ap3Config.getBuildToTables().get(id));
+            checkUcscTables(id);
             return;
         }
         setLoading(true);
