@@ -28,6 +28,7 @@ public class RegionParser {
     
 //------------------------------------------------------------------------------
     public static GenomicRegionSummary readRegion(String s){
+        s = s.trim();
         GenomicRegionSummary r = parseAsRegion(s);
         if (r != null){
             return r;
@@ -50,6 +51,9 @@ public class RegionParser {
         String[] chromSplit = s.split(":");
         if (chromSplit.length < 2){
             return null;
+        }
+        for (int i = 0; i < chromSplit.length; i++){
+            chromSplit[i] = chromSplit[i].trim(); 
         }
         String[] posSplit = chromSplit[1].split("-");
         String start;
