@@ -201,7 +201,8 @@ public class AutoPrimer3 extends Application implements Initializable{
     File configDirectory;
     AutoPrimer3Config ap3Config;
     File misprimeDir;
-    
+    HashSet<String> checkedAlready = new HashSet<>();
+//we use this hashmap to ensure we only check tables for genomes once per session
     
     @Override
     public void start(final Stage primaryStage) {
@@ -536,33 +537,77 @@ public class AutoPrimer3 extends Application implements Initializable{
             new Task<LinkedHashSet<String>>(){
             @Override
             protected LinkedHashSet<String> call() {
+                System.out.println("Checking tables for " + genome);
                 return buildsAndTables.getAvailableTables(genome);
             }
         };
         checkUcscTablesTask.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
             @Override
             public void handle (WorkerStateEvent e){
+                System.out.println("Finished getting tables for " + genome);
                 LinkedHashSet<String> tables = 
                         (LinkedHashSet<String>) e.getSource().getValue();
                 if (! ap3Config.getBuildToTables().get(genome).equals(tables)){
                     /*Tables differ, but we need to check whether it affects
                     relevant tables (i.e. genes or SNPs)
                     */
+                    System.out.println("Tables differ!");
                     if (configTablesDiffer(tables, 
                             ap3Config.getBuildToTables().get(genome))){
                         /*if available genes or snps differ we need to alert
                         user and change fields in choiceboxes
                         */
-                        // TO DO!
-                    }else{
-                        /*if available genes and snps are the same we just
-                        rewrite the config file silently
-                        */
-                        // TO DO !
+                        System.out.println("SNP/Gene tables differ!");
+                        // TO DO - ALERT USER IF GENOME STILL SELECTED
+                        String g = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
+                        if (! g.equals(genome)){
+                            String curSnp = (String) snpsChoiceBox.getSelectionModel().getSelectedItem();
+                            snpsChoiceBox.getItems().clear();
+                            snpsChoiceBox.getItems().add("No");
+                            snpsChoiceBox.getItems().addAll(getSnpsFromTables(tables));
+                            if (snpsChoiceBox.getItems().contains(curSnp)){
+                                snpsChoiceBox.getSelectionModel().select(curSnp);
+                            }else{
+                                snpsChoiceBox.getSelectionModel().selectFirst();
+                            }
+
+                            String curGene = (String) databaseChoiceBox.getSelectionModel().getSelectedItem();
+                            databaseChoiceBox.getItems().clear();
+                            databaseChoiceBox.getItems().add("No");
+                            databaseChoiceBox.getItems().addAll(getSnpsFromTables(tables));
+                            if (databaseChoiceBox.getItems().contains(curGene)){
+                                databaseChoiceBox.getSelectionModel().select(curGene);
+                            }else{
+                                databaseChoiceBox.getSelectionModel().selectFirst();
+                            }
+                        }
+                    }/*even if available genes and snps are the same we just
+                       change and rewrite rewrite the config file silently
+                       to prevent this happening until tables change again
+                     */
+                    ap3Config.getBuildToTables().put(genome, tables);
+                    try{
+                        System.out.println("Writing output");
+                        ap3Config.writeConfig();
+                    }catch (IOException ex){
+                        //TO DO - handle this error!
+                        ex.printStackTrace();
                     }
+                    
+                }else{
+                    System.out.println("Tables are the same");
                 }
             }
         });
+        checkUcscTablesTask.setOnFailed(new EventHandler<WorkerStateEvent>(){
+            @Override
+            public void handle (WorkerStateEvent e){
+                //TO DO - HANDLE THIS EXCEPTION
+                System.out.println(e.getSource().getException());
+            }
+        });
+        
+       new Thread(checkUcscTablesTask).start();
     }
     
     //only checks snp and gene tables in lists to see if they are the same
@@ -581,6 +626,26 @@ public class AutoPrimer3 extends Application implements Initializable{
             }
         }
         return (tableComp.containsAll(configComp) && configComp.containsAll(tableComp));
+    }
+    
+    private LinkedHashSet<String> getGenesFromTables(LinkedHashSet<String> tables){
+        LinkedHashSet<String> genes = new LinkedHashSet<>();
+        for (String t: tables){
+            if (matchesGeneTable(t)){
+                genes.add(t);
+            }
+        }
+        return genes;
+    }
+
+    private LinkedHashSet<String> getSnpsFromTables(LinkedHashSet<String> tables){
+        LinkedHashSet<String> snps = new LinkedHashSet<>();
+        for (String t: tables){
+            if (matchesSnpTable(t)){
+                snps.add(t);
+            }
+        }
+        return snps;
     }
     
     private boolean matchesGeneTable(String t){
@@ -655,15 +720,8 @@ public class AutoPrimer3 extends Application implements Initializable{
     
     
     private void setTables(LinkedHashSet<String> tables){
-        LinkedHashSet<String> genes = new LinkedHashSet<>();
-        LinkedHashSet<String> snps = new LinkedHashSet<>();
-        for (String t: tables){
-            if (matchesGeneTable(t)){
-                genes.add(t);
-            }else if (matchesSnpTable(t)){
-                snps.add(t);
-            }
-        }
+        LinkedHashSet<String> genes = getGenesFromTables(tables);
+        LinkedHashSet<String> snps = getSnpsFromTables(tables);
         databaseChoiceBox.getItems().clear();
         if (genes.isEmpty()){
             databaseChoiceBox.getItems().add("No gene databases found - please choose another genome.");
@@ -688,8 +746,11 @@ public class AutoPrimer3 extends Application implements Initializable{
         snpsChoiceBox.getItems().clear();
         if (ap3Config.getBuildToTables().containsKey(id)){
             setTables(ap3Config.getBuildToTables().get(id));
-            checkUcscTables(id);
-            return;
+            if (! checkedAlready.contains(id)){
+                checkUcscTables(id);
+                checkedAlready.add(id);
+                return;
+            }
         }
         setLoading(true);
         progressLabel.setText("Getting database information for " + id);
