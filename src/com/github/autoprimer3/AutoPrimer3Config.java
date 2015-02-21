@@ -84,7 +84,7 @@ public class AutoPrimer3Config implements Serializable{
             }
         }else{
             inputStream = this.getClass().
-                        getResourceAsStream("primer3_core");
+                        getResourceAsStream("primer3_core.exe");
         }
         OutputStream outputStream = new FileOutputStream(primer3ex);
         int read = 0;
