@@ -204,6 +204,9 @@ public class AutoPrimer3 extends Application implements Initializable{
     HashSet<String> checkedAlready = new HashSet<>();
 //we use this hashmap to ensure we only check tables for genomes once per session
     
+    int MAX_GENES_PER_DESIGN = 10;
+    int MAX_LINES_PER_DESIGN = 100;//max lines for coordinates design
+    
     @Override
     public void start(final Stage primaryStage) {
         try {
@@ -337,70 +340,11 @@ public class AutoPrimer3 extends Application implements Initializable{
         defaultPrimer3Values.put(splitRegionsTextField, "300");
         defaultPrimer3Values.put(maxMisprimeTextField, "12");
         defaultPrimer3Values.put(sizeRangeTextField, defaultSizeRange);
-        
-        minDistanceTextField.textProperty().addListener(
-                new ChangeListener<String>(){
-            @Override
-            public void changed(ObservableValue<? extends String> ov,
-                    String oldValue, final String newValue){
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!minDistanceTextField2.getText().equals(newValue)){
-                        minDistanceTextField2.setText(newValue);
-                        }
-                    }
-                });
-            }
-        });
-        
-        minDistanceTextField2.textProperty().addListener(
-                new ChangeListener<String>(){
-            @Override
-            public void changed(ObservableValue<? extends String> ov,
-                    String oldValue, final String newValue){
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!minDistanceTextField.getText().equals(newValue)){
-                        minDistanceTextField.setText(newValue);
-                        }
-                    }
-                });
-            }
-        });
-        
-        flankingRegionsTextField.textProperty().addListener(
-                new ChangeListener<String>(){
-            @Override
-            public void changed(ObservableValue<? extends String> ov,
-                    String oldValue, final String newValue){
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!flankingRegionsTextField2.getText().equals(newValue)){
-                        flankingRegionsTextField2.setText(newValue);
-                        }
-                    }
-                });
-            }
-        });
-        
-        flankingRegionsTextField2.textProperty().addListener(
-                new ChangeListener<String>(){
-            @Override
-            public void changed(ObservableValue<? extends String> ov,
-                    String oldValue, final String newValue){
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!flankingRegionsTextField.getText().equals(newValue)){
-                            flankingRegionsTextField.setText(newValue);
-                        }
-                    }
-                });
-            }
-        });
+                
+        minDistanceTextField2.textProperty().bindBidirectional
+                        (minDistanceTextField.textProperty());
+        flankingRegionsTextField2.textProperty().bindBidirectional
+                    (flankingRegionsTextField.textProperty());       
         
         resetValuesButton.setOnAction(new EventHandler<ActionEvent>(){
            @Override
@@ -422,23 +366,79 @@ public class AutoPrimer3 extends Application implements Initializable{
                                 @Override
                                 public void run() {
                                     genesTextField.requestFocus();
+                                    progressLabel.setText("");
+                                    checkGeneTextField();
+                                }
+                            });
+                        }else if (nt.equals(coordTab)){
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    progressLabel.setText("");
+                                    displayValidRegions();
                                 }
                             });
                         }
                     }
                 }
         );
-        //this error is actually quite annoying, we should change this so that
-        //it is only checked on design or change of tab focus
+        
         sizeRangeTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
             @Override
             public void changed(ObservableValue<? extends Boolean> observable,
                     Boolean oldValue, Boolean newValue ){
-                if (!sizeRangeTextField.isFocused()){
+                if (!newValue){
                     if (!checkSizeRange(sizeRangeTextField)){
                         displaySizeRangeError();
                     }
                 }
+            }
+        });
+        
+        regionsTextArea.textProperty().addListener(new ChangeListener<String>(){
+            @Override
+            public void changed(ObservableValue<? extends String> observable,
+                    final String oldValue, final String newValue ){
+                //newValue = newValue.trim();
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        String reg = newValue.replaceAll("(?m)^\\s", "");
+                        int regions = reg.split("\\n").length;
+                        progressLabel.setText(regions + " lines"); 
+                    }
+                });
+            }
+        });
+        
+        regionsTextArea.focusedProperty().addListener(new ChangeListener<Boolean>(){
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable,
+                    Boolean oldValue, Boolean newValue ){
+                if (!newValue){
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            displayValidRegions();
+                        }
+                    }
+                    );
+                }
+            }
+        });
+
+        genesTextField.textProperty().addListener(new ChangeListener<String>(){
+            @Override
+            public void changed(ObservableValue<? extends String> observable,
+                    final String oldValue, final String newValue ){
+                //newValue = newValue.trim();
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        checkGeneTextField();
+                    }
+                });
+                
             }
         });
         
@@ -455,6 +455,45 @@ public class AutoPrimer3 extends Application implements Initializable{
                 }
             }
         );
+    }
+    
+    private void checkGeneTextField(){
+        progressLabel.setText("");
+        if (!genesTextField.getText().matches(".*\\w.*")){
+            return;
+        }
+        String[] genes = genesTextField.getText().split("\\s+");
+        if (genes.length > MAX_GENES_PER_DESIGN){
+            progressLabel.setText("Warning: " + genes.length + " genes entered,"
+                    + " max per design is " + MAX_GENES_PER_DESIGN);
+        }else if (genes.length > 0){
+            progressLabel.setText(genes.length + " genes entered.");
+        }
+    }
+    
+    private void displayValidRegions(){
+        int validRegions = 0;
+        int invalidRegions = 0;
+        String[] lines = regionsTextArea.getText().replaceAll("(?m)^\\s", "").split("\\n");
+        if (lines.length < 1){
+            return;
+        }
+        if (lines.length == 1 && lines[0].isEmpty()){
+            return;
+        }
+        
+        for (String r: lines){
+            if (RegionParser.readRegion(r) == null){
+                invalidRegions++;
+            }else{
+                validRegions++;
+            }
+        }
+        StringBuilder lbl = new StringBuilder(validRegions + " valid regions");
+        if (invalidRegions > 0){
+            lbl.append(" (").append(invalidRegions).append(" invalid)");
+        }
+        progressLabel.setText(lbl.toString());
     }
     
     private void selectMisprimingLibrary(String id){
@@ -894,6 +933,23 @@ public class AutoPrimer3 extends Application implements Initializable{
     }
     
     public void loadRegionsFile(){
+    /*  we need to know how many regions we already have to make sure we don't go over
+        MAX_LINES_PER_DESIGN
+    */
+        final int regions = regionsTextArea.getText().split("\\n").length;
+        if (regions > MAX_LINES_PER_DESIGN){
+            Dialogs maxVariantsWarning = 
+                Dialogs.create().title("Max Regions Already Reached").
+                masthead("Maximum of " + MAX_LINES_PER_DESIGN 
+                    + " lines allowed per design").
+                message("Cannot load file - you have already reached the maximum"
+                        + " number of lines allowed per design.  Delete some or "
+                        + "all regions if you want to load regions from a file.")
+                .styleClass(Dialog.STYLE_CLASS_NATIVE);
+            maxVariantsWarning.showWarning();
+            progressLabel.setText("Max regions reached.");
+            return;
+        }
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select input file");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
@@ -907,6 +963,9 @@ public class AutoPrimer3 extends Application implements Initializable{
                 @Override
                 protected ArrayList<String> call() {
                     ArrayList<String> regionStrings = new ArrayList<>();
+                    int totalRegions = regions;
+                    int valid = 0;
+                    int invalid = 0;
                     try{
                         updateMessage("Opening " + inFile.getName());
                         BufferedReader br;
@@ -919,6 +978,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                         }
                         String line;
                         int n = 0;
+                        
                         while ((line = br.readLine()) != null) {
                            n++;
                            if (line.startsWith("#")){//skip header lines
@@ -929,17 +989,68 @@ public class AutoPrimer3 extends Application implements Initializable{
                            if (region != null){
                                String r = region.getChromosome() + ":" + 
                                        region.getStartPos() + "-" + region.getEndPos();
+                               if (totalRegions > MAX_LINES_PER_DESIGN){
+                                   final int lastLine = n - 1;
+                                   final int validRegions = valid;
+                                   Platform.runLater(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Dialogs maxVariantsError = 
+                                                Dialogs.create().title(
+                                                "Maximum Number of Lines Reached").
+                                                masthead("Maximum of " + MAX_LINES_PER_DESIGN 
+                                                    + " lines allowed per design").
+                                                message("You have reached the maximum "
+                                                    + "number of lines allowed per "
+                                                    + "design while processing line " 
+                                                    + lastLine + " of file " + inFile.getName()
+                                                    + ". " + validRegions  
+                                                    +  " valid regions added. "
+                                                    + "Remaining lines will not be "
+                                                    + "read.")
+                                                .styleClass(Dialog.STYLE_CLASS_NATIVE);
+                                            maxVariantsError.showWarning();
+                                        }
+                                    });
+                                   break;                                   
+                               }
                                regionStrings.add(r);
+                               valid++;
+                               totalRegions++;
                            }else{
-                               //TO DO 
-                                //display error!!!!
-                                System.out.println("Invalid region:\t" + line);
+                                invalid++;
+                                //System.out.println("Invalid region:\t" + line);
                            }
                         }
                         br.close();
                     }catch(IOException ex){
                         //TO DO - display error
                         ex.printStackTrace();
+                    }
+                    if (invalid > 0){
+                        StringBuilder msg = new StringBuilder(invalid)
+                                .append(" invalid variant");
+                        if (invalid > 1){
+                            msg.append("s");
+                        }
+                        msg.append(" identified in file ").append(inFile.getName())
+                                .append(" (").append(valid).append(" valid region");
+                        if (valid != 1){
+                            msg.append("s");
+                        }
+                        msg.append(" identified.");
+                        final String messageString = msg.toString();
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                Dialogs invalidRegionsError = Dialogs.create().title(
+                                       "Invalid Regions").
+                                    masthead("Invalid Regions Identified").
+                                    message(messageString)
+                                    .styleClass(Dialog.STYLE_CLASS_NATIVE);
+                                invalidRegionsError.showWarning();
+                            }
+                        });
                     }
                     return regionStrings;
                 }
@@ -1020,7 +1131,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                 GetGeneCoordinates geneSearcher = null;
                 ArrayList<Primer3Result> primers = new ArrayList<>();
                 ArrayList<String> designs = new ArrayList<>();
-                List<String> tempRegions = Arrays.asList(regionsInput.split("\\n"));
+                List<String> tempRegions = Arrays.asList(regionsInput.replaceAll("(?m)^\\s", ""));
                 int n = 1;
                 for (String r: tempRegions){
                     if (! r.matches(".*\\w.*")){
