@@ -1131,7 +1131,8 @@ public class AutoPrimer3 extends Application implements Initializable{
                 GetGeneCoordinates geneSearcher = null;
                 ArrayList<Primer3Result> primers = new ArrayList<>();
                 ArrayList<String> designs = new ArrayList<>();
-                List<String> tempRegions = Arrays.asList(regionsInput.replaceAll("(?m)^\\s", ""));
+                List<String> tempRegions = Arrays.asList(
+                        regionsInput.replaceAll("(?m)^\\s", "").split("\\n"));
                 int n = 1;
                 for (String r: tempRegions){
                     if (! r.matches(".*\\w.*")){
