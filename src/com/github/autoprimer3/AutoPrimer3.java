@@ -396,16 +396,20 @@ public class AutoPrimer3 extends Application implements Initializable{
                                 @Override
                                 public void run() {
                                     genesTextField.requestFocus();
-                                    progressLabel.setText("");
-                                    checkGeneTextField();
+                                    if (!progressLabel.textProperty().isBound()){
+                                        progressLabel.setText("");
+                                        checkGeneTextField();
+                                    }
                                 }
                             });
                         }else if (nt.equals(coordTab)){
                             Platform.runLater(new Runnable() {
                                 @Override
                                 public void run() {
-                                    progressLabel.setText("");
-                                    displayValidRegions();
+                                    if (!progressLabel.textProperty().isBound()){
+                                        progressLabel.setText("");
+                                        displayValidRegions();
+                                    }
                                 }
                             });
                         }
@@ -1357,7 +1361,7 @@ public class AutoPrimer3 extends Application implements Initializable{
             @Override
             protected HashMap<String, ArrayList> call() 
                     throws SQLException, IOException {
-             ArrayList<GenomicRegionSummary> regions = regs;
+            ArrayList<GenomicRegionSummary> regions = regs;
             GetGeneCoordinates geneSearcher = null;
             ArrayList<Primer3Result> primers = new ArrayList<>();
             ArrayList<String> designs = new ArrayList<>();
@@ -1368,7 +1372,11 @@ public class AutoPrimer3 extends Application implements Initializable{
             regions = splitLargeRegionsMergeSmallRegions(regions, optSize, 
                     designBuffer, false);
             int pair = 0;
+            int n = 0;
+            int p = 0;
+            updateProgress(0, regions.size() * 3);
             for (GenomicRegionSummary r: regions){
+                n++;
                 int start = r.getStartPos() - flanks > 0 ? 
                             r.getStartPos() - flanks : 0;
                 int end = r.getEndPos() + flanks;
@@ -1376,23 +1384,25 @@ public class AutoPrimer3 extends Application implements Initializable{
                         r.getStartPos() + "-" + r.getEndPos());
                 System.out.println("Using start = " + start + " and end = "
                         + end);
+                updateMessage("Retrieving DNA for region " + n + 
+                        " of " + regions.size() + "...");
                 String dna = seqFromDas.retrieveSequence(
                         genome, r.getChromosome(), start, end);
+                updateProgress(++p, regions.size() * 3);
                 //System.out.println(dna);//debug only
                 String snpDb = (String) snpsChoiceBox.getSelectionModel().getSelectedItem();
                 ArrayList<GenomicRegionSummary> snps = new ArrayList<>();
                 if (! snpDb.equals("No")){
-                    try{
-                        if (geneSearcher == null){
-                            geneSearcher = new GetGeneCoordinates();
-                        }
-                        snps = geneSearcher.GetSnpCoordinates
-                            (r.getChromosome(), start, end, genome, snpDb);
-                    }catch(SQLException ex){
-                        ex.printStackTrace();
-                        throw ex;
+                    updateMessage("Retrieving SNPs for region " + n + 
+                        " of " + regions.size() + "...");
+                
+                    if (geneSearcher == null){
+                        geneSearcher = new GetGeneCoordinates();
                     }
+                    snps = geneSearcher.GetSnpCoordinates
+                            (r.getChromosome(), start, end, genome, snpDb);
                 }
+                updateProgress(++p, regions.size() * 3);
                 ArrayList<String> excludeRegions = new ArrayList<>();
                 for (GenomicRegionSummary s: snps){
                     if (s.getStartPos() < start){
@@ -1421,11 +1431,11 @@ public class AutoPrimer3 extends Application implements Initializable{
                         .toLowerCase());
                 String seqid = (r.getName() + ": " + r.getId());
                 //design primers
-                //updateMessage("Designing primers for part " + exonNumber + 
-                  //      " of " + exonRegions.size() + "...");
+                updateMessage("Designing primers for region " + n + 
+                        " of " + regions.size() + "...");
                 ArrayList<String> result = designPrimers(seqid, 
                         dnaTarget.toString(), target, String.join(" ", excludeRegions));
-
+                updateProgress(++p, regions.size() * 3);
                 //updateProgress(prog, 100);
                 designs.add(String.join("\n", result));
 
@@ -2631,6 +2641,8 @@ public class AutoPrimer3 extends Application implements Initializable{
         flankingRegionsTextField.setDisable(running);
         flankingRegionsTextField2.setDisable(running);
         genesTextField.setDisable(running);
+        refreshButton.setDisable(running);
+        loadFileButton.setDisable(running);
     }
     
     private void setLoading(boolean loading){
