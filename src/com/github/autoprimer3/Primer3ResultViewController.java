@@ -88,7 +88,9 @@ public class Primer3ResultViewController implements Initializable {
    @FXML
    MenuBar menuBar;
    @FXML
-   MenuItem writeFileMenu;
+   MenuItem writeFileMenuItem;
+   @FXML
+   MenuItem closeMenuItem;
    @FXML
    TableView<Primer3Result> primerTable;
    @FXML
@@ -167,13 +169,34 @@ public class Primer3ResultViewController implements Initializable {
             }
         });
         
-        writeFileMenu.setOnAction(new EventHandler<ActionEvent>() {
+        writeFileMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                writePrimersToFile();
+                try{
+                    writePrimersToFile();
+                }catch(IOException ex){
+                    Action writeFailed = Dialogs.create().title("Writing failed").
+                    masthead("Could not write primers to file").
+                    message("Exception encountered when attempting to write "
+                            + "primers to file. See below:").
+                    styleClass(Dialog.STYLE_CLASS_NATIVE).
+                    showException(ex);
+                }
             }
         });
                 
+        closeMenuItem.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent e){
+                Platform.runLater(new Runnable(){
+                    @Override
+                    public void run(){
+                        Stage stage = (Stage) resultPane.getScene().getWindow();
+                        stage.close();
+                    }
+                });
+            }
+        });
         
         MenuItem copyItem = new MenuItem("Copy");
         copyItem.setOnAction(new EventHandler<ActionEvent>() {
@@ -286,7 +309,7 @@ public class Primer3ResultViewController implements Initializable {
         return split.toString();
     }
     
-    private void writePrimersToFile(){
+    private void writePrimersToFile() throws IOException{
         if (data.isEmpty()){
             Dialogs noPrimersError = Dialogs.create().title("Nothing to save").
                     masthead("No primers to save").
@@ -313,19 +336,15 @@ public class Primer3ResultViewController implements Initializable {
                 fileChooser.selectedExtensionFilterProperty().get().getExtensions().get(0).substring(1);
             wFile = new File(wFile.getAbsolutePath() + ext);
        }
-       try{
-           if (wFile.getName().endsWith(".xlsx")){
-               writePrimersToExcel(wFile);
-           }else if (wFile.getName().endsWith(".csv")){
-               writePrimersToCsv(wFile);
-           }else{
-               writePrimersToTsv(wFile);
-           }
-       }catch(Exception ex){
-           // TO DO
+       if (wFile.getName().endsWith(".xlsx")){
+           writePrimersToExcel(wFile);
+       }else if (wFile.getName().endsWith(".csv")){
+           writePrimersToCsv(wFile);
+       }else{
+           writePrimersToTsv(wFile);
        }
     }
-    private void writePrimersToExcel(final File f) throws Exception{
+    private void writePrimersToExcel(final File f) throws IOException{
        Service<Void> service = new Service<Void>(){
             @Override
             protected Task<Void> createTask(){
@@ -465,7 +484,8 @@ public class Primer3ResultViewController implements Initializable {
             public void handle (WorkerStateEvent e){
                 Action writeFailed = Dialogs.create().title("Writing failed").
                     masthead("Could not write primers to file").
-                    message("Exception was:").
+                    message("Exception encountered when attempting to write "
+                            + "primers to file. See below:").
                     styleClass(Dialog.STYLE_CLASS_NATIVE).
                     showException(e.getSource().getException());
             }
@@ -473,11 +493,11 @@ public class Primer3ResultViewController implements Initializable {
         service.start();
     }
     
-    private void writePrimersToCsv(final File f) throws Exception{
+    private void writePrimersToCsv(final File f) throws IOException{
         writePrimersToText(f, ",");
     }
     
-    private void writePrimersToTsv(final File f) throws Exception{
+    private void writePrimersToTsv(final File f) throws IOException{
         writePrimersToText(f, "\t");
     }
     
@@ -536,7 +556,8 @@ public class Primer3ResultViewController implements Initializable {
             public void handle (WorkerStateEvent e){
                 Action writeFailed = Dialogs.create().title("Writing failed").
                     masthead("Could not write primers to file").
-                    message("Exception was:").
+                    message("Exception encountered when attempting to write "
+                            + "primers to file. See below:").
                     styleClass(Dialog.STYLE_CLASS_NATIVE).
                     showException(e.getSource().getException());
             }
@@ -553,18 +574,3 @@ public class Primer3ResultViewController implements Initializable {
     }
     
 }
-/*
-writeTask.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
-                @Override
-                public void handle (WorkerStateEvent e){
-                    Dialogs doneWriting = Dialogs.create().title("Done").
-                                masthead("Finished writing").
-                                message("Primers successfully written to " + 
-                                        f.getAbsolutePath() + " .").
-                                styleClass(Dialog.STYLE_CLASS_NATIVE);
-                        doneWriting.showInformation();
-                }
-            });
-
-            writeTask.setOnFailed(new EventHandler<WorkerStateEvent>(){
-           */     
