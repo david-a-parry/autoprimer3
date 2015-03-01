@@ -1118,7 +1118,8 @@ public class AutoPrimer3 extends Application implements Initializable{
         final String regionsInput = regionsTextArea.getText();
         final int optSize = Integer.valueOf(splitRegionsTextField.getText());
         final int flanks = Integer.valueOf(flankingRegionsTextField.getText());
-        final int designBuffer = Integer.valueOf(minDistanceTextField.getText());    
+        final int designBuffer = Integer.valueOf(minDistanceTextField.getText()); 
+        final String genome = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();                    
         if (! regionsInput.isEmpty()){
             if (! checkDesignParameters()){
                 return;
@@ -1169,7 +1170,6 @@ public class AutoPrimer3 extends Application implements Initializable{
                             r.getStartPos() + "-" + r.getEndPos());
                     System.out.println("Using start = " + start + " and end = "
                             + end);
-                    String genome = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
                     String dna = seqFromDas.retrieveSequence(
                             genome, r.getChromosome(), start, end);
                     //System.out.println(dna);//debug only
@@ -1285,6 +1285,8 @@ public class AutoPrimer3 extends Application implements Initializable{
                             //        .getResource("autoprimer3.css").toExternalForm());
                             resultView.displayData(result.get("primers"), 
                                     result.get("design"), null);
+                            resultView.setServer(serverUrl);
+                            resultView.setGenome(genome);
                             tableStage.setTitle("AutoPrimer3 Results");
                             tableStage.getIcons().add(new Image(this.getClass()
                                     .getResourceAsStream("icon.png")));
@@ -1409,7 +1411,8 @@ public class AutoPrimer3 extends Application implements Initializable{
         if (! checkDesignParameters()){
             return;
         }
-        
+        final String genome = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
+                            
         setRunning(true);
         final Task<GeneSearchResult> geneSearchTask = 
                 new Task<GeneSearchResult>(){
@@ -1538,6 +1541,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                                     start, end, null, null, t.getId(), t.getSymbol());
                             genomicRegions.add(r);
                         }
+                        final String genome = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
                         GenomicRegionSummary merger = new GenomicRegionSummary();
                         merger.mergeRegionsByPosition(genomicRegions);
 
@@ -1560,7 +1564,6 @@ public class AutoPrimer3 extends Application implements Initializable{
                             HashMap<String, String> checkedTranscript = new HashMap<>();
                                 //only want to check names/ID has already been 
                                 //used once per region i.e. for previous regions
-                            String genome = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
                             String dna = seqFromDas.retrieveSequence(
                                     genome, r.getChromosome(), r.getStartPos(), r.getEndPos());
                             //System.out.println(dna);//debug only
@@ -1795,6 +1798,8 @@ public class AutoPrimer3 extends Application implements Initializable{
                             resultView.displayData(result.get("primers"), 
                                     result.get("design"), 
                                     (HashMap<String, String>) result.get("ref").get(0));
+                            resultView.setServer(serverUrl);
+                            resultView.setGenome(genome);
                             tableStage.setTitle("AutoPrimer3 Results");
                             tableStage.getIcons().add(new Image(this.getClass()
                                     .getResourceAsStream("icon.png")));
