@@ -1,8 +1,6 @@
 /*things to add:
     server choice
-    output reference sequence
-    write primers and primer3 output to file
-    limit size of regions, number of genes per run
+    
 */
 
 /*
@@ -36,6 +34,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -68,6 +67,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -84,6 +84,7 @@ import net.lingala.zip4j.exception.ZipException;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
+import org.dom4j.DocumentException;
 
 /**
  *
@@ -94,8 +95,13 @@ public class AutoPrimer3 extends Application implements Initializable{
     
     @FXML
     AnchorPane mainPane;
+    //menus
     @FXML
     MenuBar menuBar;
+    @FXML
+    MenuItem refreshMenuItem;
+    @FXML
+    MenuItem quitMenuItem;
     //tabs
     @FXML
     TabPane mainTabPane;
@@ -206,6 +212,7 @@ public class AutoPrimer3 extends Application implements Initializable{
     
     int MAX_GENES_PER_DESIGN = 10;
     int MAX_LINES_PER_DESIGN = 100;//max lines for coordinates design
+    int MAX_REGION_SIZE = 100000;//longest permissible region size = 100 kb
     
     @Override
     public void start(final Stage primaryStage) {
@@ -246,7 +253,7 @@ public class AutoPrimer3 extends Application implements Initializable{
             Dialogs configError = Dialogs.create().title("Config Error").
             masthead("Error Reading AutoPrimer3 Config").
             message("AutoPrimer3 encountered an error reading config details"
-                    + " - please see the exception below and report this error.").
+                    + " - see exception below.").
                     styleClass(Dialog.STYLE_CLASS_NATIVE);
             configError.showException(ex);
         }
@@ -255,8 +262,16 @@ public class AutoPrimer3 extends Application implements Initializable{
             misprimeDir = ap3Config.extractMisprimingLibs();
             thermoConfig = ap3Config.extractThermoConfig();
         }catch(IOException|ZipException ex){
-            //TO DO - catch this properly
-            ex.printStackTrace();
+            Dialogs configError = Dialogs.create().title("Config Error").
+            masthead("Error Extracting Primer3 Files").
+            message("AutoPrimer3 encountered an error while trying to extract"
+                    + " the primer3 executable and primer3 config files. "
+                    + "AutoPrimer3 will have to exit. If this reoccurs you may"
+                    + " need to reinstall AutoPrimer3."
+                    + "See exception below.").
+                    styleClass(Dialog.STYLE_CLASS_NATIVE);
+            configError.showException(ex);
+            Platform.exit();
         }
         designToChoiceBox.getSelectionModel().selectFirst();
         refreshButton.setOnAction(new EventHandler<ActionEvent>(){
@@ -265,6 +280,21 @@ public class AutoPrimer3 extends Application implements Initializable{
                 refreshDatabase();
             }
         });
+        
+        refreshMenuItem.setOnAction(new EventHandler<ActionEvent>(){
+           @Override
+           public void handle(ActionEvent actionEvent){
+                refreshDatabase();
+            }
+        });
+        
+        quitMenuItem.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent e){
+                Platform.exit();
+            }
+        });
+        
 
         genomeChoiceBox.getSelectionModel().selectedIndexProperty().addListener
             (new ChangeListener<Number>(){
@@ -282,7 +312,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                         });
                         
                     }
-                    getBuildTables(id);
+                    getBuildTables(id, false);
                 }
             }
         });
@@ -506,7 +536,8 @@ public class AutoPrimer3 extends Application implements Initializable{
         final Task<LinkedHashMap<String, String>> getGenomesTask = 
                 new Task<LinkedHashMap<String, String>>(){
             @Override
-            protected LinkedHashMap<String, String> call() {
+            protected LinkedHashMap<String, String> call() 
+                    throws DocumentException, MalformedURLException{
                 System.out.println("Checking genome list.");
                 buildsAndTables.connectToUcsc();
                 return buildsAndTables.getBuildToDescription();
@@ -520,7 +551,11 @@ public class AutoPrimer3 extends Application implements Initializable{
                 boolean rewriteConfig = false;
                 if (! ap3Config.getBuildToDescription().equals(buildIds)){
                     //warn and repopulate genome choicebox
-                    //TO DO WARN!
+                    Action warn = Dialogs.create().title("Warning").
+                        masthead("Repopulating Genomes").
+                        message("The available genomes have changed. AutoPrimer3 "
+                                + "will now repopulate the genome menu.").
+                        styleClass(Dialog.STYLE_CLASS_NATIVE).showWarning();
                     System.out.println("Genome list has changed - repopulating genome choice box");
                     rewriteConfig = true;
                     String currentSel = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
@@ -538,15 +573,22 @@ public class AutoPrimer3 extends Application implements Initializable{
                 
                 if (!ap3Config.getBuildToMapMaster().equals(buildsAndTables.getBuildToMapMaster())){
                     ap3Config.setBuildToMapMaster(buildsAndTables.getBuildToMapMaster());
+                    System.out.println("Build to map master has changed - will rewrite.");
                     rewriteConfig = true;
                 }
                 if (rewriteConfig){
                     try{
-                        System.out.println("Writing output");
+                        System.out.println("re writing output");
                         ap3Config.writeConfig();
                     }catch (IOException ex){
-                        //TO DO - handle this error!
                         ex.printStackTrace();
+                        Dialogs writeErr = Dialogs.create().title("Error").
+                            masthead("Error Updating Genomes!").
+                            message("AutoPrimer3 encountered an error writing "
+                                    + "updated genomes to its config file."
+                                    + "See exception below.").
+                            styleClass(Dialog.STYLE_CLASS_NATIVE);
+                            writeErr.showException(ex);
                     }
                 }
             }
@@ -556,8 +598,14 @@ public class AutoPrimer3 extends Application implements Initializable{
             @Override
             public void handle (WorkerStateEvent e){
                 progressIndicator.setProgress(0);
-                //TO DO - HANDLE THIS EXCEPTION
                 System.out.println(e.getSource().getException());
+                Dialogs checkErr = Dialogs.create().title("Error").
+                    masthead("Gene Search Failed!").
+                    message("AutoPrimer3 encountered an error when performing "
+                            + "a background check of available genomes."
+                            + "See exception below.").
+                    styleClass(Dialog.STYLE_CLASS_NATIVE);
+                    checkErr.showException(e.getSource().getException());
             }
         });
        new Thread(getGenomesTask).start();
@@ -572,7 +620,8 @@ public class AutoPrimer3 extends Application implements Initializable{
         final Task<LinkedHashSet<String>> checkUcscTablesTask = 
             new Task<LinkedHashSet<String>>(){
             @Override
-            protected LinkedHashSet<String> call() {
+            protected LinkedHashSet<String> call() 
+                    throws DocumentException, MalformedURLException{
                 System.out.println("Checking tables for " + genome);
                 return buildsAndTables.getAvailableTables(genome);
             }
@@ -594,9 +643,15 @@ public class AutoPrimer3 extends Application implements Initializable{
                         user and change fields in choiceboxes
                         */
                         System.out.println("SNP/Gene tables differ!");
-                        // TO DO - ALERT USER IF GENOME STILL SELECTED
+                        // ALERT USER IF GENOME STILL SELECTED
+                        Dialogs inf = Dialogs.create().title("Tables Updated").
+                            masthead("Gene/SNP Tables Updated").
+                            message("The Gene/SNP tables for your currently "
+                                    + "selected genome have been updated." ).
+                            styleClass(Dialog.STYLE_CLASS_NATIVE);
+                        inf.showInformation();
                         String g = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
-                        if (! g.equals(genome)){
+                        if (g.equals(genome)){
                             String curSnp = (String) snpsChoiceBox.getSelectionModel().getSelectedItem();
                             snpsChoiceBox.getItems().clear();
                             snpsChoiceBox.getItems().add("No");
@@ -626,8 +681,14 @@ public class AutoPrimer3 extends Application implements Initializable{
                         System.out.println("Writing output");
                         ap3Config.writeConfig();
                     }catch (IOException ex){
-                        //TO DO - handle this error!
                         ex.printStackTrace();
+                        Dialogs writeErr = Dialogs.create().title("Error").
+                            masthead("Error Updating Genomes!").
+                            message("AutoPrimer3 encountered an error writing "
+                                    + "updated gene/SNP tables to its config file."
+                                    + "See exception below.").
+                            styleClass(Dialog.STYLE_CLASS_NATIVE);
+                            writeErr.showException(ex);
                     }
                     
                 }else{
@@ -638,8 +699,14 @@ public class AutoPrimer3 extends Application implements Initializable{
         checkUcscTablesTask.setOnFailed(new EventHandler<WorkerStateEvent>(){
             @Override
             public void handle (WorkerStateEvent e){
-                //TO DO - HANDLE THIS EXCEPTION
                 System.out.println(e.getSource().getException());
+                Dialogs checkErr = Dialogs.create().title("Error").
+                    masthead("Gene Search Failed!").
+                    message("AutoPrimer3 encountered an error when performing "
+                            + "a background check of available gene/SNP tables "
+                            + "for genome " + genome + ". See exception below.").
+                    styleClass(Dialog.STYLE_CLASS_NATIVE);
+                    checkErr.showException(e.getSource().getException());
             }
         });
         
@@ -693,12 +760,13 @@ public class AutoPrimer3 extends Application implements Initializable{
         return t.matches("^snp\\d+(\\w+)*");
     }
     
-    private void connectToUcsc(){
+    private void connectToUcsc() {
         progressIndicator.setProgress(-1);
         final Task<LinkedHashMap<String, String>> getBuildsTask = 
-                new Task<LinkedHashMap<String, String>>(){
+                new Task<LinkedHashMap<String, String>>() {
             @Override
-            protected LinkedHashMap<String, String> call() {
+            protected LinkedHashMap<String, String> call() 
+                    throws DocumentException, MalformedURLException{
                 buildsAndTables.connectToUcsc();
                 return buildsAndTables.getBuildToDescription();
             }
@@ -727,6 +795,14 @@ public class AutoPrimer3 extends Application implements Initializable{
             @Override
             public void handle (WorkerStateEvent e){
                 progressIndicator.setProgress(0);
+                Dialogs configError = Dialogs.create().title("Error").
+                    masthead("Error Retrieving Genome Information from UCSC").
+                    message("AutoPrimer3 encountered an error connecting to the "
+                            + "UCSC server to retrieve available genomes. "
+                            + "See exception below. Use the Refresh/Reconnect "
+                            + "button to try again.").
+                            styleClass(Dialog.STYLE_CLASS_NATIVE);
+                    configError.showException(e.getSource().getException());
                 System.out.println(e.getSource().getException());
                 setLoading(false);
                 setCanRun(false);
@@ -775,22 +851,24 @@ public class AutoPrimer3 extends Application implements Initializable{
         snpsChoiceBox.getSelectionModel().selectFirst();
     }
     
-    private void getBuildTables(final String id){
+    private void getBuildTables(final String id, boolean forceRefresh){
         databaseChoiceBox.getItems().clear();
         snpsChoiceBox.getItems().clear();
-        if (ap3Config.getBuildToTables().containsKey(id)){
+        if (ap3Config.getBuildToTables().containsKey(id) && !forceRefresh){
             setTables(ap3Config.getBuildToTables().get(id));
             if (! checkedAlready.contains(id)){
                 checkUcscTables(id);
                 checkedAlready.add(id);
-                return;
             }
+            return;
         }
+        checkedAlready.add(id);
         setLoading(true);
         progressLabel.setText("Getting database information for " + id);
         final Task<LinkedHashSet<String>> getTablesTask = new Task<LinkedHashSet<String>>(){
             @Override
-            protected LinkedHashSet<String> call() {
+            protected LinkedHashSet<String> call() 
+                    throws DocumentException, MalformedURLException{
                 System.out.println("Called getTablesTask...");
                 return buildsAndTables.getAvailableTables(id);
             }
@@ -810,6 +888,13 @@ public class AutoPrimer3 extends Application implements Initializable{
                         ap3Config.writeConfig();
                     }catch (IOException ex){
                         ex.printStackTrace();
+                        Dialogs writeErr = Dialogs.create().title("Error").
+                            masthead("Error Updating Genomes!").
+                            message("AutoPrimer3 encountered an error writing "
+                                    + "updated gene/SNP tables to its config file."
+                                    + "See exception below.").
+                            styleClass(Dialog.STYLE_CLASS_NATIVE);
+                            writeErr.showException(ex);
                     }
                 }
                 setTables(tables);
@@ -823,7 +908,15 @@ public class AutoPrimer3 extends Application implements Initializable{
             @Override
             public void handle (WorkerStateEvent e){
                 progressLabel.setText("Get Tables Task Failed");
-                System.out.println("getTablesTask failed.");
+                Dialogs configError = Dialogs.create().title("Error").
+                    masthead("Error Retrieving Gene/SNP Tables from UCSC").
+                    message("AutoPrimer3 encountered an error connecting to the "
+                            + "UCSC server to retrieve available gene/SNP tables. "
+                            + "See exception below. Use the Refresh/Reconnect "
+                            + "button to try again or select a different genome.").
+                            styleClass(Dialog.STYLE_CLASS_NATIVE);
+                    configError.showException(e.getSource().getException());
+                //System.out.println("getTablesTask failed.");
                 System.out.println(e.getSource().getException());
                 setLoading(false);
                 setCanRun(false);
@@ -928,7 +1021,7 @@ public class AutoPrimer3 extends Application implements Initializable{
             connectToUcsc();
         }else{//we've got a connection to UCSC but want to refresh the database info for current build
             final String id = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
-                getBuildTables(id);
+                getBuildTables(id, true);
         }
     }
     
@@ -1024,12 +1117,17 @@ public class AutoPrimer3 extends Application implements Initializable{
                         }
                         br.close();
                     }catch(IOException ex){
-                        //TO DO - display error
                         ex.printStackTrace();
+                        Dialogs readError = Dialogs.create().title("Error").
+                            masthead("Error Loading Region File").
+                            message("Could not read region file. "
+                                    + "See exception below.").
+                                    styleClass(Dialog.STYLE_CLASS_NATIVE);
+                            readError.showException(ex);
                     }
                     if (invalid > 0){
                         StringBuilder msg = new StringBuilder(invalid)
-                                .append(" invalid variant");
+                                .append(" invalid region");
                         if (invalid > 1){
                             msg.append("s");
                         }
@@ -1091,6 +1189,12 @@ public class AutoPrimer3 extends Application implements Initializable{
                     progressLabel.setText("Loading failed!");
                     progressIndicator.progressProperty().unbind();
                     progressIndicator.progressProperty().set(0);
+                    Dialogs readError = Dialogs.create().title("Error").
+                    masthead("Error Loading Region File").
+                    message("Could not read region file. "
+                            + "See exception below.").
+                            styleClass(Dialog.STYLE_CLASS_NATIVE);
+                    readError.showException(e.getSource().getException());
                 }
 
             });
@@ -1114,224 +1218,345 @@ public class AutoPrimer3 extends Application implements Initializable{
         progressLabel.setText("");
     }
     
+    private ArrayList<GenomicRegionSummary> getRegionsForDesign(String regionsInput){
+        ArrayList<GenomicRegionSummary> regions = new ArrayList<>();
+        List<String> tempRegions = Arrays.asList(
+                regionsInput.replaceAll("(?m)^\\s", "").split("\\n"));
+        ArrayList<String> invalidRegions = new ArrayList<>();
+        int n = 1;
+        for (String r: tempRegions){
+            if (! r.matches(".*\\w.*")){
+                continue;
+            }
+            //region parser methods
+            GenomicRegionSummary region = RegionParser.readRegion(r);
+            if (region != null){
+                region.setName("Region_" + n++);
+                region.setId(region.getChromosome() + ":" + region.getStartPos()
+                        + "-" + region.getEndPos());
+                regions.add(region);
+            }else{
+                invalidRegions.add(r);
+                System.out.println("Invalid region:\t" + r);
+            }
+        }
+        if (regions.isEmpty()){
+            Dialogs noRegions = Dialogs.create().title("No Regions").
+                        masthead("No valid regions found.").
+                        message("No valid regions were found in your "
+                                + "input.")
+                        .styleClass(Dialog.STYLE_CLASS_NATIVE);
+                        noRegions.showError();       
+            return null;
+        }
+
+        if (invalidRegions.size() > 0){
+            StringBuilder mh = new StringBuilder("Found " + 
+                    invalidRegions.size() + " Invalid Region");
+            if (invalidRegions.size() > 1){
+                mh.append("s");
+            }
+            mh.append(" in User Input");
+            StringBuilder msg = new StringBuilder("Invalid regions found "
+                    + "- continue designing without these regions?\n");
+            if (invalidRegions.size() <= 10){
+                msg.append(String.join("\n", invalidRegions));
+            }else{
+                msg.append(String.join("\n", invalidRegions.subList(0, 10)));
+                msg.append("\n...and ").
+                    append((invalidRegions.size() - 9)).
+                    append("more.");
+            }
+            Action response = Dialogs.create().title("Invalid Regions").
+                    masthead(mh.toString()).
+                    message(msg.toString()).
+                    actions(Dialog.ACTION_YES, Dialog.ACTION_NO).
+                    styleClass(Dialog.STYLE_CLASS_NATIVE).
+                    showConfirm();
+
+            if (response == Dialog.ACTION_NO){
+                setRunning(false);
+                progressIndicator.progressProperty().unbind();
+                progressLabel.textProperty().unbind();        
+                progressLabel.setText("Design cancelled");
+                progressIndicator.progressProperty().set(0);
+                return null;
+            }
+        }
+
+        ArrayList<GenomicRegionSummary> tooLong = new ArrayList<>();
+        ArrayList<GenomicRegionSummary> passed = new ArrayList<>();
+        for (GenomicRegionSummary r : regions){
+            if (r.getLength() > MAX_REGION_SIZE){
+                tooLong.add(r);
+            }else{
+                passed.add(r);
+            }
+        }
+        if (tooLong.size() > 0){
+            StringBuilder mh = new StringBuilder("Found " + 
+                    tooLong.size() + " Region");
+            if (tooLong.size() > 1){
+                mh.append("s");
+            }
+            mh.append(" Exceeding Maximum Length in User Input");
+            StringBuilder msg = new StringBuilder("Maximum region size "
+                    + "is ").append(MAX_REGION_SIZE).append(" bp. "
+                    + "Continue designing without these regions?\n");
+            if (tooLong.size() <= 10){
+                for (GenomicRegionSummary l: tooLong){
+                    msg.append(l.getCoordinateString()).append("\n");
+                }
+            }else{
+                for (GenomicRegionSummary l:  tooLong.subList(0, 10)){
+                    msg.append(l.getCoordinateString()).append("\n");
+                }
+                msg.append("\n...and ").
+                    append((tooLong.size() - 9)).
+                    append("more.");
+            }
+            Action response = Dialogs.create().title("Invalid Regions").
+                    masthead(mh.toString()).
+                    message(msg.toString()).
+                    actions(Dialog.ACTION_YES, Dialog.ACTION_NO).
+                    styleClass(Dialog.STYLE_CLASS_NATIVE).
+                    showConfirm();
+
+            if (response == Dialog.ACTION_NO){
+                setRunning(false);
+                progressIndicator.progressProperty().unbind();
+                progressLabel.textProperty().unbind();        
+                progressLabel.setText("Design cancelled");
+                progressIndicator.progressProperty().set(0);
+                return null;
+            }
+        }
+        return passed;
+    }
+    
     public void designPrimersToCoordinates(){
         final String regionsInput = regionsTextArea.getText();
         final int optSize = Integer.valueOf(splitRegionsTextField.getText());
         final int flanks = Integer.valueOf(flankingRegionsTextField.getText());
         final int designBuffer = Integer.valueOf(minDistanceTextField.getText()); 
-        final String genome = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();                    
-        if (! regionsInput.isEmpty()){
-            if (! checkDesignParameters()){
-                return;
-            }
-            final Task<HashMap<String, ArrayList>> designTask = 
-                    new Task<HashMap<String, ArrayList>>(){
-                @Override
-                protected HashMap<String, ArrayList> call() {
-                ArrayList<GenomicRegionSummary> regions = new ArrayList<>();
-                GetGeneCoordinates geneSearcher = null;
-                ArrayList<Primer3Result> primers = new ArrayList<>();
-                ArrayList<String> designs = new ArrayList<>();
-                List<String> tempRegions = Arrays.asList(
-                        regionsInput.replaceAll("(?m)^\\s", "").split("\\n"));
-                int n = 1;
-                for (String r: tempRegions){
-                    if (! r.matches(".*\\w.*")){
+        final String genome = (String) genomeChoiceBox.getSelectionModel().getSelectedItem(); 
+        
+        if (regionsInput.isEmpty()){
+            return;
+        }
+        if (! checkDesignParameters()){
+            return;
+        }
+        final ArrayList<GenomicRegionSummary> regs = getRegionsForDesign(regionsInput);
+        if (regs == null){
+            return;
+        }
+        
+        final Task<HashMap<String, ArrayList>> designTask = 
+                new Task<HashMap<String, ArrayList>>() {
+            @Override
+            protected HashMap<String, ArrayList> call() 
+                    throws SQLException, IOException {
+             ArrayList<GenomicRegionSummary> regions = regs;
+            GetGeneCoordinates geneSearcher = null;
+            ArrayList<Primer3Result> primers = new ArrayList<>();
+            ArrayList<String> designs = new ArrayList<>();
+            
+            SequenceFromDasUcsc seqFromDas = new SequenceFromDasUcsc();
+            GenomicRegionSummary merger = new GenomicRegionSummary();
+            merger.mergeRegionsByPosition(regions);
+            regions = splitLargeRegionsMergeSmallRegions(regions, optSize, 
+                    designBuffer, false);
+            int pair = 0;
+            for (GenomicRegionSummary r: regions){
+                int start = r.getStartPos() - flanks > 0 ? 
+                            r.getStartPos() - flanks : 0;
+                int end = r.getEndPos() + flanks;
+                System.out.println("Region " + r.getChromosome() + ":" + 
+                        r.getStartPos() + "-" + r.getEndPos());
+                System.out.println("Using start = " + start + " and end = "
+                        + end);
+                String dna = seqFromDas.retrieveSequence(
+                        genome, r.getChromosome(), start, end);
+                //System.out.println(dna);//debug only
+                String snpDb = (String) snpsChoiceBox.getSelectionModel().getSelectedItem();
+                ArrayList<GenomicRegionSummary> snps = new ArrayList<>();
+                if (! snpDb.equals("No")){
+                    try{
+                        if (geneSearcher == null){
+                            geneSearcher = new GetGeneCoordinates();
+                        }
+                        snps = geneSearcher.GetSnpCoordinates
+                            (r.getChromosome(), start, end, genome, snpDb);
+                    }catch(SQLException ex){
+                        ex.printStackTrace();
+                        throw ex;
+                    }
+                }
+                ArrayList<String> excludeRegions = new ArrayList<>();
+                for (GenomicRegionSummary s: snps){
+                    if (s.getStartPos() < start){
                         continue;
+                    }else if(s.getEndPos() > end){
+                        break;
                     }
-                    //region parser methods
-                    GenomicRegionSummary region = RegionParser.readRegion(r);
-                    if (region != null){
-                        region.setName("Region_" + n++);
-                        region.setId(region.getChromosome() + ":" + region.getStartPos()
-                                + "-" + region.getEndPos());
-                        regions.add(region);
-                    }else{
-                        //TO DO 
-                        //display error!!!!
-                        System.out.println("Invalid region:\t" + r);
+                    Integer excludeStart = s.getStartPos() - start - 1;
+                    Integer excludeEnd = s.getEndPos() - start - 1;
+                    Integer excludeLength = 1 +  excludeEnd - excludeStart;
+                    if (excludeStart + excludeLength < dna.length()){
+                        excludeRegions.add(excludeStart + "," + excludeLength);
+                    }else if (excludeStart < dna.length() - 1 ){
+                        int diff = dna.length() -1 - excludeStart;
+                        excludeRegions.add(excludeStart + "," + diff);
                     }
                 }
-                if (regions.isEmpty()){
-                    //TO DO - complain about empty regions
-                    return null;
+                //get info from text fields for primer3 options
+                String target = Integer.toString(flanks - designBuffer - 1) + 
+                        "," + Integer.toString(r.getLength() + 2*designBuffer);
+                StringBuilder dnaTarget = new StringBuilder(
+                        dna.substring(0, flanks -1).toLowerCase());
+                dnaTarget.append(dna.substring(flanks -1, flanks 
+                        + r.getLength() - 1).toUpperCase());
+                dnaTarget.append(dna.substring(flanks + r.getLength() -1)
+                        .toLowerCase());
+                String seqid = (r.getName() + ": " + r.getId());
+                //design primers
+                //updateMessage("Designing primers for part " + exonNumber + 
+                  //      " of " + exonRegions.size() + "...");
+                ArrayList<String> result = designPrimers(seqid, 
+                        dnaTarget.toString(), target, String.join(" ", excludeRegions));
+
+                //updateProgress(prog, 100);
+                designs.add(String.join("\n", result));
+
+                //parse primer3 output and write our output
+                primers.add(parsePrimer3Output(++pair,  r.getName(), r.getId(), 
+                        r.getChromosome(), 1 + r.getStartPos() - flanks, result));
+
                 }
-                SequenceFromDasUcsc seqFromDas = new SequenceFromDasUcsc();
-                GenomicRegionSummary merger = new GenomicRegionSummary();
-                merger.mergeRegionsByPosition(regions);
-                regions = splitLargeRegionsMergeSmallRegions(regions, optSize, 
-                        designBuffer, false);
-                int pair = 0;
-                for (GenomicRegionSummary r: regions){
-                    int start = r.getStartPos() - flanks > 0 ? 
-                                r.getStartPos() - flanks : 0;
-                    int end = r.getEndPos() + flanks;
-                    System.out.println("Region " + r.getChromosome() + ":" + 
-                            r.getStartPos() + "-" + r.getEndPos());
-                    System.out.println("Using start = " + start + " and end = "
-                            + end);
-                    String dna = seqFromDas.retrieveSequence(
-                            genome, r.getChromosome(), start, end);
-                    //System.out.println(dna);//debug only
-                    String snpDb = (String) snpsChoiceBox.getSelectionModel().getSelectedItem();
-                    ArrayList<GenomicRegionSummary> snps = new ArrayList<>();
-                    if (! snpDb.equals("No")){
-                        try{
-                            if (geneSearcher == null){
-                                geneSearcher = new GetGeneCoordinates();
-                            }
-                            snps = geneSearcher.GetSnpCoordinates
-                                (r.getChromosome(), start, end, genome, snpDb);
-                        }catch(SQLException ex){
-                            //TO DO
-                            ex.printStackTrace();
-                        }
-                    }
-                    ArrayList<String> excludeRegions = new ArrayList<>();
-                    for (GenomicRegionSummary s: snps){
-                        if (s.getStartPos() < start){
-                            continue;
-                        }else if(s.getEndPos() > end){
-                            break;
-                        }
-                        Integer excludeStart = s.getStartPos() - start - 1;
-                        Integer excludeEnd = s.getEndPos() - start - 1;
-                        Integer excludeLength = 1 +  excludeEnd - excludeStart;
-                        if (excludeStart + excludeLength < dna.length()){
-                            excludeRegions.add(excludeStart + "," + excludeLength);
-                        }else if (excludeStart < dna.length() - 1 ){
-                            int diff = dna.length() -1 - excludeStart;
-                            excludeRegions.add(excludeStart + "," + diff);
-                        }
-                    }
-                    //get info from text fields for primer3 options
-                    String target = Integer.toString(flanks - designBuffer - 1) + 
-                            "," + Integer.toString(r.getLength() + 2*designBuffer);
-                    StringBuilder dnaTarget = new StringBuilder(
-                            dna.substring(0, flanks -1).toLowerCase());
-                    dnaTarget.append(dna.substring(flanks -1, flanks 
-                            + r.getLength() - 1).toUpperCase());
-                    dnaTarget.append(dna.substring(flanks + r.getLength() -1)
-                            .toLowerCase());
-                    String seqid = (r.getName() + ": " + r.getId());
-                    //design primers
-                    //updateMessage("Designing primers for part " + exonNumber + 
-                      //      " of " + exonRegions.size() + "...");
-                    ArrayList<String> result = designPrimers(seqid, 
-                            dnaTarget.toString(), target, String.join(" ", excludeRegions));
 
-                    //updateProgress(prog, 100);
-                    designs.add(String.join("\n", result));
-
-                    //parse primer3 output and write our output
-                    primers.add(parsePrimer3Output(++pair,  r.getName(), r.getId(), 
-                            r.getChromosome(), 1 + r.getStartPos() - flanks, result));
-
-                    }
-                
-                    HashMap<String, ArrayList> primerResult = new HashMap<>();
-                    primerResult.put("primers", primers);
-                    primerResult.put("design", designs);
-                    return primerResult;
-                }
-            };
-            progressIndicator.progressProperty().unbind();
-                progressIndicator.progressProperty().bind(designTask.progressProperty());
-                progressLabel.textProperty().bind(designTask.messageProperty());
-                designTask.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
-                    @Override
-                    public void handle (WorkerStateEvent e){
-                        progressIndicator.progressProperty().unbind();
-                        progressIndicator.progressProperty().set(100);
-                        progressLabel.textProperty().unbind();
-                        setRunning(false);
-                        HashMap<String, ArrayList> result = 
-                                (HashMap<String, ArrayList>) e.getSource().getValue();
-                        if (result == null){
-                            return;
-                        }
-                        if (result.get("primers").isEmpty()){
-                            progressLabel.setText("No primers designed.");
-                            Dialogs noPrimersError = Dialogs.create().title("No PrimersFound").
-                                masthead("No primers found for your targets.").
-                                message("No primer designs were attempted for your targets")
-                                .styleClass(Dialog.STYLE_CLASS_NATIVE);
-                                noPrimersError.showError();       
-                                progressIndicator.progressProperty().set(0);
-                            return;
-                        }
-                        if (result.get("design").isEmpty()){
-                            progressLabel.setText("No primers designed.");
-                            Dialogs noPrimersError = Dialogs.create().title("No PrimersFound").
-                                masthead("No primers found for your targets.").
-                                message("No primer designs were attempted for your targets")
-                                .styleClass(Dialog.STYLE_CLASS_NATIVE);
-                            noPrimersError.showError();       
-                            progressIndicator.progressProperty().set(0);
-                            return;
-                        }
-                        progressLabel.setText(result.get("primers").size() +
-                                " primer pairs designed.");
-                        FXMLLoader tableLoader = new FXMLLoader(getClass().
-                                               getResource("Primer3ResultView.fxml"));
-                        try{
-                            Pane tablePane = (Pane) tableLoader.load();
-                            Primer3ResultViewController resultView = 
-                                    (Primer3ResultViewController) tableLoader.getController();
-                            Scene tableScene = new Scene(tablePane);
-                            Stage tableStage = new Stage();
-                            tableStage.setScene(tableScene);
-                            //tableScene.getStylesheets().add(AutoPrimer3.class
-                            //        .getResource("autoprimer3.css").toExternalForm());
-                            resultView.displayData(result.get("primers"), 
-                                    result.get("design"), null);
-                            resultView.setServer(serverUrl);
-                            resultView.setGenome(genome);
-                            tableStage.setTitle("AutoPrimer3 Results");
-                            tableStage.getIcons().add(new Image(this.getClass()
-                                    .getResourceAsStream("icon.png")));
-                            tableStage.initModality(Modality.NONE);
-                            tableStage.show();
-                       }catch (Exception ex){
-            //               Dialogs.showErrorDialog(null, "Error displaying"
-            //                       + " results from Find Regions Method.",
-            //                       "Find Regions Error!", "SnpViewer", ex);
-                           ex.printStackTrace();
-                       }
-                    }
-                });
-                designTask.setOnCancelled(new EventHandler<WorkerStateEvent>(){
-                    @Override
-                    public void handle (WorkerStateEvent e){
-                        setRunning(false);
-                        progressLabel.textProperty().unbind();
-                        progressLabel.setText("Design cancelled");
-                        progressIndicator.progressProperty().unbind();
-                        progressIndicator.progressProperty().set(0);
-                    }
-
-                });
-                designTask.setOnFailed(new EventHandler<WorkerStateEvent>(){
-                    @Override
-                    public void handle (WorkerStateEvent e){
-                        setRunning(false);
-                        e.getSource().getException().printStackTrace();
-                        progressLabel.textProperty().unbind();
-                        progressLabel.setText("Design failed!");
-                        progressIndicator.progressProperty().unbind();
-                        progressIndicator.progressProperty().set(0);
-                    }
-
-                });
-                cancelButton.setOnAction(new EventHandler<ActionEvent>(){
-                   @Override
-                   public void handle(ActionEvent actionEvent){
-                        designTask.cancel();
-                    }
-                });
-                setRunning(true);
-                new Thread(designTask).start();
+                HashMap<String, ArrayList> primerResult = new HashMap<>();
+                primerResult.put("primers", primers);
+                primerResult.put("design", designs);
+                return primerResult;
             }
+        };
+        progressIndicator.progressProperty().unbind();
+        progressIndicator.progressProperty().bind(designTask.progressProperty());
+        progressLabel.textProperty().bind(designTask.messageProperty());
+        designTask.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
+            @Override
+            public void handle (WorkerStateEvent e){
+                progressIndicator.progressProperty().unbind();
+                progressIndicator.progressProperty().set(100);
+                progressLabel.textProperty().unbind();
+                setRunning(false);
+                HashMap<String, ArrayList> result = 
+                        (HashMap<String, ArrayList>) e.getSource().getValue();
+                if (result == null){
+                    return;
+                }
+                if (result.get("primers").isEmpty()){
+                    progressLabel.setText("No primers designed.");
+                    Dialogs noPrimersError = Dialogs.create().title("No PrimersFound").
+                        masthead("No primers found for your targets.").
+                        message("No primer designs were attempted for your targets")
+                        .styleClass(Dialog.STYLE_CLASS_NATIVE);
+                        noPrimersError.showError();       
+                        progressIndicator.progressProperty().set(0);
+                    return;
+                }
+                if (result.get("design").isEmpty()){
+                    progressLabel.setText("No primers designed.");
+                    Dialogs noPrimersError = Dialogs.create().title("No PrimersFound").
+                        masthead("No primers found for your targets.").
+                        message("No primer designs were attempted for your targets")
+                        .styleClass(Dialog.STYLE_CLASS_NATIVE);
+                    noPrimersError.showError();       
+                    progressIndicator.progressProperty().set(0);
+                    return;
+                }
+                progressLabel.setText(result.get("primers").size() +
+                        " primer pairs designed.");
+                FXMLLoader tableLoader = new FXMLLoader(getClass().
+                                       getResource("Primer3ResultView.fxml"));
+                try{
+                    Pane tablePane = (Pane) tableLoader.load();
+                    Primer3ResultViewController resultView = 
+                            (Primer3ResultViewController) tableLoader.getController();
+                    Scene tableScene = new Scene(tablePane);
+                    Stage tableStage = new Stage();
+                    tableStage.setScene(tableScene);
+                    //tableScene.getStylesheets().add(AutoPrimer3.class
+                    //        .getResource("autoprimer3.css").toExternalForm());
+                    resultView.displayData(result.get("primers"), 
+                            result.get("design"), null);
+                    resultView.setServer(serverUrl);
+                    resultView.setGenome(genome);
+                    tableStage.setTitle("AutoPrimer3 Results");
+                    tableStage.getIcons().add(new Image(this.getClass()
+                            .getResourceAsStream("icon.png")));
+                    tableStage.initModality(Modality.NONE);
+                    tableStage.show();
+               }catch (Exception ex){
+                    Dialogs displayError = Dialogs.create().title("Error").
+                        masthead("Error Displaying Design Results").
+                        message("Internal error displaying primer design"
+                                + " results in a new window."
+                                + "See exception below.").
+                                styleClass(Dialog.STYLE_CLASS_NATIVE);
+                    displayError.showException(ex);
+                    ex.printStackTrace();
+               }
+            }
+        });
+        designTask.setOnCancelled(new EventHandler<WorkerStateEvent>(){
+            @Override
+            public void handle (WorkerStateEvent e){
+                setRunning(false);
+                progressLabel.textProperty().unbind();
+                progressLabel.setText("Design cancelled");
+                progressIndicator.progressProperty().unbind();
+                progressIndicator.progressProperty().set(0);
+            }
+
+        });
+        designTask.setOnFailed(new EventHandler<WorkerStateEvent>(){
+            @Override
+            public void handle (WorkerStateEvent e){
+                setRunning(false);
+                e.getSource().getException().printStackTrace();
+                progressLabel.textProperty().unbind();
+                progressLabel.setText("Design failed!");
+                progressIndicator.progressProperty().unbind();
+                progressIndicator.progressProperty().set(0);
+                if (e.getSource().getException() instanceof SQLException){
+                    Dialogs sqlError = Dialogs.create().title("SQL Error").
+                        masthead("Error Retrieving SNPs").
+                        message("Failed to retrieve SNPs from UCSC. "
+                                + "See exception below.").
+                                styleClass(Dialog.STYLE_CLASS_NATIVE);
+                        sqlError.showException(e.getSource().getException());
+                }
+                Dialogs designErr = Dialogs.create().title("Error").
+                    masthead("Design Failed!").
+                    message("AutoPrimer3 encountered an error designing "
+                    + "primers to your targets. See exception below.").
+                    styleClass(Dialog.STYLE_CLASS_NATIVE);
+                designErr.showException(e.getSource().getException());
+            }
+
+        });
+        cancelButton.setOnAction(new EventHandler<ActionEvent>(){
+           @Override
+           public void handle(ActionEvent actionEvent){
+                designTask.cancel();
+            }
+        });
+        setRunning(true);
+        new Thread(designTask).start();
+
+
     }
     
     public boolean checkDesignParameters(){
@@ -1417,7 +1642,8 @@ public class AutoPrimer3 extends Application implements Initializable{
         final Task<GeneSearchResult> geneSearchTask = 
                 new Task<GeneSearchResult>(){
             @Override
-            protected GeneSearchResult call() {
+            protected GeneSearchResult call() 
+                    throws SQLException, GetGeneCoordinates.GetGeneExonsException{
                 updateMessage("Connecting to UCSC database...");
                 GetGeneCoordinates geneSearcher = getGeneSearcher();
                 if (geneSearcher == null){
@@ -1525,7 +1751,8 @@ public class AutoPrimer3 extends Application implements Initializable{
                 final Task<HashMap<String, ArrayList>> designTask = 
                         new Task<HashMap<String, ArrayList>>(){
                     @Override
-                    protected HashMap<String, ArrayList> call() {
+                    protected HashMap<String, ArrayList> call() 
+                            throws SQLException, IOException{
 
                     //get our transcript targets using databaseChoiceBox and genesTextField
                         double prog = 0;
@@ -1570,17 +1797,12 @@ public class AutoPrimer3 extends Application implements Initializable{
                             String snpDb = (String) snpsChoiceBox.getSelectionModel().getSelectedItem();
                             ArrayList<GenomicRegionSummary> snps = new ArrayList<>();
                             if (! snpDb.equals("No")){
-                                try{
-                                    updateMessage("Getting SNPs for region " + regionNumber + 
-                                    " of " + genomicRegions.size());
-                                    updateProgress(-1, -1);
-                                    snps = geneSearcher.GetSnpCoordinates
-                                        (r.getChromosome(), r.getStartPos(), r.getEndPos(), 
-                                        genome, snpDb);
-                                }catch(SQLException ex){
-                                    //TO DO
-                                    ex.printStackTrace();
-                                }
+                                updateMessage("Getting SNPs for region " + regionNumber + 
+                                " of " + genomicRegions.size());
+                                updateProgress(-1, -1);
+                                snps = geneSearcher.GetSnpCoordinates
+                                    (r.getChromosome(), r.getStartPos(), r.getEndPos(), 
+                                    genome, snpDb);
                             }
 
                             ArrayList<GenomicRegionSummary> exonRegions = new ArrayList<>();
@@ -1832,6 +2054,21 @@ public class AutoPrimer3 extends Application implements Initializable{
                         progressLabel.setText("Design failed!");
                         progressIndicator.progressProperty().unbind();
                         progressIndicator.progressProperty().set(0);
+                        if (e.getSource().getException() instanceof SQLException){
+                            Dialogs sqlError = Dialogs.create().title("SQL Error").
+                                masthead("Error Retrieving Genes/SNPs").
+                                message("Failed to retrieve information from UCSC. "
+                                        + "See exception below.").
+                                        styleClass(Dialog.STYLE_CLASS_NATIVE);
+                                sqlError.showException(e.getSource().getException());
+                        }else{
+                            Dialogs designErr = Dialogs.create().title("Error").
+                                masthead("Design Failed!").
+                                message("AutoPrimer3 encountered an error designing "
+                                + "primers to your targets. See exception below.").
+                                styleClass(Dialog.STYLE_CLASS_NATIVE);
+                            designErr.showException(e.getSource().getException());
+                        }
                     }
 
                 });
@@ -1868,6 +2105,12 @@ public class AutoPrimer3 extends Application implements Initializable{
                 progressLabel.setText("Search failed!");
                 progressIndicator.progressProperty().unbind();
                 progressIndicator.progressProperty().set(0);
+                Dialogs searchErr = Dialogs.create().title("Error").
+                    masthead("Gene Search Failed!").
+                    message("AutoPrimer3 encountered an error when searching "
+                    + "for gene targets. See exception below.").
+                    styleClass(Dialog.STYLE_CLASS_NATIVE);
+                    searchErr.showException(e.getSource().getException());
             }
 
         });
@@ -2182,7 +2425,7 @@ public class AutoPrimer3 extends Application implements Initializable{
     
     //for given parameters design primers and return result as an array of strings
     private ArrayList<String> designPrimers(String name, String dna, 
-            String target, String exclude){
+            String target, String exclude) throws IOException{
         ArrayList<String> result = new ArrayList<>();
         StringBuilder error = new StringBuilder(); 
         StringBuilder p3_job = new StringBuilder("SEQUENCE_TARGET=");
@@ -2229,38 +2472,36 @@ public class AutoPrimer3 extends Application implements Initializable{
             ArrayList<String> command = new ArrayList<>();
             command.add(primer3ex.getAbsolutePath());
             command.add("-format_output");
+            Process ps = new ProcessBuilder(command).start();
             try{
-                Process ps = new ProcessBuilder(command).start();
-                try{
-                    BufferedReader errorbuf = new BufferedReader
-                            (new InputStreamReader( ps.getErrorStream()));
-                    BufferedReader inbuf = new BufferedReader
-                            (new InputStreamReader( ps.getInputStream()));
-                    BufferedWriter out = new BufferedWriter(
-                            new OutputStreamWriter(ps.getOutputStream()));
-                    out.write(p3_job.toString());
-                    out.flush();
-                    out.close();
+                BufferedReader errorbuf = new BufferedReader
+                        (new InputStreamReader( ps.getErrorStream()));
+                BufferedReader inbuf = new BufferedReader
+                        (new InputStreamReader( ps.getInputStream()));
+                BufferedWriter out = new BufferedWriter(
+                        new OutputStreamWriter(ps.getOutputStream()));
+                out.write(p3_job.toString());
+                out.flush();
+                out.close();
 
-                    String line;
-                    while ((line = inbuf.readLine()) != null) {
-                        //System.out.println(line);//debug only
-                        result.add(line);
-                    }
-                    while ((line = errorbuf.readLine()) != null){
-                        System.out.println(line);//debug only
-                        error.append(line);
-                    }
-                    int exit = ps.waitFor();
-                    //System.out.println(exit);//debug only
-                }catch(InterruptedException ex){
-                    ex.printStackTrace();
+                String line;
+                while ((line = inbuf.readLine()) != null) {
+                    //System.out.println(line);//debug only
+                    result.add(line);
                 }
-            }catch (IOException ex){
-                //TO DO - Handle error!
+                while ((line = errorbuf.readLine()) != null){
+                    System.out.println(line);//debug only
+                    error.append(line);
+                }
+                int exit = ps.waitFor();
+                //System.out.println(exit);//debug only
+            }catch(InterruptedException ex){
                 ex.printStackTrace();
+                /*this should have been caused by user pressing cancel
+                could do with a way of checking though and throwing if 
+                not caused by user cancel
+                */
             }
-
         return result;
     }
     
@@ -2311,76 +2552,48 @@ public class AutoPrimer3 extends Application implements Initializable{
     }
     
     private ArrayList<GeneDetails> getGeneDetails(String searchString, 
-            GetGeneCoordinates geneSearcher){
+            GetGeneCoordinates geneSearcher) 
+            throws SQLException, GetGeneCoordinates.GetGeneExonsException{
         ArrayList<GeneDetails> genes = new ArrayList<>();
         if (databaseChoiceBox.getSelectionModel().getSelectedItem().equals("refGene") 
                 || databaseChoiceBox.getSelectionModel().getSelectedItem().equals("xenoRefGene")){
             if (searchString.matches("[NX][MR]_\\w+(.\\d)*")){
                 //is accession, need to remove the version number if present
                 searchString = searchString.replaceAll("\\.\\d$", "");
-                try{
-                    genes.addAll(geneSearcher.getGeneFromId(searchString, 
-                            (String) genomeChoiceBox.getSelectionModel().getSelectedItem(),
-                            (String) databaseChoiceBox.getSelectionModel().getSelectedItem()));
-                }catch(SQLException | GetGeneCoordinates.GetGeneExonsException ex){
-                    //TO DO!
-                    ex.printStackTrace();
-                }
+                genes.addAll(geneSearcher.getGeneFromId(searchString, 
+                        (String) genomeChoiceBox.getSelectionModel().getSelectedItem(),
+                        (String) databaseChoiceBox.getSelectionModel().getSelectedItem()));
+                
             }else{
                 //is gene symbol (?)
-                try{
-                    genes.addAll(geneSearcher.getGeneFromSymbol(searchString, 
-                            (String) genomeChoiceBox.getSelectionModel().getSelectedItem(),
-                            (String) databaseChoiceBox.getSelectionModel().getSelectedItem()));
-                }catch(SQLException | GetGeneCoordinates.GetGeneExonsException ex){
-                    //TO DO!
-                    ex.printStackTrace();
-                }
+                genes.addAll(geneSearcher.getGeneFromSymbol(searchString, 
+                        (String) genomeChoiceBox.getSelectionModel().getSelectedItem(),
+                        (String) databaseChoiceBox.getSelectionModel().getSelectedItem()));
             }
             
         }else if (databaseChoiceBox.getSelectionModel().getSelectedItem().equals("knownGene")){
             if (searchString.equals("uc\\d{3}[a-z]{3}\\.\\d")){
                 //is accession
-                try{
-                    genes.addAll(geneSearcher.getGeneFromId(searchString, 
-                            (String) genomeChoiceBox.getSelectionModel().getSelectedItem(),
-                            (String) databaseChoiceBox.getSelectionModel().getSelectedItem()));
-                }catch(SQLException | GetGeneCoordinates.GetGeneExonsException ex){
-                    //TO DO!
-                    ex.printStackTrace();
-                }
+                genes.addAll(geneSearcher.getGeneFromId(searchString, 
+                        (String) genomeChoiceBox.getSelectionModel().getSelectedItem(),
+                        (String) databaseChoiceBox.getSelectionModel().getSelectedItem()));
             }else{
                 //is gene symbol (?)
-                try{
-                    genes.addAll(geneSearcher.getGeneFromSymbol(searchString, 
-                            (String) genomeChoiceBox.getSelectionModel().getSelectedItem(),
-                            (String) databaseChoiceBox.getSelectionModel().getSelectedItem()));
-                }catch(SQLException | GetGeneCoordinates.GetGeneExonsException ex){
-                    //TO DO!
-                    ex.printStackTrace();
-                }
+                genes.addAll(geneSearcher.getGeneFromSymbol(searchString, 
+                        (String) genomeChoiceBox.getSelectionModel().getSelectedItem(),
+                        (String) databaseChoiceBox.getSelectionModel().getSelectedItem()));
             }
         }else if (databaseChoiceBox.getSelectionModel().getSelectedItem().equals("ensGene")){
             if (searchString.matches("ENS\\w*T\\d{11}.*\\d*")){
                 //is accession
-                try{
-                    genes.addAll(geneSearcher.getGeneFromId(searchString, 
-                            (String) genomeChoiceBox.getSelectionModel().getSelectedItem(),
-                            (String) databaseChoiceBox.getSelectionModel().getSelectedItem()));
-                }catch(SQLException | GetGeneCoordinates.GetGeneExonsException ex){
-                    //TO DO!
-                    ex.printStackTrace();
-                }
+                genes.addAll(geneSearcher.getGeneFromId(searchString, 
+                        (String) genomeChoiceBox.getSelectionModel().getSelectedItem(),
+                        (String) databaseChoiceBox.getSelectionModel().getSelectedItem()));
             }else{
                 //is gene symbol (?)
-                try{
-                    genes.addAll(geneSearcher.getGeneFromSymbol(searchString, 
-                            (String) genomeChoiceBox.getSelectionModel().getSelectedItem(),
-                            (String) databaseChoiceBox.getSelectionModel().getSelectedItem()));
-                }catch(SQLException | GetGeneCoordinates.GetGeneExonsException ex){
-                    //TO DO!
-                    ex.printStackTrace();
-                }
+                genes.addAll(geneSearcher.getGeneFromSymbol(searchString, 
+                        (String) genomeChoiceBox.getSelectionModel().getSelectedItem(),
+                        (String) databaseChoiceBox.getSelectionModel().getSelectedItem()));
             }
         }
                 /*if (t.equals("refGene") || t.equals("knownGene") || 
