@@ -218,7 +218,7 @@ public class AutoPrimer3Config implements Serializable{
         if (! configDir.exists()){
             configDir.mkdir();
         }
-        File temp = File.createTempFile("config", ".ser");
+        File temp = File.createTempFile("temp_config", ".ser");
         FileOutputStream fos = new FileOutputStream(temp);
         ObjectOutputStream out = new ObjectOutputStream(
                 new BufferedOutputStream(fos));
