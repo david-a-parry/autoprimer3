@@ -17,18 +17,26 @@
 
 package com.github.autoprimer3;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import static java.lang.System.getProperty;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -52,7 +60,21 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.controlsfx.control.action.Action;
+import org.controlsfx.dialog.Dialog;
+import org.controlsfx.dialog.Dialogs;
+import org.apache.poi.ss.usermodel.CreationHelper;
 
 /**
  * FXML Controller class
@@ -61,9 +83,12 @@ import javafx.stage.Stage;
  */
 public class Primer3ResultViewController implements Initializable {
 
-   
+   @FXML
+   AnchorPane resultPane;
    @FXML
    MenuBar menuBar;
+   @FXML
+   MenuItem writeFileMenu;
    @FXML
    TableView<Primer3Result> primerTable;
    @FXML
@@ -95,14 +120,19 @@ public class Primer3ResultViewController implements Initializable {
    @FXML
    ChoiceBox refChoiceBox;
    
+   AutoPrimer3 mainController = null;
+
    NumberFormat nf = NumberFormat.getNumberInstance();
    CoordComparator coordCompare = new CoordComparator();
+   String server = null;
+   String genome = null;
    
    private final ObservableList<Primer3Result> data = FXCollections.observableArrayList();
    
    @Override
     public void initialize(URL url, ResourceBundle rb) {
         menuBar.setUseSystemMenuBar(true);
+        
         indexCol.setCellValueFactory(new 
                 PropertyValueFactory<Primer3Result, Integer>("index"));
         leftPrimerCol.setCellValueFactory(new 
@@ -137,8 +167,16 @@ public class Primer3ResultViewController implements Initializable {
             }
         });
         
-        MenuItem item = new MenuItem("Copy");
-        item.setOnAction(new EventHandler<ActionEvent>() {
+        writeFileMenu.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                writePrimersToFile();
+            }
+        });
+                
+        
+        MenuItem copyItem = new MenuItem("Copy");
+        copyItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 ObservableList<TablePosition> posList = primerTable.getSelectionModel().getSelectedCells();
@@ -164,8 +202,8 @@ public class Primer3ResultViewController implements Initializable {
             }
         });
         ContextMenu menu = new ContextMenu();
-        menu.getItems().add(item);
-        item.setAccelerator(new KeyCodeCombination(KeyCode.C, KeyCombination.SHORTCUT_DOWN));
+        menu.getItems().add(copyItem);
+        copyItem.setAccelerator(new KeyCodeCombination(KeyCode.C, KeyCombination.SHORTCUT_DOWN));
         primerTable.setContextMenu(menu);
         
         
@@ -247,4 +285,286 @@ public class Primer3ResultViewController implements Initializable {
         }
         return split.toString();
     }
+    
+    private void writePrimersToFile(){
+        if (data.isEmpty()){
+            Dialogs noPrimersError = Dialogs.create().title("Nothing to save").
+                    masthead("No primers to save").
+                    message("No primers were designed, no file can be saved.")
+                    .styleClass(Dialog.STYLE_CLASS_NATIVE);
+            noPrimersError.showError();
+            return;
+        }
+       FileChooser fileChooser = new FileChooser();
+       fileChooser.getExtensionFilters().addAll(
+               new FileChooser.ExtensionFilter("Excel  (*.xlsx)", "*.xlsx"),
+               new FileChooser.ExtensionFilter("CSV  (*.csv)", "*.csv"),
+               new FileChooser.ExtensionFilter("Text  (*.txt)", "*.txt")
+       );
+       fileChooser.setTitle("Write primers to file...");
+       fileChooser.setInitialDirectory(new File(getProperty("user.home")));
+       File wFile = fileChooser.showSaveDialog(resultPane.getScene().getWindow());
+       if (wFile == null){
+           return;
+       }else if (! wFile.getName().endsWith(".xlsx") && 
+                 !wFile.getName().endsWith(".csv")   &&
+                 !wFile.getName().endsWith(".txt")){
+            String ext = //annoying bug with filechooser means extension might not be appended
+                fileChooser.selectedExtensionFilterProperty().get().getExtensions().get(0).substring(1);
+            wFile = new File(wFile.getAbsolutePath() + ext);
+       }
+       try{
+           if (wFile.getName().endsWith(".xlsx")){
+               writePrimersToExcel(wFile);
+           }else if (wFile.getName().endsWith(".csv")){
+               writePrimersToCsv(wFile);
+           }else{
+               writePrimersToTsv(wFile);
+           }
+       }catch(Exception ex){
+           // TO DO
+       }
+    }
+    private void writePrimersToExcel(final File f) throws Exception{
+       Service<Void> service = new Service<Void>(){
+            @Override
+            protected Task<Void> createTask(){
+                return new Task<Void>(){
+                    @Override
+                    protected Void call() throws IOException {
+                        BufferedOutputStream bo = new BufferedOutputStream(new 
+                           FileOutputStream(f));
+                        Workbook wb = new XSSFWorkbook();
+                        CellStyle hlink_style = wb.createCellStyle();
+                        Font hlink_font = wb.createFont();
+                        hlink_font.setUnderline(Font.U_SINGLE);
+                        hlink_font.setColor(IndexedColors.BLUE.getIndex());
+                        hlink_style.setFont(hlink_font);
+                        CreationHelper createHelper = wb.getCreationHelper();
+                        Sheet listSheet = wb.createSheet();
+                        Sheet detailsSheet = wb.createSheet();
+                        Row row = null;
+                        int rowNo = 0;
+                        int sheetNo = 0;
+                        wb.setSheetName(sheetNo++, "List");
+                        wb.setSheetName(sheetNo++, "Details");
+                        
+                        row = listSheet.createRow(rowNo++);
+                        String header[] = {"Primer", "Sequence", "Product Size (bp)"};
+                        for (int col = 0; col < header.length; col ++){
+                            Cell cell = row.createCell(col);
+                            cell.setCellValue(header[col]);
+                        }
+                        
+                        updateMessage("Writing primers . . .");
+                        updateProgress(0, data.size() * 3);
+                        int n = 0;
+                        for (Primer3Result r: data){
+                            updateMessage("Writing primer list " + n + " . . .");
+                            row = listSheet.createRow(rowNo++);
+                            int col = 0;
+                            Cell cell = row.createCell(col++);
+                            cell.setCellValue(r.getName() + "F");
+                            cell = row.createCell(col++);
+                            cell.setCellValue(r.getLeftPrimer());
+                            cell = row.createCell(col++);
+                            cell.setCellValue(r.getProductSize());
+                            n++;
+                            updateProgress(n, data.size());
+                            updateMessage("Writing primer list " + n + " . . .");
+                            row = listSheet.createRow(rowNo++);
+                            col = 0;
+                            cell = row.createCell(col++);
+                            cell.setCellValue(r.getName() + "R");
+                            cell = row.createCell(col++);
+                            cell.setCellValue(r.getRightPrimer());
+                            cell = row.createCell(col++);
+                            cell.setCellValue(r.getProductSize());
+                            n++;
+                            updateProgress(n, data.size());
+                        }
+                        rowNo = 0;
+                        row = detailsSheet.createRow(rowNo++);
+                        String detailsHeader[] = {"Name", "Other IDs", "Left Primer",
+                            "Right Primer", "Product Size (bp)", "Region", "isPCR"};
+                        for (int col = 0; col < detailsHeader.length; col ++){
+                            Cell cell = row.createCell(col);
+                            cell.setCellValue(detailsHeader[col]);
+                        }
+                        int m = 0;
+                        for (Primer3Result r: data){
+                            m++;
+                            updateMessage("Writing details for pair " + m + " . . .");
+                            row = detailsSheet.createRow(rowNo++);
+                            int col = 0;
+                            Cell cell = row.createCell(col++);
+                            cell.setCellValue(r.getName());
+                            cell = row.createCell(col++);
+                            cell.setCellValue(r.getTranscripts());
+                            cell = row.createCell(col++);
+                            cell.setCellValue(r.getLeftPrimer());
+                            cell = row.createCell(col++);
+                            cell.setCellValue(r.getRightPrimer());
+                            cell = row.createCell(col++);
+                            cell.setCellValue(r.getProductSize());
+                            cell = row.createCell(col++);
+                            cell.setCellValue(r.getRegion());
+                            cell = row.createCell(col++);
+                            if (r.getProductSize() > 0 && server != null && 
+                                    genome != null){
+                                Integer wpSize = 4000 > Integer.valueOf(r.getProductSize()) * 2 ? 
+                                4000 : Integer.valueOf(r.getProductSize()) * 2;
+                                final String url = server + "/cgi-bin/hgPcr?db=" 
+                                    + genome + "&wp_target=genome&wp_f=" + 
+                                    r.getLeftPrimer() + "&wp_r=" + 
+                                    r.getRightPrimer() + "&wp_size=" + wpSize + 
+                                    "&wp_perfect=15&wp_good=15&boolshad.wp_flipReverse=0";
+                                cell.setCellValue("isPCR");
+                                org.apache.poi.ss.usermodel.Hyperlink hl = 
+                                    createHelper.createHyperlink(org.apache.poi.ss.usermodel.Hyperlink.LINK_URL);
+                                hl.setAddress(url);
+                                cell.setHyperlink(hl);
+                                cell.setCellStyle(hlink_style);
+                            }else{
+                                cell.setCellValue("");
+                            }
+                            updateProgress(n + m, data.size());
+                        }
+                        
+                        
+                        updateMessage("Wrote " + data.size() + " primer pairs to file.");
+                        wb.write(bo);
+                        bo.close();
+                        return null;
+                    }
+                };
+            }
+            
+        };
+        
+        
+
+        Dialogs.create().owner(resultPane.getScene().getWindow())
+                .title("Writing Progress")
+                .masthead("Saving Primers to File")
+                .styleClass(Dialog.STYLE_CLASS_NATIVE)
+                .showWorkerProgress(service);
+        service.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
+                @Override
+                public void handle (WorkerStateEvent e){
+                    Dialogs doneWriting = Dialogs.create().title("Done").
+                                masthead("Finished writing").
+                                message("Primers successfully written to " + 
+                                        f.getAbsolutePath() + " .").
+                                styleClass(Dialog.STYLE_CLASS_NATIVE);
+                        doneWriting.showInformation();
+                }
+        });
+        service.setOnFailed(new EventHandler<WorkerStateEvent>(){
+            @Override
+            public void handle (WorkerStateEvent e){
+                Action writeFailed = Dialogs.create().title("Writing failed").
+                    masthead("Could not write primers to file").
+                    message("Exception was:").
+                    styleClass(Dialog.STYLE_CLASS_NATIVE).
+                    showException(e.getSource().getException());
+            }
+        });
+        service.start();
+    }
+    
+    private void writePrimersToCsv(final File f) throws Exception{
+        writePrimersToText(f, ",");
+    }
+    
+    private void writePrimersToTsv(final File f) throws Exception{
+        writePrimersToText(f, "\t");
+    }
+    
+    //takes output file and delimiter string as arguments
+    private void writePrimersToText(final File f, final String d) throws IOException{
+        Service<Void> service = new Service<Void>(){
+            @Override
+            protected Task<Void> createTask(){
+                return new Task<Void>(){
+                    @Override
+                    protected Void call() throws IOException {
+                        FileWriter fw = new FileWriter(f.getAbsoluteFile());
+                        BufferedWriter bw = new BufferedWriter(fw);
+                        updateMessage("Writing primers . . .");
+                        updateProgress(0, data.size() * 2);
+                        int n = 0;
+                        for (Primer3Result r: data){
+                            n++;
+                            updateMessage("Writing primer " + n + " . . .");
+                            updateProgress(n, data.size());
+                            bw.write(r.getName() + "F" + d + r.getLeftPrimer() + "\n");
+                            n++;
+                            updateMessage("Writing primer " + n + " . . .");
+                            updateProgress(n, data.size());
+                            bw.write(r.getName() + "R" + d + r.getRightPrimer() + "\n");
+                        }
+                        updateMessage("Wrote " + n + " primers to file.");
+                        bw.close();
+                        return null;
+                    }
+                };
+            }
+            
+        };
+        
+        
+
+        Dialogs.create().owner(resultPane.getScene().getWindow())
+                .title("Writing Progress")
+                .masthead("Saving Primers to File")
+                .styleClass(Dialog.STYLE_CLASS_NATIVE)
+                .showWorkerProgress(service);
+        service.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
+                @Override
+                public void handle (WorkerStateEvent e){
+                    Dialogs doneWriting = Dialogs.create().title("Done").
+                                masthead("Finished writing").
+                                message("Primers successfully written to " + 
+                                        f.getAbsolutePath() + " .").
+                                styleClass(Dialog.STYLE_CLASS_NATIVE);
+                        doneWriting.showInformation();
+                }
+        });
+        service.setOnFailed(new EventHandler<WorkerStateEvent>(){
+            @Override
+            public void handle (WorkerStateEvent e){
+                Action writeFailed = Dialogs.create().title("Writing failed").
+                    masthead("Could not write primers to file").
+                    message("Exception was:").
+                    styleClass(Dialog.STYLE_CLASS_NATIVE).
+                    showException(e.getSource().getException());
+            }
+        });
+        service.start();
+    }
+    
+    public void setServer (String s){
+        server = s;
+    }
+    
+    public void setGenome (String g){
+        genome = g;
+    }
+    
 }
+/*
+writeTask.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
+                @Override
+                public void handle (WorkerStateEvent e){
+                    Dialogs doneWriting = Dialogs.create().title("Done").
+                                masthead("Finished writing").
+                                message("Primers successfully written to " + 
+                                        f.getAbsolutePath() + " .").
+                                styleClass(Dialog.STYLE_CLASS_NATIVE);
+                        doneWriting.showInformation();
+                }
+            });
+
+            writeTask.setOnFailed(new EventHandler<WorkerStateEvent>(){
+           */     
