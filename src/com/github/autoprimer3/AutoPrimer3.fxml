@@ -32,7 +32,7 @@
           <content>
             <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="196.0" prefWidth="652.0" style="">
               <children>
-                        <HBox layoutX="16.0" layoutY="75.0" spacing="10.0" AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="17.0">
+                        <HBox layoutX="17.0" layoutY="83.0" spacing="10.0" AnchorPane.leftAnchor="17.0" AnchorPane.rightAnchor="16.0">
                            <children>
                               <VBox layoutX="14.0" layoutY="59.0" spacing="10.0">
                                  <children>
@@ -54,14 +54,7 @@
                               </VBox>
                            </children>
                         </HBox>
-                <HBox id="HBox" alignment="CENTER_LEFT" layoutX="15.0" layoutY="136.0" prefHeight="46.0" prefWidth="622.0" spacing="10.0" AnchorPane.bottomAnchor="23.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0">
-                  <children>
-                    <ProgressIndicator fx:id="progressIndicator" disable="false" opacity="1.0" progress="0.0" style="-fx-fill: null" visible="true" />
-                    <Label text="" />
-                    <Separator prefHeight="3.0" prefWidth="412.0" HBox.hgrow="SOMETIMES" />
-                  </children>
-                </HBox>
-                        <HBox layoutX="15.0" layoutY="14.0" spacing="10.0" AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="17.0">
+                        <HBox layoutX="17.0" layoutY="22.0" spacing="10.0" AnchorPane.leftAnchor="17.0" AnchorPane.rightAnchor="16.0">
                            <children>
                               <VBox alignment="TOP_CENTER" layoutX="14.0" layoutY="6.0" spacing="10.0">
                                  <children>
@@ -114,9 +107,10 @@
                               </VBox>
                            </children>
                         </HBox>
-                <Label fx:id="progressLabel" layoutX="15.0" layoutY="182.0" text="" />
-                <HBox alignment="CENTER_RIGHT" layoutX="34.0" layoutY="177.0" prefHeight="26.0" prefWidth="619.0000915527344" spacing="15.0" AnchorPane.bottomAnchor="4.0" AnchorPane.rightAnchor="14.0">
+                <HBox alignment="CENTER_RIGHT" layoutX="17.0" layoutY="159.0" prefHeight="47.0" prefWidth="620.0" spacing="15.0" AnchorPane.bottomAnchor="11.0" AnchorPane.rightAnchor="15.0">
                   <children>
+                    <ProgressIndicator fx:id="progressIndicator" disable="false" opacity="1.0" progress="0.0" style="-fx-fill: null" visible="true" />
+                    <Label fx:id="progressLabel" prefHeight="17.0" prefWidth="286.0" text="AutoPrimer3" />
                     <Button fx:id="refreshButton" mnemonicParsing="false" text="Refresh/Reconnect" />
                     <Button fx:id="cancelButton" disable="false" mnemonicParsing="false" prefWidth="66.0" text="Cancel" />
                     <Button fx:id="runButton" defaultButton="true" mnemonicParsing="false" onAction="#designPrimersToGene" style="&#10;" text="Design" textAlignment="LEFT" />
@@ -132,8 +126,10 @@
                      <children>
                         <TextArea fx:id="regionsTextArea" layoutX="14.0" layoutY="38.0" prefHeight="101.0" prefWidth="277.0" />
                         <Label layoutX="90.0" layoutY="14.0" text="Regions/Coordinates" />
-                        <HBox layoutX="315.0" layoutY="166.0" spacing="10.0">
+                        <HBox alignment="CENTER_LEFT" layoutX="14.0" layoutY="156.0" prefHeight="47.0" prefWidth="613.0" spacing="10.0">
                            <children>
+                              <ProgressIndicator fx:id="progressIndicator2" disable="false" opacity="1.0" prefHeight="47.0" prefWidth="52.0" progress="0.0" style="-fx-fill: null" visible="true" />
+                              <Label fx:id="progressLabel2" prefHeight="41.0" prefWidth="243.0" text="AutoPrimer3" />
                               <Button fx:id="clearButton" layoutX="315.0" layoutY="166.0" mnemonicParsing="false" onAction="#clearRegions" text="Clear Regions" />
                               <Button fx:id="loadFileButton" layoutX="407.0" layoutY="166.0" mnemonicParsing="false" onAction="#loadRegionsFile" text="Load File" />
                               <Button fx:id="cancelButton2" cancelButton="true" layoutX="487.0" layoutY="166.0" mnemonicParsing="false" text="Cancel" />
@@ -148,8 +144,6 @@
                         <TextField fx:id="minDistanceTextField2" alignment="CENTER" layoutX="308.0" layoutY="100.0" prefHeight="28.0" prefWidth="145.0" text="50" />
                         <TextField fx:id="flankingRegionsTextField2" alignment="CENTER" layoutX="479.0" layoutY="100.0" prefHeight="28.0" prefWidth="145.0" text="500" />
                         <Label layoutX="500.0" layoutY="78.0" text="Flanking region (bp)" />
-                        <ProgressIndicator fx:id="progressIndicator2" disable="false" layoutX="14.0" layoutY="148.0" opacity="1.0" prefHeight="48.0" prefWidth="43.0" progress="0.0" style="-fx-fill: null" visible="true" />
-                        <Label fx:id="progressLabel2" layoutX="75.0" layoutY="183.0" prefHeight="16.0" prefWidth="320.0" />
                      </children></AnchorPane>
           </content>
         </Tab>
