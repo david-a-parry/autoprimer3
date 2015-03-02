@@ -17,6 +17,7 @@
 
 package com.github.autoprimer3;
 
+import java.awt.Desktop;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -405,7 +406,7 @@ public class Primer3ResultViewController implements Initializable {
                         rowNo = 0;
                         row = detailsSheet.createRow(rowNo++);
                         String detailsHeader[] = {"Name", "Other IDs", "Left Primer",
-                            "Right Primer", "Product Size (bp)", "Region", "isPCR"};
+                            "Right Primer", "Product Size (bp)", "Region", "in-silico PCR result"};
                         for (int col = 0; col < detailsHeader.length; col ++){
                             Cell cell = row.createCell(col);
                             cell.setCellValue(detailsHeader[col]);
@@ -471,12 +472,27 @@ public class Primer3ResultViewController implements Initializable {
         service.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
                 @Override
                 public void handle (WorkerStateEvent e){
-                    Dialogs doneWriting = Dialogs.create().title("Done").
-                                masthead("Finished writing").
-                                message("Primers successfully written to " + 
-                                        f.getAbsolutePath() + " .").
-                                styleClass(Dialog.STYLE_CLASS_NATIVE);
-                        doneWriting.showInformation();
+                     Action response = Dialogs.create().title("Done").
+                        masthead("Finished writing").
+                        message("Primers successfully written to " + 
+                                f.getAbsolutePath() + "\n\nDo you want to open "
+                                + "this file now?").
+                        actions(Dialog.ACTION_YES, Dialog.ACTION_NO).
+                        styleClass(Dialog.STYLE_CLASS_NATIVE).
+                        showConfirm();
+
+                    if (response == Dialog.ACTION_YES){
+                        try{
+                            Desktop.getDesktop().open(f);
+                        }catch (IOException ex){
+                            Action openFailed = Dialogs.create().title("Open failed").
+                                masthead("Could not open output file").
+                                message("Exception encountered when attempting to open "
+                                        + "the saved file. See below:").
+                                styleClass(Dialog.STYLE_CLASS_NATIVE).
+                                showException(e.getSource().getException());
+                        }
+                    }
                 }
         });
         service.setOnFailed(new EventHandler<WorkerStateEvent>(){
@@ -543,12 +559,27 @@ public class Primer3ResultViewController implements Initializable {
         service.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
                 @Override
                 public void handle (WorkerStateEvent e){
-                    Dialogs doneWriting = Dialogs.create().title("Done").
+                    Action response = Dialogs.create().title("Done").
                                 masthead("Finished writing").
                                 message("Primers successfully written to " + 
-                                        f.getAbsolutePath() + " .").
-                                styleClass(Dialog.STYLE_CLASS_NATIVE);
-                        doneWriting.showInformation();
+                                        f.getAbsolutePath() + "\n\nDo you want to open "
+                                + "this file now?").
+                                actions(Dialog.ACTION_YES, Dialog.ACTION_NO).
+                                styleClass(Dialog.STYLE_CLASS_NATIVE).
+                                showConfirm();
+
+                    if (response == Dialog.ACTION_YES){
+                        try{
+                            Desktop.getDesktop().open(f);
+                        }catch (IOException ex){
+                            Action openFailed = Dialogs.create().title("Open failed").
+                                masthead("Could not open output file").
+                                message("Exception encountered when attempting to open "
+                                        + "the saved file. See below:").
+                                styleClass(Dialog.STYLE_CLASS_NATIVE).
+                                showException(e.getSource().getException());
+                        }
+                    }
                 }
         });
         service.setOnFailed(new EventHandler<WorkerStateEvent>(){
