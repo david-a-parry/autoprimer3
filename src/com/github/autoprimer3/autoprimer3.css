@@ -29,6 +29,7 @@ linear-gradient(#eeeeee 0%, #cdcdcd 25%, #bebfbe 75%, #ffffff 100%),
     -fx-background-color:
  linear-gradient(#eeeeee 0%, #cdcdcd 25%, #bebfbe 75%, #ffffff 100%),
         linear-gradient(#cdcdcd, #dfdfdf);
+    -fx-border-color: transparent;
 }
 
 .pane{
