@@ -17,38 +17,44 @@
 package com.github.autoprimer3;
 
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.FileHeader;
+import org.dom4j.Attribute;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
 
 /**
  *
  * @author david
  */
-public class AutoPrimer3Config implements Serializable{
+public class AutoPrimer3Config {
+    final GetUcscBuildsAndTables buildsAndTables = new GetUcscBuildsAndTables();
     String fileSeparator = System.getProperty("file.separator");
     File configDir =  new File(System.getProperty("user.home") + fileSeparator
                     + ".AutoPrimer3");
-    File configFile = new File (configDir  + fileSeparator + "config.ser");
+    File genomeXmlFile = new File (configDir  + fileSeparator + "genome.xml");
+    File tableDir = new File (configDir + fileSeparator + "tables");
     File misprimingDir = new File (configDir + fileSeparator + "mispriming_libs");
     List<String> misprimingLibs = Arrays.asList("human", "rodent", "drosophila", "none");
     File thermoDir = new File (configDir + fileSeparator + "thermo_config");
@@ -65,9 +71,10 @@ public class AutoPrimer3Config implements Serializable{
         primer3ex.deleteOnExit();
     }
     
-    public File getConfigFile(){
-        return configFile;
+    public File getGenomeXmlFile(){
+        return genomeXmlFile;
     }
+    
     
     public File extractP3Executable() throws FileNotFoundException, IOException{    
         InputStream inputStream;
@@ -180,10 +187,6 @@ public class AutoPrimer3Config implements Serializable{
         return thermoDir;
     }
     
-    public void setConfigFile(File file){
-        configFile = file;
-    }
-    
     public HashMap<String, String> getBuildToMapMaster(){
         return buildToMapMaster;
     }
@@ -204,50 +207,42 @@ public class AutoPrimer3Config implements Serializable{
         buildToDescription = buildDesc;
     }
     
-    public  void setBuildToTables(HashMap<String, LinkedHashSet<String>> buildTables){
+    public void setBuildToTables(HashMap<String, LinkedHashSet<String>> buildTables){
         buildToTables = buildTables;
     }
     
-    public void writeConfig()throws IOException{
-        writeConfig(buildToMapMaster, buildToDescription, buildToTables);
+    public void writeGenomeXmlFile()
+            throws IOException, DocumentException, MalformedURLException{
+        buildsAndTables.readDasGenomeXmlDocument();
+        writeGenomeXmlFile(buildsAndTables.getDasGenomeXmlDocument());
     }
     
-    public void writeConfig(HashMap<String, String> buildToMap, 
-            LinkedHashMap<String, String> buildToDescription,
-            HashMap<String, LinkedHashSet<String>> buildToTable) throws IOException{
+    public void writeGenomeXmlFile(Document xmldoc) throws IOException{
         if (! configDir.exists()){
             configDir.mkdir();
         }
-        File temp = File.createTempFile("temp_config", ".ser");
-        FileOutputStream fos = new FileOutputStream(temp);
-        ObjectOutputStream out = new ObjectOutputStream(
-                new BufferedOutputStream(fos));
-        /*debug
-        System.out.println(buildToMap.toString());
-        System.out.println(buildToDescription.toString());
-        System.out.println(buildToTable.toString());
-        */
-        out.writeObject(buildToMap);
-        out.writeObject(buildToDescription);
-        out.writeObject(buildToTable);
+        File temp = File.createTempFile("temp_genome", ".xml");
+        BufferedWriter out = new BufferedWriter(new FileWriter(temp));
+        XMLWriter writer = new XMLWriter(out); 
+        writer.write(xmldoc);
         out.close();
-        Files.move(temp.toPath(), configFile.toPath(), REPLACE_EXISTING);
+        Files.move(temp.toPath(), genomeXmlFile.toPath(), REPLACE_EXISTING);
     }
     
-    public void readConfig() throws IOException, ClassNotFoundException{
-        if (configFile.exists()){
-            readConfigFile(configFile);
+    public void readGenomeXmlFile() throws IOException, DocumentException{
+        if (genomeXmlFile.exists()){
+            readGenomeXmlFile(genomeXmlFile);
         }else{
             if (! configDir.exists()){
                 configDir.mkdir();
             }
             InputStream inputStream = this.getClass().
-                            getResourceAsStream("config.ser");
+                            getResourceAsStream("genome.xml");
             if (inputStream == null){
-                writeConfig();
+                writeGenomeXmlFile();
                 return;
             }
-            OutputStream outputStream = new FileOutputStream(configFile);
+            OutputStream outputStream = new FileOutputStream(genomeXmlFile);
             int read = 0;
             byte[] bytes = new byte[1024];
             while ((read = inputStream.read(bytes)) != -1) {
@@ -255,19 +250,50 @@ public class AutoPrimer3Config implements Serializable{
             }
             inputStream.close();
             outputStream.close();
-            readConfigFile(configFile);
+            readGenomeXmlFile(genomeXmlFile);
         }
     }
     
-    private void readConfigFile(File config)throws IOException, ClassNotFoundException{
-        if (! config.exists()){
+    private void readGenomeXmlFile(File xml)throws IOException, DocumentException{
+        if (! xml.exists()){
+            buildsAndTables.connectToUcsc();
+            writeGenomeXmlFile();
             return;
         }
-        ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream
-            (new FileInputStream(config)));
-        buildToMapMaster = (HashMap<String, String>) ois.readObject();
-        buildToDescription = (LinkedHashMap<String, String> ) ois.readObject();
-        buildToTables = (HashMap<String, LinkedHashSet<String>>) ois.readObject();
-        ois.close();
+        SAXReader reader = new SAXReader();
+        Document doc = reader.read(xml);
+        buildsAndTables.setDasGenomeXmlDocument(doc);
+        buildsAndTables.readDasGenomeXmlDocument();
+        setBuildToDescription(buildsAndTables.getBuildToDescription());
+        setBuildToMapMaster(buildsAndTables.getBuildToMapMaster());
+        
     }
+    
+    public void readTablesXmlFiles() throws DocumentException{
+        if (! tableDir.exists()){
+            tableDir.mkdir();
+            return;
+        }
+        File[] tables = tableDir.listFiles();
+        for (File t: tables){
+            buildToTables.put(t.getName(), readTableFile(t));
+        }
+    }
+    
+    //t must be an xml file from UCSC
+    private LinkedHashSet<String> readTableFile(File xml) throws DocumentException{
+        LinkedHashSet<String> tables = new LinkedHashSet<>();
+        SAXReader reader = new SAXReader();
+        Document dasXml = reader.read(xml);
+        Element root = dasXml.getRootElement();
+        Element gff = root.element("GFF");
+        Element segment = gff.element("SEGMENT");
+        for (Iterator i = segment.elementIterator("TYPE"); i.hasNext();){
+            Element type = (Element) i.next();
+            Attribute id = type.attribute("id");
+            tables.add(id.getValue());
+        }
+        return tables;
+    }
+    
 }

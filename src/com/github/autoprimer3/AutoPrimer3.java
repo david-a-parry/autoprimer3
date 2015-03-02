@@ -29,6 +29,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -544,6 +545,20 @@ public class AutoPrimer3 extends Application implements Initializable{
                     throws DocumentException, MalformedURLException{
                 System.out.println("Checking genome list.");
                 buildsAndTables.connectToUcsc();
+                /*
+                TEST FOR XML OUTPUT
+                */
+                try{
+                    FileWriter out = new FileWriter( ap3Config.getGenomeXmlFile() );
+                    buildsAndTables.getDasGenomeXmlDocument().write(out);
+                    out.close();
+                }catch(IOException ex){
+                    ex.printStackTrace();
+                }
+                /*
+                END TEST
+                */
+                
                 return buildsAndTables.getBuildToDescription();
             }
         };
@@ -585,7 +600,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                         System.out.println("re writing output");
                         ap3Config.writeConfig();
                     }catch (IOException ex){
-                        ex.printStackTrace();
+                        //ex.printStackTrace();
                         Dialogs writeErr = Dialogs.create().title("Error").
                             masthead("Error Updating Genomes!").
                             message("AutoPrimer3 encountered an error writing "
@@ -685,7 +700,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                         System.out.println("Writing output");
                         ap3Config.writeConfig();
                     }catch (IOException ex){
-                        ex.printStackTrace();
+                        //ex.printStackTrace();
                         Dialogs writeErr = Dialogs.create().title("Error").
                             masthead("Error Updating Genomes!").
                             message("AutoPrimer3 encountered an error writing "
@@ -732,7 +747,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                 configComp.add(t);
             }
         }
-        return (tableComp.containsAll(configComp) && configComp.containsAll(tableComp));
+        return (! (tableComp.containsAll(configComp) && configComp.containsAll(tableComp)));
     }
     
     private LinkedHashSet<String> getGenesFromTables(LinkedHashSet<String> tables){
@@ -789,7 +804,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                     System.out.println("Writing output");
                     ap3Config.writeConfig();
                 }catch (IOException ex){
-                    ex.printStackTrace();
+                    //ex.printStackTrace();
                 }
                 setLoading(false);
             }
@@ -891,7 +906,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                         System.out.println("Writing output");
                         ap3Config.writeConfig();
                     }catch (IOException ex){
-                        ex.printStackTrace();
+                        //ex.printStackTrace();
                         Dialogs writeErr = Dialogs.create().title("Error").
                             masthead("Error Updating Genomes!").
                             message("AutoPrimer3 encountered an error writing "
@@ -1121,7 +1136,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                         }
                         br.close();
                     }catch(IOException ex){
-                        ex.printStackTrace();
+                        //ex.printStackTrace();
                         Dialogs readError = Dialogs.create().title("Error").
                             masthead("Error Loading Region File").
                             message("Could not read region file. "
@@ -1516,7 +1531,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                                 + "See exception below.").
                                 styleClass(Dialog.STYLE_CLASS_NATIVE);
                     displayError.showException(ex);
-                    ex.printStackTrace();
+                    //ex.printStackTrace();
                }
             }
         });
@@ -2041,7 +2056,7 @@ public class AutoPrimer3 extends Application implements Initializable{
             //               Dialogs.showErrorDialog(null, "Error displaying"
             //                       + " results from Find Regions Method.",
             //                       "Find Regions Error!", "SnpViewer", ex);
-                           ex.printStackTrace();
+                           //ex.printStackTrace();
                        }
                     }
                 });

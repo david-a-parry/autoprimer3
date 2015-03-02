@@ -16,6 +16,7 @@
  */
 package com.github.autoprimer3;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -44,14 +45,15 @@ public class GetUcscBuildsAndTables {
     private LinkedHashMap<String, String> buildToDescription = new LinkedHashMap<>();
 //maps build name to description e.g. hg19 => 'Human Feb. 2009 (GRCh37/hg19) Genome at UCSC'
     
+    private Document dasGenomeXml;
+    
     //get build names and DAS urls
     public void connectToUcsc() throws DocumentException, MalformedURLException{
         SAXReader reader = new SAXReader();
         URL url = new URL("http://genome.ucsc.edu/cgi-bin/das/dsn");
-        //URL url = new URL("http://genome-euro.ucsc.edu/cgi-bin/das/dsn");    
-        Document dasXml;
-        dasXml  = reader.read(url);
-        Element root = dasXml.getRootElement();
+        //URL url = new URL("http://genome-euro.ucsc.edu/cgi-bin/das/dsn");
+        dasGenomeXml  = reader.read(url);
+        Element root = dasGenomeXml.getRootElement();
         for ( Iterator i = root.elementIterator( "DSN" ); i.hasNext(); ) {
             Element dsn = (Element) i.next();
             Element source = dsn.element("SOURCE");
@@ -61,6 +63,14 @@ public class GetUcscBuildsAndTables {
             buildToMapMaster.put(build.getValue(), mapmaster.getText());
             buildToDescription.put(build.getValue(), desc.getText());
         }
+    }
+    
+    public Document getDasGenomeXmlDocument(){
+        return dasGenomeXml;
+    }
+    
+    public void setDasGenomeXmlDocument(Document document){
+        dasGenomeXml = document;
     }
     
     public HashMap<String, String> getBuildToMapMaster(){
@@ -79,16 +89,24 @@ public class GetUcscBuildsAndTables {
         return buildToDescription.get(genome);
     }
     
-    public LinkedHashSet<String> getAvailableTables(String build) 
+    public Document getTableXmlDocument(String build) 
             throws DocumentException, MalformedURLException{
         if (buildToDescription.isEmpty()){
-           this.connectToUcsc();
+            this.connectToUcsc();
         }
-        LinkedHashSet<String> tables = new LinkedHashSet<>();
         SAXReader reader = new SAXReader();
         URL url = new URL("http://genome.ucsc.edu/cgi-bin/das/" + build + "/types");    
         Document dasXml;
         dasXml  = reader.read(url);
+        return dasXml;
+    }
+    
+    
+    public LinkedHashSet<String> getAvailableTables(String build) 
+            throws DocumentException, MalformedURLException{
+        
+        LinkedHashSet<String> tables = new LinkedHashSet<>();
+        Document dasXml = getTableXmlDocument(build);
         Element root = dasXml.getRootElement();
         Element gff = root.element("GFF");
         Element segment = gff.element("SEGMENT");
@@ -100,34 +118,24 @@ public class GetUcscBuildsAndTables {
         return tables;
     }
     
+    
     public LinkedHashSet<String> getAvailableTables(String build, String category)
             throws DocumentException, MalformedURLException{
-        if (buildToDescription.isEmpty()){
-            this.connectToUcsc();
-        }
         LinkedHashSet<String> tables = new LinkedHashSet<>();
-        try{
-            SAXReader reader = new SAXReader();
-            URL url = new URL("http://genome.ucsc.edu/cgi-bin/das/" + build + "/types");    
-            Document dasXml;
-            dasXml  = reader.read(url);
-            Element root = dasXml.getRootElement();
-            Element gff = root.element("GFF");
-            Element segment = gff.element("SEGMENT");
-            for (Iterator i = segment.elementIterator("TYPE"); i.hasNext();){
-                Element type = (Element) i.next();
-                Attribute id = type.attribute("id");
-                Attribute cat = type.attribute("category");
-                if (cat.getValue().equals(category)){
-                    tables.add(id.getValue());
-                }
-            }                    
-            return tables;
-        }catch (DocumentException|MalformedURLException ex){
-            //TO DO - handle (throw) this error properly
-            ex.printStackTrace();
-            return null;
-        }
+        Document dasXml = getTableXmlDocument(build);
+        Element root = dasXml.getRootElement();
+        Element gff = root.element("GFF");
+        Element segment = gff.element("SEGMENT");
+        for (Iterator i = segment.elementIterator("TYPE"); i.hasNext();){
+            Element type = (Element) i.next();
+            Attribute id = type.attribute("id");
+            Attribute cat = type.attribute("category");
+            if (cat.getValue().equals(category)){
+                tables.add(id.getValue());
+            }
+        }                    
+        return tables;
+        
     }
     //uses 0-based coordinates for compatibility with gene tables, bed etc., although DAS uses 1-based
     public String retrieveSequence(String build, String chrom, Integer start, Integer end)
@@ -138,28 +146,22 @@ public class GetUcscBuildsAndTables {
         if (! buildToMapMaster.containsKey(build)){
             return null;
         }else{
-            try{
-                StringBuilder dna = new StringBuilder();
-                URL genomeUrl = new URL(buildToMapMaster.get(build) + 
-                        "/dna?segment="+chrom + ":" + (start + 1) + "," + end);
-                SAXReader reader = new SAXReader();
-                Document dasXml;
-                dasXml  = reader.read(genomeUrl);
-                Element root = dasXml.getRootElement();
-                for ( Iterator i = root.elementIterator( "SEQUENCE" ); i.hasNext(); ) {
-                    Element dsn = (Element) i.next();
-                    Element seq = dsn.element("DNA");
-                    String text = seq.getText().replaceAll("\n", "");
-                    dna.append(text);
-                    //dna.append(seq.getText());
-                }
-                return dna.toString();
-            }catch(DocumentException|MalformedURLException ex){
-                //TO DO - handle (throw) this error properly
-                ex.printStackTrace();
-                return null;
+            StringBuilder dna = new StringBuilder();
+            URL genomeUrl = new URL(buildToMapMaster.get(build) + 
+                    "/dna?segment="+chrom + ":" + (start + 1) + "," + end);
+            SAXReader reader = new SAXReader();
+            Document dasXml;
+            dasXml  = reader.read(genomeUrl);
+            Element root = dasXml.getRootElement();
+            for ( Iterator i = root.elementIterator( "SEQUENCE" ); i.hasNext(); ) {
+                Element dsn = (Element) i.next();
+                Element seq = dsn.element("DNA");
+                String text = seq.getText().replaceAll("\n", "");
+                dna.append(text);
+                //dna.append(seq.getText());
             }
-            
+            return dna.toString();
+                        
         }
         
     }
