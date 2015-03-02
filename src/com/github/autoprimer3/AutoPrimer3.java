@@ -569,7 +569,8 @@ public class AutoPrimer3 extends Application implements Initializable{
                 LinkedHashMap<String, String> buildIds = 
                         (LinkedHashMap<String, String>) e.getSource().getValue();
                 boolean rewriteConfig = false;
-                if (! ap3Config.getBuildToDescription().equals(buildIds)){
+                if (! ap3Config.getBuildToDescription().equals(buildIds) &&
+                        buildIds != null){
                     //warn and repopulate genome choicebox
                     Action warn = Dialogs.create().title("Warning").
                         masthead("Repopulating Genomes").
@@ -591,7 +592,9 @@ public class AutoPrimer3 extends Application implements Initializable{
                     System.out.println("Genome list is the same.");
                 }
                 
-                if (!ap3Config.getBuildToMapMaster().equals(buildsAndTables.getBuildToMapMaster())){
+                if (!ap3Config.getBuildToMapMaster().equals
+                        (buildsAndTables.getBuildToMapMaster()) && 
+                        buildsAndTables.getBuildToMapMaster() != null){
                     ap3Config.setBuildToMapMaster(buildsAndTables.getBuildToMapMaster());
                     System.out.println("Build to map master has changed - will rewrite.");
                     rewriteConfig = true;
@@ -652,7 +655,8 @@ public class AutoPrimer3 extends Application implements Initializable{
                 System.out.println("Finished getting tables for " + genome);
                 LinkedHashSet<String> tables = 
                         (LinkedHashSet<String>) e.getSource().getValue();
-                if (! ap3Config.getBuildToTables().get(genome).equals(tables)){
+                if (! ap3Config.getBuildToTables().get(genome).equals(tables) && 
+                        tables != null){
                     /*Tables differ, but we need to check whether it affects
                     relevant tables (i.e. genes or SNPs)
                     */
@@ -1154,7 +1158,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                         if (valid != 1){
                             msg.append("s");
                         }
-                        msg.append(" identified.");
+                        msg.append(" identified).");
                         final String messageString = msg.toString();
                         Platform.runLater(new Runnable() {
                             @Override
