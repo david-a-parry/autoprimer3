@@ -534,11 +534,13 @@ public class Primer3ResultViewController implements Initializable {
                             n++;
                             updateMessage("Writing primer " + n + " . . .");
                             updateProgress(n, data.size());
-                            bw.write(r.getName() + "F" + d + r.getLeftPrimer() + "\n");
+                            bw.write(r.getName() + "F" + d + r.getLeftPrimer());
+                            bw.newLine();
                             n++;
                             updateMessage("Writing primer " + n + " . . .");
                             updateProgress(n, data.size());
-                            bw.write(r.getName() + "R" + d + r.getRightPrimer() + "\n");
+                            bw.write(r.getName() + "R" + d + r.getRightPrimer());
+                            bw.newLine();
                         }
                         updateMessage("Wrote " + n + " primers to file.");
                         bw.close();
