@@ -9,9 +9,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" fx:id="mainPane" minHeight="207.0" prefHeight="268.0" prefWidth="656.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.autoprimer3.AutoPrimer3">
+<AnchorPane id="AnchorPane" fx:id="mainPane" minHeight="207.0" prefHeight="281.0" prefWidth="656.0" styleClass="mainFxmlClass" stylesheets="@autoprimer3.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.autoprimer3.AutoPrimer3">
   <children>
-    <MenuBar fx:id="menuBar" focusTraversable="true" prefWidth="600.0" style="" useSystemMenuBar="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <MenuBar fx:id="menuBar" focusTraversable="true" prefHeight="39.0" prefWidth="656.0" style="" useSystemMenuBar="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
@@ -26,11 +26,11 @@
         </Menu>
       </menus>
     </MenuBar>
-    <TabPane fx:id="mainTabPane" prefHeight="183.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="24.0">
+    <TabPane fx:id="mainTabPane" layoutY="29.0" prefHeight="252.0" prefWidth="656.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="29.0">
       <tabs>
         <Tab fx:id="genesTab" text="Genes">
           <content>
-            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="226.0" prefWidth="635.0" style="">
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="196.0" prefWidth="652.0" style="">
               <children>
                         <HBox layoutX="16.0" layoutY="75.0" spacing="10.0" AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="17.0">
                            <children>
@@ -299,7 +299,4 @@
       </tabs>
     </TabPane>
   </children>
-  <stylesheets>
-    <URL value="@autoprimer3.css" />
-  </stylesheets>
 </AnchorPane>
