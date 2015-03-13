@@ -9,30 +9,30 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" fx:id="mainPane" minHeight="207.0" prefHeight="281.0" prefWidth="656.0" styleClass="mainFxmlClass" stylesheets="@autoprimer3.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.autoprimer3.AutoPrimer3">
+<AnchorPane id="AnchorPane" fx:id="mainPane" minHeight="207.0" prefHeight="228.0" prefWidth="656.0" styleClass="mainFxmlClass" stylesheets="@autoprimer3.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.autoprimer3.AutoPrimer3">
   <children>
-    <MenuBar fx:id="menuBar" focusTraversable="true" prefHeight="39.0" prefWidth="656.0" style="" useSystemMenuBar="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-      <menus>
-        <Menu mnemonicParsing="false" text="File">
-          <items>
-                  <MenuItem fx:id="refreshMenuItem" mnemonicParsing="false" text="Refresh/Reconnect" />
-            <MenuItem fx:id="quitMenuItem" mnemonicParsing="false" text="Quit" />
-          </items>
-        </Menu>
-        <Menu mnemonicParsing="false" text="Help">
-          <items>
-            <MenuItem mnemonicParsing="false" text="About" />
-          </items>
-        </Menu>
-      </menus>
-    </MenuBar>
-    <TabPane fx:id="mainTabPane" layoutY="29.0" prefHeight="252.0" prefWidth="656.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="29.0">
+    <TabPane fx:id="mainTabPane" prefHeight="255.0" prefWidth="656.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <tabs>
         <Tab fx:id="genesTab" text="Genes">
           <content>
-            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="196.0" prefWidth="652.0" style="">
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="203.0" prefWidth="652.0" style="">
               <children>
-                        <HBox layoutX="17.0" layoutY="83.0" spacing="10.0" AnchorPane.leftAnchor="17.0" AnchorPane.rightAnchor="16.0">
+                      <MenuBar fx:id="menuBar" focusTraversable="true" layoutX="-165.0" layoutY="-10.0" prefHeight="39.0" prefWidth="656.0" style="" useSystemMenuBar="false" AnchorPane.leftAnchor="-165.0" AnchorPane.rightAnchor="165.0" AnchorPane.topAnchor="-10.0">
+                        <menus>
+                          <Menu mnemonicParsing="false" text="File">
+                            <items>
+                                    <MenuItem fx:id="refreshMenuItem" mnemonicParsing="false" text="Refresh/Reconnect" />
+                              <MenuItem fx:id="quitMenuItem" mnemonicParsing="false" text="Quit" />
+                            </items>
+                          </Menu>
+                          <Menu mnemonicParsing="false" text="Help">
+                            <items>
+                              <MenuItem mnemonicParsing="false" text="About" />
+                            </items>
+                          </Menu>
+                        </menus>
+                      </MenuBar>
+                        <HBox layoutX="16.0" layoutY="75.0" spacing="10.0" AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="17.0">
                            <children>
                               <VBox layoutX="14.0" layoutY="59.0" spacing="10.0">
                                  <children>
@@ -54,7 +54,7 @@
                               </VBox>
                            </children>
                         </HBox>
-                        <HBox layoutX="17.0" layoutY="22.0" spacing="10.0" AnchorPane.leftAnchor="17.0" AnchorPane.rightAnchor="16.0">
+                        <HBox layoutX="15.0" layoutY="14.0" spacing="10.0" AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="17.0">
                            <children>
                               <VBox alignment="TOP_CENTER" layoutX="14.0" layoutY="6.0" spacing="10.0">
                                  <children>
@@ -107,13 +107,13 @@
                               </VBox>
                            </children>
                         </HBox>
-                <HBox alignment="CENTER_RIGHT" layoutX="17.0" layoutY="159.0" prefHeight="47.0" prefWidth="620.0" spacing="15.0" AnchorPane.bottomAnchor="11.0" AnchorPane.rightAnchor="15.0">
+                <HBox alignment="CENTER_RIGHT" layoutX="16.0" layoutY="138.0" prefHeight="47.0" prefWidth="620.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="16.0">
                   <children>
-                    <ProgressIndicator fx:id="progressIndicator" disable="false" opacity="1.0" progress="0.0" style="-fx-fill: null" visible="true" />
-                    <Label fx:id="progressLabel" prefHeight="17.0" prefWidth="286.0" text="AutoPrimer3" />
-                    <Button fx:id="refreshButton" mnemonicParsing="false" text="Refresh/Reconnect" />
-                    <Button fx:id="cancelButton" disable="false" mnemonicParsing="false" prefWidth="66.0" text="Cancel" />
-                    <Button fx:id="runButton" defaultButton="true" mnemonicParsing="false" onAction="#designPrimersToGene" style="&#10;" text="Design" textAlignment="LEFT" />
+                    <ProgressIndicator fx:id="progressIndicator" disable="false" opacity="1.0" prefHeight="25.0" prefWidth="47.0" progress="0.0" style="-fx-fill: null" visible="true" />
+                      <Label fx:id="progressLabel" prefHeight="16.0" prefWidth="265.0" text="AutoPrimer3" />
+                    <Button fx:id="refreshButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="151.0" text="Refresh/Reconnect" />
+                    <Button fx:id="cancelButton" disable="false" mnemonicParsing="false" prefHeight="26.0" prefWidth="75.0" text="Cancel" />
+                    <Button fx:id="runButton" defaultButton="true" mnemonicParsing="false" onAction="#designPrimersToGene" prefHeight="26.0" prefWidth="76.0" style="&#10;" text="Design" textAlignment="LEFT" />
                   </children>
                 </HBox>
               </children>
@@ -124,16 +124,16 @@
           <content>
             <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <TextArea fx:id="regionsTextArea" layoutX="14.0" layoutY="38.0" prefHeight="101.0" prefWidth="277.0" />
+                        <TextArea fx:id="regionsTextArea" layoutX="14.0" layoutY="38.0" prefHeight="100.0" prefWidth="277.0" />
                         <Label layoutX="90.0" layoutY="14.0" text="Regions/Coordinates" />
-                        <HBox alignment="CENTER_LEFT" layoutX="14.0" layoutY="156.0" prefHeight="47.0" prefWidth="613.0" spacing="10.0">
+                        <HBox alignment="CENTER_RIGHT" layoutX="7.916346073150635" layoutY="141.0" spacing="15.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="7.916346073150635" AnchorPane.rightAnchor="19.083653926849365">
                            <children>
-                              <ProgressIndicator fx:id="progressIndicator2" disable="false" opacity="1.0" prefHeight="47.0" prefWidth="52.0" progress="0.0" style="-fx-fill: null" visible="true" />
-                              <Label fx:id="progressLabel2" prefHeight="41.0" prefWidth="243.0" text="AutoPrimer3" />
-                              <Button fx:id="clearButton" layoutX="315.0" layoutY="166.0" mnemonicParsing="false" onAction="#clearRegions" text="Clear Regions" />
-                              <Button fx:id="loadFileButton" layoutX="407.0" layoutY="166.0" mnemonicParsing="false" onAction="#loadRegionsFile" text="Load File" />
-                              <Button fx:id="cancelButton2" cancelButton="true" layoutX="487.0" layoutY="166.0" mnemonicParsing="false" text="Cancel" />
-                              <Button fx:id="runButton2" layoutX="561.0" layoutY="166.0" mnemonicParsing="false" onAction="#designPrimersToCoordinates" text="Design" />
+                              <ProgressIndicator fx:id="progressIndicator2" disable="false" opacity="1.0" prefHeight="25.0" prefWidth="47.0" progress="0.0" style="-fx-fill: null" visible="true" />
+                              <Label fx:id="progressLabel2" layoutX="83.0" layoutY="145.0" prefHeight="38.0" prefWidth="225.0" text="AutoPrimer3" />
+                              <Button fx:id="clearButton" layoutX="318.0" layoutY="146.0" mnemonicParsing="false" onAction="#clearRegions" prefHeight="26.0" prefWidth="129.0" text="Clear Regions" />
+                              <Button fx:id="loadFileButton" layoutX="429.0" layoutY="146.0" mnemonicParsing="false" onAction="#loadRegionsFile" prefHeight="26.0" prefWidth="109.0" text="Load File" />
+                              <Button fx:id="cancelButton2" cancelButton="true" layoutX="512.0" layoutY="146.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="95.0" text="Cancel" />
+                              <Button fx:id="runButton2" layoutX="582.0" layoutY="146.0" mnemonicParsing="false" onAction="#designPrimersToCoordinates" prefHeight="26.0" prefWidth="93.0" text="Design" />
                            </children>
                         </HBox>
                         <ChoiceBox fx:id="genomeChoiceBox2" layoutX="308.0" layoutY="38.0" prefHeight="28.0" prefWidth="145.0" />
@@ -257,13 +257,13 @@
                               </VBox>
                            </children>
                         </HBox>
-                        <Label layoutX="302.0" layoutY="77.0" text="Primer Product Size Range" />
-                        <TextField fx:id="sizeRangeTextField" alignment="CENTER" layoutX="145.0" layoutY="104.0" prefHeight="27.0" prefWidth="480.0" text="150-250 100-300 301-400 401-500 501-600 601-700 701-850 851-1000 1000-2000" AnchorPane.leftAnchor="145.0" AnchorPane.rightAnchor="27.0">
+                        <Label layoutX="302.0" layoutY="68.0" text="Primer Product Size Range" />
+                        <TextField fx:id="sizeRangeTextField" alignment="CENTER" layoutX="145.0" layoutY="95.0" prefHeight="27.0" prefWidth="480.0" text="150-250 100-300 301-400 401-500 501-600 601-700 701-850 851-1000 1000-2000" AnchorPane.leftAnchor="145.0" AnchorPane.rightAnchor="27.0">
                            <font>
                               <Font size="12.0" />
                            </font>
                         </TextField>
-                        <VBox alignment="TOP_CENTER" layoutX="30.0" layoutY="77.0" spacing="10.0">
+                        <VBox alignment="TOP_CENTER" layoutX="30.0" layoutY="68.0" spacing="10.0">
                            <children>
                               <Label alignment="CENTER" layoutX="278.0" layoutY="144.0" text="Max Mispriming" />
                               <TextField fx:id="maxMisprimeTextField" alignment="CENTER" layoutX="279.0" layoutY="167.0" prefHeight="27.0" prefWidth="102.0" text="12" />
@@ -286,7 +286,7 @@
                            </children>
                         </HBox>
                         <Button fx:id="resetValuesButton" layoutX="484.0" layoutY="174.0" mnemonicParsing="false" text="Reset" AnchorPane.bottomAnchor="8.0" AnchorPane.rightAnchor="29.0" />
-                        <CheckBox fx:id="autoSelectMisprimingLibraryCheckBox" layoutX="348.0" layoutY="175.0" mnemonicParsing="false" selected="true" text="Autoselect Mispriming Library" />
+                        <CheckBox fx:id="autoSelectMisprimingLibraryCheckBox" layoutX="348.0" layoutY="200.0" mnemonicParsing="false" selected="true" text="Autoselect Mispriming Library" />
                      </children></AnchorPane>
           </content>
         </Tab>
