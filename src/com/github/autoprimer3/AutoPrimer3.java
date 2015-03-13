@@ -81,6 +81,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import net.lingala.zip4j.exception.ZipException;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
@@ -218,7 +219,16 @@ public class AutoPrimer3 extends Application implements Initializable{
     @Override
     public void start(final Stage primaryStage) {
         try {
-            AnchorPane page = (AnchorPane) FXMLLoader.load(com.github.autoprimer3.AutoPrimer3.class.getResource("AutoPrimer3.fxml"));
+            AnchorPane page;
+            if (System.getProperty("os.name").equals("Mac OS X")){
+                page = (AnchorPane) FXMLLoader.load(
+                        com.github.autoprimer3.AutoPrimer3.class.
+                                getResource("AutoPrimer3Mac.fxml"));  
+            }else{
+                page = (AnchorPane) FXMLLoader.load(
+                        com.github.autoprimer3.AutoPrimer3.class.
+                                getResource("AutoPrimer3.fxml"));
+            }
             Scene scene = new Scene(page);
             primaryStage.setScene(scene);
             primaryStage.setTitle("AutoPrimer3");
@@ -228,7 +238,13 @@ public class AutoPrimer3 extends Application implements Initializable{
             primaryStage.show();
             primaryStage.getIcons().add(new Image(this.getClass().
                     getResourceAsStream("icon.png")));
-            
+            primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+               @Override
+               public void handle(WindowEvent e) {
+                  Platform.exit();
+                  System.exit(0);
+               }
+            });
         } catch (Exception ex) {
             Logger.getLogger(AutoPrimer3.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -568,7 +584,8 @@ public class AutoPrimer3 extends Application implements Initializable{
                 LinkedHashMap<String, String> buildIds = 
                         (LinkedHashMap<String, String>) e.getSource().getValue();
                 boolean rewriteConfig = false;
-                if (! ap3Config.getBuildToDescription().equals(buildIds)){
+                if (! ap3Config.getBuildToDescription().equals(buildIds) &&
+                        buildIds != null){
                     //warn and repopulate genome choicebox
                     Action warn = Dialogs.create().title("Warning").
                         masthead("Repopulating Genomes").
@@ -590,7 +607,9 @@ public class AutoPrimer3 extends Application implements Initializable{
                     System.out.println("Genome list is the same.");
                 }
                 
-                if (!ap3Config.getBuildToMapMaster().equals(buildsAndTables.getBuildToMapMaster())){
+                if (!ap3Config.getBuildToMapMaster().equals
+                        (buildsAndTables.getBuildToMapMaster()) && 
+                        buildsAndTables.getBuildToMapMaster() != null){
                     ap3Config.setBuildToMapMaster(buildsAndTables.getBuildToMapMaster());
                     System.out.println("Build to map master has changed - will rewrite.");
                     rewriteConfig = true;
@@ -651,7 +670,8 @@ public class AutoPrimer3 extends Application implements Initializable{
                 System.out.println("Finished getting tables for " + genome);
                 LinkedHashSet<String> tables = 
                         (LinkedHashSet<String>) e.getSource().getValue();
-                if (! ap3Config.getBuildToTables().get(genome).equals(tables)){
+                if (! ap3Config.getBuildToTables().get(genome).equals(tables) && 
+                        tables != null){
                     /*Tables differ, but we need to check whether it affects
                     relevant tables (i.e. genes or SNPs)
                     */
@@ -900,8 +920,6 @@ public class AutoPrimer3 extends Application implements Initializable{
                 LinkedHashSet<String> tables = (LinkedHashSet<String>) e.getSource().getValue();
                 if (! tables.equals(ap3Config.getBuildToTables().get(id))){
                     ap3Config.getBuildToTables().put(id, tables);
-                    ap3Config.setBuildToDescription(ap3Config.getBuildToDescription());
-                    ap3Config.setBuildToMapMaster(ap3Config.getBuildToMapMaster());
                     try{
                         System.out.println("Writing output");
                         ap3Config.writeConfig();
@@ -1155,7 +1173,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                         if (valid != 1){
                             msg.append("s");
                         }
-                        msg.append(" identified.");
+                        msg.append(" identified).");
                         final String messageString = msg.toString();
                         Platform.runLater(new Runnable() {
                             @Override
@@ -1503,8 +1521,14 @@ public class AutoPrimer3 extends Application implements Initializable{
                 }
                 progressLabel.setText(result.get("primers").size() +
                         " primer pairs designed.");
-                FXMLLoader tableLoader = new FXMLLoader(getClass().
+                FXMLLoader tableLoader;
+                if (System.getProperty("os.name").equals("Mac OS X")){
+                    tableLoader = new FXMLLoader(getClass().
+                                       getResource("Primer3ResultViewMac.fxml"));
+                }else{
+                     tableLoader = new FXMLLoader(getClass().
                                        getResource("Primer3ResultView.fxml"));
+                }
                 try{
                     Pane tablePane = (Pane) tableLoader.load();
                     Primer3ResultViewController resultView = 
@@ -1903,11 +1927,12 @@ public class AutoPrimer3 extends Application implements Initializable{
                                 onMinusStrand = true;
                             }
                             merger.mergeRegionsByPosition(exonRegions);
-                            referenceSeqs.put(r.getName(), 
-                                    createRefserenceSequence(dna, r.getStartPos(),
+                            //need to allow for multiple regions for a given gene
+                            referenceSeqs.put(r.getName() + ":" + r.getCoordinateString(), 
+                                    createReferenceSequence(dna, r.getStartPos(),
                                             flanks, exonRegions, onMinusStrand));
                             //DEBUG
-                            System.out.println("Ref " + r.getName() + ":");
+                            System.out.println("Ref " + r.getName() + ":" + r.getCoordinateString());
                             System.out.println(referenceSeqs.get(r.getName()));
                             
                             numberExons(exonRegions, onMinusStrand, geneExonOffsets);
@@ -2031,8 +2056,14 @@ public class AutoPrimer3 extends Application implements Initializable{
                         }
                         progressLabel.setText(result.get("primers").size() +
                                 " primer pairs designed.");
-                        FXMLLoader tableLoader = new FXMLLoader(getClass().
+                        FXMLLoader tableLoader;
+                        if (System.getProperty("os.name").equals("Mac OS X")){
+                            tableLoader = new FXMLLoader(getClass().
+                                               getResource("Primer3ResultViewMac.fxml"));
+                        }else{
+                             tableLoader = new FXMLLoader(getClass().
                                                getResource("Primer3ResultView.fxml"));
+                        }
                         try{
                             Pane tablePane = (Pane) tableLoader.load();
                             Primer3ResultViewController resultView = 
@@ -2154,7 +2185,7 @@ public class AutoPrimer3 extends Application implements Initializable{
     
     }
     
-    private String createRefserenceSequence(String dna, int offset, int flanks,
+    private String createReferenceSequence(String dna, int offset, int flanks,
             ArrayList<GenomicRegionSummary> exons, boolean revComp){
         StringBuilder dnaTarget = new StringBuilder();
         int prevEnd = 0;
