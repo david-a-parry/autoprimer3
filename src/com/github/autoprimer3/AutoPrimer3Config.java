@@ -41,6 +41,7 @@ import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
@@ -222,8 +223,9 @@ public class AutoPrimer3Config {
             configDir.mkdir();
         }
         File temp = File.createTempFile("temp_genome", ".xml");
+        OutputFormat format = OutputFormat.createPrettyPrint();
         BufferedWriter out = new BufferedWriter(new FileWriter(temp));
-        XMLWriter writer = new XMLWriter(out); 
+        XMLWriter writer = new XMLWriter(out, format); 
         writer.write(xmldoc);
         out.close();
         Files.move(temp.toPath(), genomeXmlFile.toPath(), REPLACE_EXISTING);
@@ -344,8 +346,9 @@ public class AutoPrimer3Config {
         }
         File buildXmlFile = getBuildXmlFile(build);
         File temp = File.createTempFile("temp_build_" + build, ".xml");
+        OutputFormat format = OutputFormat.createPrettyPrint();
         BufferedWriter out = new BufferedWriter(new FileWriter(temp));
-        XMLWriter writer = new XMLWriter(out); 
+        XMLWriter writer = new XMLWriter(out, format); 
         writer.write(xmldoc);
         out.close();
         Files.move(temp.toPath(), buildXmlFile.toPath(), REPLACE_EXISTING);
