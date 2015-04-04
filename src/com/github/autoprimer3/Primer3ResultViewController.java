@@ -472,6 +472,7 @@ public class Primer3ResultViewController implements Initializable {
         service.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
                 @Override
                 public void handle (WorkerStateEvent e){
+                    
                      Action response = Dialogs.create().title("Done").
                         masthead("Finished writing").
                         message("Primers successfully written to " + 
@@ -483,8 +484,8 @@ public class Primer3ResultViewController implements Initializable {
 
                     if (response == Dialog.ACTION_YES){
                         try{
-                            Desktop.getDesktop().open(f);
-                        }catch (IOException ex){
+                            openFile(f);
+                        } catch (IOException ex) {
                             Action openFailed = Dialogs.create().title("Open failed").
                                 masthead("Could not open output file").
                                 message("Exception encountered when attempting to open "
@@ -561,6 +562,14 @@ public class Primer3ResultViewController implements Initializable {
         service.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
                 @Override
                 public void handle (WorkerStateEvent e){
+                    /*
+                    Dialogs.create().title("Done").
+                            masthead("Finished writing").
+                            message("Primers successfully written to " + 
+                                    f.getAbsolutePath()).
+                            styleClass(Dialog.STYLE_CLASS_NATIVE).
+                            showInformation();
+                    */
                     Action response = Dialogs.create().title("Done").
                                 masthead("Finished writing").
                                 message("Primers successfully written to " + 
@@ -572,7 +581,8 @@ public class Primer3ResultViewController implements Initializable {
 
                     if (response == Dialog.ACTION_YES){
                         try{
-                            Desktop.getDesktop().open(f);
+                            //Desktop.getDesktop().open(f);
+                            openFile(f);
                         }catch (IOException ex){
                             Action openFailed = Dialogs.create().title("Open failed").
                                 masthead("Could not open output file").
@@ -606,4 +616,18 @@ public class Primer3ResultViewController implements Initializable {
         genome = g;
     }
     
+    private void openFile(File f) throws IOException{
+        String command;
+        //Desktop.getDesktop().open(f);
+        if (System.getProperty("os.name").equals("Linux")) {
+            command = "xdg-open " + f;
+        } else if (System.getProperty("os.name").equals("Mac OS X")) {
+            command = "open " + f;
+        }else if (System.getProperty("os.name").contains("Windows")){
+            command = "cmd /C start " + f;
+        } else {
+            return;
+        }
+        Runtime.getRuntime().exec(command);
+    }
 }
