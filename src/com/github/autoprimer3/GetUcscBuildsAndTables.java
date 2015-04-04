@@ -53,6 +53,13 @@ public class GetUcscBuildsAndTables {
         URL url = new URL("http://genome.ucsc.edu/cgi-bin/das/dsn");
         //URL url = new URL("http://genome-euro.ucsc.edu/cgi-bin/das/dsn");
         dasGenomeXml  = reader.read(url);
+        readDasGenomeXmlDocument();
+    }
+    
+    public void readDasGenomeXmlDocument(){
+        if (dasGenomeXml == null){
+            return;
+        }
         Element root = dasGenomeXml.getRootElement();
         for ( Iterator i = root.elementIterator( "DSN" ); i.hasNext(); ) {
             Element dsn = (Element) i.next();
@@ -91,9 +98,6 @@ public class GetUcscBuildsAndTables {
     
     public Document getTableXmlDocument(String build) 
             throws DocumentException, MalformedURLException{
-        if (buildToDescription.isEmpty()){
-            this.connectToUcsc();
-        }
         SAXReader reader = new SAXReader();
         URL url = new URL("http://genome.ucsc.edu/cgi-bin/das/" + build + "/types");    
         Document dasXml;
@@ -101,42 +105,6 @@ public class GetUcscBuildsAndTables {
         return dasXml;
     }
     
-    
-    public LinkedHashSet<String> getAvailableTables(String build) 
-            throws DocumentException, MalformedURLException{
-        
-        LinkedHashSet<String> tables = new LinkedHashSet<>();
-        Document dasXml = getTableXmlDocument(build);
-        Element root = dasXml.getRootElement();
-        Element gff = root.element("GFF");
-        Element segment = gff.element("SEGMENT");
-        for (Iterator i = segment.elementIterator("TYPE"); i.hasNext();){
-            Element type = (Element) i.next();
-            Attribute id = type.attribute("id");
-            tables.add(id.getValue());
-        }
-        return tables;
-    }
-    
-    
-    public LinkedHashSet<String> getAvailableTables(String build, String category)
-            throws DocumentException, MalformedURLException{
-        LinkedHashSet<String> tables = new LinkedHashSet<>();
-        Document dasXml = getTableXmlDocument(build);
-        Element root = dasXml.getRootElement();
-        Element gff = root.element("GFF");
-        Element segment = gff.element("SEGMENT");
-        for (Iterator i = segment.elementIterator("TYPE"); i.hasNext();){
-            Element type = (Element) i.next();
-            Attribute id = type.attribute("id");
-            Attribute cat = type.attribute("category");
-            if (cat.getValue().equals(category)){
-                tables.add(id.getValue());
-            }
-        }                    
-        return tables;
-        
-    }
     //uses 0-based coordinates for compatibility with gene tables, bed etc., although DAS uses 1-based
     public String retrieveSequence(String build, String chrom, Integer start, Integer end)
             throws DocumentException, MalformedURLException{

@@ -86,6 +86,7 @@ import net.lingala.zip4j.exception.ZipException;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
+import org.dom4j.Document;
 import org.dom4j.DocumentException;
 
 /**
@@ -265,11 +266,12 @@ public class AutoPrimer3 extends Application implements Initializable{
         setLoading(true);
         try{
             ap3Config = new AutoPrimer3Config();
-            ap3Config.readConfig();
-        }catch (IOException|ClassNotFoundException ex){
+            ap3Config.readGenomeXmlFile();
+            ap3Config.readTablesXmlFiles();
+        }catch (IOException|DocumentException ex){
             Dialogs configError = Dialogs.create().title("Config Error").
-            masthead("Error Reading AutoPrimer3 Config").
-            message("AutoPrimer3 encountered an error reading config details"
+            masthead("Error Reading AutoPrimer3 Genome Database").
+            message("AutoPrimer3 encountered an error reading genome details"
                     + " - see exception below.").
                     styleClass(Dialog.STYLE_CLASS_NATIVE);
             configError.showException(ex);
@@ -561,20 +563,6 @@ public class AutoPrimer3 extends Application implements Initializable{
                     throws DocumentException, MalformedURLException{
                 System.out.println("Checking genome list.");
                 buildsAndTables.connectToUcsc();
-                /*
-                TEST FOR XML OUTPUT
-                */
-                try{
-                    FileWriter out = new FileWriter( ap3Config.getGenomeXmlFile() );
-                    buildsAndTables.getDasGenomeXmlDocument().write(out);
-                    out.close();
-                }catch(IOException ex){
-                    ex.printStackTrace();
-                }
-                /*
-                END TEST
-                */
-                
                 return buildsAndTables.getBuildToDescription();
             }
         };
@@ -617,13 +605,13 @@ public class AutoPrimer3 extends Application implements Initializable{
                 if (rewriteConfig){
                     try{
                         System.out.println("re writing output");
-                        ap3Config.writeConfig();
+                        ap3Config.writeGenomeXmlFile(buildsAndTables.getDasGenomeXmlDocument());
                     }catch (IOException ex){
                         //ex.printStackTrace();
                         Dialogs writeErr = Dialogs.create().title("Error").
                             masthead("Error Updating Genomes!").
                             message("AutoPrimer3 encountered an error writing "
-                                    + "updated genomes to its config file."
+                                    + "updated genomes to its database file."
                                     + "See exception below.").
                             styleClass(Dialog.STYLE_CLASS_NATIVE);
                             writeErr.showException(ex);
@@ -650,88 +638,96 @@ public class AutoPrimer3 extends Application implements Initializable{
     }
     
     
-    
-    
-    
     private void checkUcscTables(final String genome){
         //Background check that tables for given genome are up to date
-        final Task<LinkedHashSet<String>> checkUcscTablesTask = 
-            new Task<LinkedHashSet<String>>(){
+        final Task<Document> checkUcscTablesTask = 
+            new Task<Document>(){
             @Override
-            protected LinkedHashSet<String> call() 
+            protected Document call() 
                     throws DocumentException, MalformedURLException{
                 System.out.println("Checking tables for " + genome);
-                return buildsAndTables.getAvailableTables(genome);
+                return buildsAndTables.getTableXmlDocument(genome);
             }
         };
         checkUcscTablesTask.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
             @Override
             public void handle (WorkerStateEvent e){
                 System.out.println("Finished getting tables for " + genome);
-                LinkedHashSet<String> tables = 
-                        (LinkedHashSet<String>) e.getSource().getValue();
-                if (! ap3Config.getBuildToTables().get(genome).equals(tables) && 
-                        tables != null){
+                Document doc = (Document) e.getSource().getValue();
+                try{
+                    if (! ap3Config.getBuildXmlDocument(genome).equals(doc) && 
+                        doc != null){
                     /*Tables differ, but we need to check whether it affects
                     relevant tables (i.e. genes or SNPs)
                     */
-                    System.out.println("Tables differ!");
-                    if (configTablesDiffer(tables, 
-                            ap3Config.getBuildToTables().get(genome))){
-                        /*if available genes or snps differ we need to alert
-                        user and change fields in choiceboxes
-                        */
-                        System.out.println("SNP/Gene tables differ!");
-                        // ALERT USER IF GENOME STILL SELECTED
-                        Dialogs inf = Dialogs.create().title("Tables Updated").
-                            masthead("Gene/SNP Tables Updated").
-                            message("The Gene/SNP tables for your currently "
-                                    + "selected genome have been updated." ).
-                            styleClass(Dialog.STYLE_CLASS_NATIVE);
-                        inf.showInformation();
-                        String g = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
-                        if (g.equals(genome)){
-                            String curSnp = (String) snpsChoiceBox.getSelectionModel().getSelectedItem();
-                            snpsChoiceBox.getItems().clear();
-                            snpsChoiceBox.getItems().add("No");
-                            snpsChoiceBox.getItems().addAll(getSnpsFromTables(tables));
-                            if (snpsChoiceBox.getItems().contains(curSnp)){
-                                snpsChoiceBox.getSelectionModel().select(curSnp);
-                            }else{
-                                snpsChoiceBox.getSelectionModel().selectFirst();
-                            }
+                        System.out.println("Tables differ!");
+                        LinkedHashSet tables = ap3Config.readTableFile(doc);
+                        if (configTablesDiffer(tables, 
+                                ap3Config.getBuildToTables().get(genome))){
+                            /*if available genes or snps differ we need to alert
+                            user and change fields in choiceboxes
+                            */
+                            System.out.println("SNP/Gene tables differ!");
+                            // ALERT USER IF GENOME STILL SELECTED
+                            Dialogs inf = Dialogs.create().title("Tables Updated").
+                                masthead("Gene/SNP Tables Updated").
+                                message("The Gene/SNP tables for your currently "
+                                        + "selected genome have been updated." ).
+                                styleClass(Dialog.STYLE_CLASS_NATIVE);
+                            inf.showInformation();
+                            String g = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
+                            if (g.equals(genome)){
+                                String curSnp = (String) snpsChoiceBox.getSelectionModel().getSelectedItem();
+                                snpsChoiceBox.getItems().clear();
+                                snpsChoiceBox.getItems().add("No");
+                                snpsChoiceBox.getItems().addAll(getSnpsFromTables(tables));
+                                if (snpsChoiceBox.getItems().contains(curSnp)){
+                                    snpsChoiceBox.getSelectionModel().select(curSnp);
+                                }else{
+                                    snpsChoiceBox.getSelectionModel().selectFirst();
+                                }
 
-                            String curGene = (String) databaseChoiceBox.getSelectionModel().getSelectedItem();
-                            databaseChoiceBox.getItems().clear();
-                            databaseChoiceBox.getItems().add("No");
-                            databaseChoiceBox.getItems().addAll(getSnpsFromTables(tables));
-                            if (databaseChoiceBox.getItems().contains(curGene)){
-                                databaseChoiceBox.getSelectionModel().select(curGene);
-                            }else{
-                                databaseChoiceBox.getSelectionModel().selectFirst();
+                                String curGene = (String) databaseChoiceBox.getSelectionModel().getSelectedItem();
+                                databaseChoiceBox.getItems().clear();
+                                databaseChoiceBox.getItems().addAll(getGenesFromTables(tables));
+                                if (databaseChoiceBox.getItems().contains(curGene)){
+                                    databaseChoiceBox.getSelectionModel().select(curGene);
+                                }else{
+                                    databaseChoiceBox.getSelectionModel().selectFirst();
+                                }
                             }
+                        }/*even if available genes and snps are the same we just
+                           change and rewrite rewrite the config file silently
+                           to prevent this happening until tables change again
+                         */
+                        ap3Config.getBuildToTables().put(genome, tables);
+                        try{
+                            System.out.println("Writing output");
+                            ap3Config.writeTableXmlFile(doc, genome);
+                        }catch (IOException ex){
+                            //ex.printStackTrace();
+                            Dialogs writeErr = Dialogs.create().title("Error").
+                                masthead("Error Updating Genome Information!").
+                                message("AutoPrimer3 encountered an error writing "
+                                        + "updated gene/SNP tables to its database "
+                                        + "file for genome " + genome + ". "
+                                        + "See exception below.").
+                                styleClass(Dialog.STYLE_CLASS_NATIVE);
+                                writeErr.showException(ex);
                         }
-                    }/*even if available genes and snps are the same we just
-                       change and rewrite rewrite the config file silently
-                       to prevent this happening until tables change again
-                     */
-                    ap3Config.getBuildToTables().put(genome, tables);
-                    try{
-                        System.out.println("Writing output");
-                        ap3Config.writeConfig();
-                    }catch (IOException ex){
-                        //ex.printStackTrace();
-                        Dialogs writeErr = Dialogs.create().title("Error").
-                            masthead("Error Updating Genomes!").
-                            message("AutoPrimer3 encountered an error writing "
-                                    + "updated gene/SNP tables to its config file."
-                                    + "See exception below.").
-                            styleClass(Dialog.STYLE_CLASS_NATIVE);
-                            writeErr.showException(ex);
+
+                    }else{
+                        System.out.println("Tables are the same");
                     }
-                    
-                }else{
-                    System.out.println("Tables are the same");
+                }catch(DocumentException|IOException ex){
+                    Dialogs docErr = Dialogs.create().title("Error").
+                        masthead("Error Updating Genome Information!").
+                        message("AutoPrimer3 encountered an error "
+                                + "updating gene/SNP tables from UCSC for genome"
+                                + genome + ". "
+                                + "See exception below.").
+                        styleClass(Dialog.STYLE_CLASS_NATIVE);
+                        docErr.showException(ex);
                 }
             }
         });
@@ -822,9 +818,9 @@ public class AutoPrimer3 extends Application implements Initializable{
                 ap3Config.setBuildToMapMaster(buildsAndTables.getBuildToMapMaster());
                 try{
                     System.out.println("Writing output");
-                    ap3Config.writeConfig();
-                }catch (IOException ex){
-                    //ex.printStackTrace();
+                    ap3Config.writeGenomeXmlFile();
+                }catch (DocumentException|IOException ex){
+                    ex.printStackTrace();
                 }
                 setLoading(false);
             }
@@ -904,12 +900,12 @@ public class AutoPrimer3 extends Application implements Initializable{
         checkedAlready.add(id);
         setLoading(true);
         progressLabel.setText("Getting database information for " + id);
-        final Task<LinkedHashSet<String>> getTablesTask = new Task<LinkedHashSet<String>>(){
+        final Task<Document> getTablesTask = new Task<Document>(){
             @Override
-            protected LinkedHashSet<String> call() 
-                    throws DocumentException, MalformedURLException{
+            protected Document call() 
+                    throws DocumentException, MalformedURLException, IOException{
                 System.out.println("Called getTablesTask...");
-                return buildsAndTables.getAvailableTables(id);
+                return ap3Config.getBuildXmlDocument(id);// buildsAndTables.getAvailableTables(id);
             }
         };
 
@@ -917,27 +913,34 @@ public class AutoPrimer3 extends Application implements Initializable{
             @Override
             public void handle (WorkerStateEvent e){
                 System.out.println("getTablesTask succeeded.");
-                LinkedHashSet<String> tables = (LinkedHashSet<String>) e.getSource().getValue();
-                if (! tables.equals(ap3Config.getBuildToTables().get(id))){
-                    ap3Config.getBuildToTables().put(id, tables);
-                    try{
-                        System.out.println("Writing output");
-                        ap3Config.writeConfig();
-                    }catch (IOException ex){
-                        //ex.printStackTrace();
-                        Dialogs writeErr = Dialogs.create().title("Error").
-                            masthead("Error Updating Genomes!").
-                            message("AutoPrimer3 encountered an error writing "
-                                    + "updated gene/SNP tables to its config file."
-                                    + "See exception below.").
-                            styleClass(Dialog.STYLE_CLASS_NATIVE);
-                            writeErr.showException(ex);
+                Document doc = (Document) e.getSource().getValue();
+                try{
+                    LinkedHashSet<String> tables = ap3Config.readTableFile(doc);
+                    ap3Config.getBuildToTables().put(id, tables);    
+                    if (! doc.equals(ap3Config.getBuildXmlDocument(id))){
+                        try{
+                            System.out.println("Writing output");
+                            ap3Config.writeTableXmlFile(doc, id);
+                        }catch (IOException ex){
+                            //ex.printStackTrace();
+                            Dialogs writeErr = Dialogs.create().title("Error").
+                                masthead("Error Updating Genome Information!").
+                                message("AutoPrimer3 encountered an error writing "
+                                        + "updated gene/SNP tables to the database "
+                                        + "file for genome " + id + ". "
+                                        + "See exception below.").
+                                styleClass(Dialog.STYLE_CLASS_NATIVE);
+                                writeErr.showException(ex);
+                        }
                     }
+                    setTables(tables);
+                    progressIndicator.setProgress(0);
+                    progressLabel.setText("");
+                    setLoading(false);
+                }catch(IOException|DocumentException ex){
+                    //TO DO!
+                    ex.printStackTrace();
                 }
-                setTables(tables);
-                progressIndicator.setProgress(0);
-                progressLabel.setText("");
-                setLoading(false);
             }
         });
 
