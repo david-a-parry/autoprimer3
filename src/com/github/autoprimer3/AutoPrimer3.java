@@ -820,7 +820,14 @@ public class AutoPrimer3 extends Application implements Initializable{
                     System.out.println("Writing output");
                     ap3Config.writeGenomeXmlFile();
                 }catch (DocumentException|IOException ex){
-                    ex.printStackTrace();
+                    //ex.printStackTrace();
+                    Dialogs writeErr = Dialogs.create().title("Error").
+                            masthead("Error Writing Genome Data!").
+                            message("AutoPrimer3 encountered an error writing "
+                                    + "updated genomes to its database file."
+                                    + "See exception below.").
+                            styleClass(Dialog.STYLE_CLASS_NATIVE);
+                            writeErr.showException(ex);
                 }
                 setLoading(false);
             }
@@ -938,8 +945,14 @@ public class AutoPrimer3 extends Application implements Initializable{
                     progressLabel.setText("");
                     setLoading(false);
                 }catch(IOException|DocumentException ex){
-                    //TO DO!
-                    ex.printStackTrace();
+                    //ex.printStackTrace();
+                    Dialogs writeErr = Dialogs.create().title("Error").
+                        masthead("Error Reading Updating Genome Information!").
+                        message("AutoPrimer3 encountered an error reading "
+                                + "updated gene/SNP tables from UCSC for genome "
+                                + id + ". See exception below.").
+                        styleClass(Dialog.STYLE_CLASS_NATIVE);
+                        writeErr.showException(ex);
                 }
             }
         });
