@@ -254,12 +254,7 @@ public class AutoPrimer3Config {
         }
     }
     
-    private void readGenomeXmlFile(File xml)throws IOException, DocumentException{
-        if (! xml.exists()){
-            buildsAndTables.connectToUcsc();
-            writeGenomeXmlFile();
-            return;
-        }
+    public void readGenomeXmlFile(File xml)throws IOException, DocumentException{        
         SAXReader reader = new SAXReader();
         Document doc = reader.read(xml);
         buildsAndTables.setDasGenomeXmlDocument(doc);
@@ -280,11 +275,41 @@ public class AutoPrimer3Config {
         }
     }
     
-    //t must be an xml file from UCSC
-    private LinkedHashSet<String> readTableFile(File xml) throws DocumentException{
-        LinkedHashSet<String> tables = new LinkedHashSet<>();
+    public File getBuildXmlFile(String build){
+        return new File (tableDir + fileSeparator + build);
+    }
+    
+    public Document getBuildXmlDocument(String build) throws DocumentException, 
+            MalformedURLException, IOException{
+        SAXReader reader = new SAXReader();
+        File f = getBuildXmlFile(build);
+        if (! f.exists()){
+            Document dasXml = buildsAndTables.getTableXmlDocument(build);
+            writeTableXmlFile(dasXml, build);
+        }
+        return reader.read(f);
+    }
+    
+    public LinkedHashSet<String> readTableFile(String build) throws DocumentException{
+        return readTableFile(getBuildXmlFile(build));
+    }
+    
+    //xml must be an xml file from UCSC
+    public LinkedHashSet<String> readTableFile(File xml) throws DocumentException{
         SAXReader reader = new SAXReader();
         Document dasXml = reader.read(xml);
+        return readTableFile(dasXml);
+    }
+    
+    public LinkedHashSet<String> readTableFile(File xml, String category)
+            throws DocumentException, MalformedURLException{
+        SAXReader reader = new SAXReader();
+        Document dasXml = reader.read(xml);
+        return readTableFile(dasXml, category);
+    }
+    
+    public LinkedHashSet<String> readTableFile(Document dasXml) throws DocumentException{
+        LinkedHashSet<String> tables = new LinkedHashSet<>();
         Element root = dasXml.getRootElement();
         Element gff = root.element("GFF");
         Element segment = gff.element("SEGMENT");
@@ -296,4 +321,33 @@ public class AutoPrimer3Config {
         return tables;
     }
     
+    public LinkedHashSet<String> readTableFile(Document dasXml, String category) 
+            throws DocumentException{
+        LinkedHashSet<String> tables = new LinkedHashSet<>();
+        Element root = dasXml.getRootElement();
+        Element gff = root.element("GFF");
+        Element segment = gff.element("SEGMENT");
+        for (Iterator i = segment.elementIterator("TYPE"); i.hasNext();){
+            Element type = (Element) i.next();
+            Attribute id = type.attribute("id");
+            Attribute cat = type.attribute("category");
+            if (cat.getValue().equals(category)){
+                tables.add(id.getValue());
+            }
+        }
+        return tables;  
+    }
+    
+    public void writeTableXmlFile(Document xmldoc, String build) throws IOException{
+        if (! tableDir.exists()){
+            tableDir.mkdir();
+        }
+        File buildXmlFile = getBuildXmlFile(build);
+        File temp = File.createTempFile("temp_build_" + build, ".xml");
+        BufferedWriter out = new BufferedWriter(new FileWriter(temp));
+        XMLWriter writer = new XMLWriter(out); 
+        writer.write(xmldoc);
+        out.close();
+        Files.move(temp.toPath(), buildXmlFile.toPath(), REPLACE_EXISTING);
+    }
 }
