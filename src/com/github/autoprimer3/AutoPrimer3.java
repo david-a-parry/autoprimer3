@@ -97,7 +97,7 @@ import org.dom4j.DocumentException;
  */
 public class AutoPrimer3 extends Application implements Initializable{
     
-    String VERSION = "3.00";
+    String VERSION = "3.0.0";
     
     @FXML
     AnchorPane mainPane;
