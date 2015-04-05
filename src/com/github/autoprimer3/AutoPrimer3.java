@@ -28,11 +28,12 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.net.MalformedURLException;
@@ -57,6 +58,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -95,6 +97,7 @@ import org.dom4j.DocumentException;
  */
 public class AutoPrimer3 extends Application implements Initializable{
     
+    String VERSION = "3.00";
     
     @FXML
     AnchorPane mainPane;
@@ -105,6 +108,10 @@ public class AutoPrimer3 extends Application implements Initializable{
     MenuItem refreshMenuItem;
     @FXML
     MenuItem quitMenuItem;
+    @FXML
+    MenuItem helpMenuItem;
+    @FXML
+    MenuItem aboutMenuItem;
     //tabs
     @FXML
     TabPane mainTabPane;
@@ -266,20 +273,30 @@ public class AutoPrimer3 extends Application implements Initializable{
         setLoading(true);
         try{
             ap3Config = new AutoPrimer3Config();
+        }catch(IOException ex){
+            Dialogs configError = Dialogs.create().title("Config Error").
+                masthead("Error Preparing AutoPrimer3 Files").
+                message("AutoPrimer3 encountered an error when trying to prepare"
+                    + " required temporary files. See exception below.").
+                styleClass(Dialog.STYLE_CLASS_NATIVE);
+            configError.showException(ex);
+        }
+        try{
             ap3Config.readGenomeXmlFile();
             ap3Config.readTablesXmlFiles();
         }catch (IOException|DocumentException ex){
             Dialogs configError = Dialogs.create().title("Config Error").
-            masthead("Error Reading AutoPrimer3 Genome Database").
-            message("AutoPrimer3 encountered an error reading genome details"
-                    + " - see exception below.").
-                    styleClass(Dialog.STYLE_CLASS_NATIVE);
+                masthead("Error Reading AutoPrimer3 Genome Database").
+                message("AutoPrimer3 encountered an error reading local stored "
+                    + "genome details - see exception below.").
+                styleClass(Dialog.STYLE_CLASS_NATIVE);
             configError.showException(ex);
         }
         try{
             primer3ex = ap3Config.extractP3Executable();
             misprimeDir = ap3Config.extractMisprimingLibs();
             thermoConfig = ap3Config.extractThermoConfig();
+            ap3Config.extractTableXml();
         }catch(IOException|ZipException ex){
             Dialogs configError = Dialogs.create().title("Config Error").
             masthead("Error Extracting Primer3 Files").
@@ -311,6 +328,20 @@ public class AutoPrimer3 extends Application implements Initializable{
             @Override
             public void handle(ActionEvent e){
                 Platform.exit();
+            }
+        });
+        
+        helpMenuItem.setOnAction(new EventHandler(){
+            @Override
+            public void handle (Event ev){
+                showHelp();
+            }
+        });
+        
+        aboutMenuItem.setOnAction(new EventHandler(){
+            @Override
+            public void handle (Event ev){
+                showAbout(ev);
             }
         });
         
@@ -556,24 +587,23 @@ public class AutoPrimer3 extends Application implements Initializable{
     }
     
     private void checkUcscGenomes(){
-        final Task<LinkedHashMap<String, String>> getGenomesTask = 
-                new Task<LinkedHashMap<String, String>>(){
+        final Task<Void> getGenomesTask = 
+                new Task<Void>(){
             @Override
-            protected LinkedHashMap<String, String> call() 
+            protected Void call() 
                     throws DocumentException, MalformedURLException{
                 System.out.println("Checking genome list.");
                 buildsAndTables.connectToUcsc();
-                return buildsAndTables.getBuildToDescription();
+                return null;
             }
         };
         getGenomesTask.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
             @Override
             public void handle (WorkerStateEvent e){
-                LinkedHashMap<String, String> buildIds = 
-                        (LinkedHashMap<String, String>) e.getSource().getValue();
                 boolean rewriteConfig = false;
-                if (! ap3Config.getBuildToDescription().equals(buildIds) &&
-                        buildIds != null){
+                if (! ap3Config.getBuildToDescription().keySet().equals(
+                        buildsAndTables.getBuildToDescription().keySet()) &&
+                        buildsAndTables.getBuildToDescription() != null){
                     //warn and repopulate genome choicebox
                     Action warn = Dialogs.create().title("Warning").
                         masthead("Repopulating Genomes").
@@ -582,15 +612,15 @@ public class AutoPrimer3 extends Application implements Initializable{
                         styleClass(Dialog.STYLE_CLASS_NATIVE).showWarning();
                     System.out.println("Genome list has changed - repopulating genome choice box");
                     rewriteConfig = true;
+                    ap3Config.setBuildToDescription(buildsAndTables.getBuildToDescription());
                     String currentSel = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
                     genomeChoiceBox.getItems().clear();
-                    genomeChoiceBox.getItems().addAll(buildIds.keySet());
+                    genomeChoiceBox.getItems().addAll(ap3Config.getBuildToDescription().keySet());
                     if (genomeChoiceBox.getItems().contains(currentSel)){
                         genomeChoiceBox.getSelectionModel().select(currentSel);
                     }else{
                         genomeChoiceBox.getSelectionModel().selectFirst();
                     }
-                    ap3Config.setBuildToDescription(buildIds);
                 }else{
                     System.out.println("Genome list is the same.");
                 }
@@ -655,7 +685,8 @@ public class AutoPrimer3 extends Application implements Initializable{
                 System.out.println("Finished getting tables for " + genome);
                 Document doc = (Document) e.getSource().getValue();
                 try{
-                    if (! ap3Config.getBuildXmlDocument(genome).equals(doc) && 
+                    
+                    if (! ap3Config.getBuildXmlDocument(genome).asXML().equals(doc.asXML()) && 
                         doc != null){
                     /*Tables differ, but we need to check whether it affects
                     relevant tables (i.e. genes or SNPs)
@@ -1944,7 +1975,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                             }
                             merger.mergeRegionsByPosition(exonRegions);
                             //need to allow for multiple regions for a given gene
-                            referenceSeqs.put(r.getName() + ":" + r.getCoordinateString(), 
+                            referenceSeqs.put(r.getName() + "|" + r.getCoordinateString(), 
                                     createReferenceSequence(dna, r.getStartPos(),
                                             flanks, exonRegions, onMinusStrand));
                             //DEBUG
@@ -2717,8 +2748,72 @@ public class AutoPrimer3 extends Application implements Initializable{
         }
     }
     
+    public void showHelp(){
+        try{
+            File instructionsPdf = File.createTempFile("autoprimer3_instructions", ".pdf" );
+            instructionsPdf.deleteOnExit();
+            InputStream inputStream = this.getClass().
+                    getResourceAsStream("instructions.pdf");
+            OutputStream outputStream = new FileOutputStream(instructionsPdf);
+            int read = 0;
+            byte[] bytes = new byte[1024];    
+            while ((read = inputStream.read(bytes)) != -1) {
+                    outputStream.write(bytes, 0, read);
+            }
+            inputStream.close();
+            outputStream.close();
+            openFile(instructionsPdf);
+        }catch(IOException ex){
+            Action openFailed = Dialogs.create().title("Open failed").
+                    masthead("Could not open instructions PDF").
+                    message("Exception encountered when attempting to open "
+                            + "AutoPrimer3's help pdf. See below:").
+                    styleClass(Dialog.STYLE_CLASS_NATIVE).
+                    showException(ex);
+        }
+    }
     
+    private void openFile(File f) throws IOException{
+        String command;
+        //Desktop.getDesktop().open(f);
+        if (System.getProperty("os.name").equals("Linux")) {
+            command = "xdg-open " + f;
+        }else if (System.getProperty("os.name").equals("Mac OS X")) {
+            command = "open " + f;
+        }else if (System.getProperty("os.name").contains("Windows")){
+            command = "cmd /C start " + f;
+        }else {
+            return;
+        }
+        Runtime.getRuntime().exec(command);
+    }
     
+    public void showAbout(Event ev){
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("about.fxml"));
+            Pane page = (Pane) loader.load();
+            Scene scene = new Scene(page);
+            Stage stage = new Stage();
+            stage.setScene(scene);
+            //scene.getStylesheets().add(AutoPrimer3.class
+            //            .getResource("autoprimer3.css").toExternalForm());
+            AboutController controller = loader.getController();
+            controller.setVersion(VERSION);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.getIcons().add(new Image(this.getClass().
+                    getResourceAsStream("icon.png")));
+            stage.setTitle("About AutoPrimer3");
+            
+            stage.show();
+        }catch(IOException ex){
+            Dialogs aboutError = Dialogs.create().title("Error").
+                masthead("Could not display about dialog").
+                message("Please see exception for details.").
+                styleClass(Dialog.STYLE_CLASS_NATIVE);
+            aboutError.showException(ex);
+                    
+        }
+    }
     
     /**
      * The main() method is ignored in correctly deployed JavaFX application.

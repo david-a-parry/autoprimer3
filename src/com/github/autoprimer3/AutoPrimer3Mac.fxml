@@ -27,7 +27,8 @@
                           </Menu>
                           <Menu mnemonicParsing="false" text="Help">
                             <items>
-                              <MenuItem mnemonicParsing="false" text="About" />
+                                    <MenuItem fx:id="helpMenuItem" mnemonicParsing="false" text="Help" />
+                              <MenuItem fx:id="aboutMenuItem" mnemonicParsing="false" text="About" />
                             </items>
                           </Menu>
                         </menus>
@@ -107,7 +108,7 @@
                               </VBox>
                            </children>
                         </HBox>
-                <HBox alignment="CENTER_RIGHT" layoutX="16.0" layoutY="138.0" prefHeight="47.0" prefWidth="620.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="16.0">
+                <HBox alignment="CENTER_RIGHT" focusTraversable="true" layoutX="16.0" layoutY="138.0" prefHeight="47.0" prefWidth="620.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="16.0">
                   <children>
                     <ProgressIndicator fx:id="progressIndicator" disable="false" opacity="1.0" prefHeight="25.0" prefWidth="47.0" progress="0.0" style="-fx-fill: null" visible="true" />
                       <Label fx:id="progressLabel" prefHeight="16.0" prefWidth="265.0" text="AutoPrimer3" />
