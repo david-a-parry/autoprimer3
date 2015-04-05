@@ -1,6 +1,7 @@
 /*
- * Copyright (C) 2014 david
- *
+
+*Copyright (C) 2014 David A. Parry <d.a.parry@leeds.ac.uk> 
+
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -187,6 +188,43 @@ public class AutoPrimer3Config {
     public File getThermoDir(){
         return thermoDir;
     }
+    
+    public File extractTableXml() throws IOException, ZipException{
+        boolean libsExist = true;
+        File tableZip = File.createTempFile("tables", ".zip" );
+        tableZip.deleteOnExit();
+        InputStream inputStream = this.getClass().
+                getResourceAsStream("tables.zip");
+        OutputStream outputStream = new FileOutputStream(tableZip);
+        int read = 0;
+        byte[] bytes = new byte[1024];    
+        while ((read = inputStream.read(bytes)) != -1) {
+                outputStream.write(bytes, 0, read);
+        }
+        inputStream.close();
+        outputStream.close();
+        ZipFile zip = new ZipFile(tableZip);
+
+        if (! tableDir.exists()){
+            tableDir.mkdir();
+            libsExist = false;
+        }
+        if (libsExist){
+            List<FileHeader> fileHeaders = zip.getFileHeaders();
+            for (FileHeader fh: fileHeaders){
+                File f = new File(tableDir + fileSeparator + fh.getFileName());
+                if (! f.exists()){
+                    libsExist = false;
+                    break;
+                }
+            }
+        }
+        if (!libsExist){
+            zip.extractAll(tableDir.toString());
+        }
+        return tableDir;
+    }
+    
     
     public HashMap<String, String> getBuildToMapMaster(){
         return buildToMapMaster;
