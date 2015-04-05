@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=AutoPrimer3
+Comment=AutoPrimer3
+Exec=/opt/AutoPrimer3/AutoPrimer3
+Icon=/opt/AutoPrimer3/AutoPrimer3.png
+Terminal=false
+Type=Application
+Categories=Science;
