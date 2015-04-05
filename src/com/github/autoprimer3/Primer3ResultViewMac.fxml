@@ -67,15 +67,12 @@
       </HBox>
       <MenuBar fx:id="menuBar" layoutX="-5.0" layoutY="-68.0" prefHeight="29.0" prefWidth="1210.0">
         <menus>
-          <Menu mnemonicParsing="false" text="File">
+          <Menu text="File">
             <items>
-                  <MenuItem fx:id="writeFileMenuItem" mnemonicParsing="false" text="Save Primers to File" />
-              <MenuItem fx:id="closeMenuItem" mnemonicParsing="false" text="Close" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Edit">
-            <items>
-              <MenuItem mnemonicParsing="false" text="Delete" />
+                  <MenuItem fx:id="writeFileMenuItem" text="Save Primers to File" />
+                  <MenuItem fx:id="writeDesignMenuItem" text="Save Design Details to File" />
+                  <MenuItem fx:id="writeRefsMenuItem" text="Save Reference Sequences to File" />
+              <MenuItem fx:id="closeMenuItem" text="Close" />
             </items>
           </Menu>
         </menus>
