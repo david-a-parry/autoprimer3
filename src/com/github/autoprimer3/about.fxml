@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+<?scenebuilder-stylesheet SnpViewerStyleSheet.css?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="227.0" prefWidth="576.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.autoprimer3.AboutController">
+  <children>
+    <ImageView id="icon" fitHeight="172.0" fitWidth="170.0" pickOnBounds="true" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="14.0">
+      <image>
+        <Image url="@icon.png" />
+      </image>
+    </ImageView>
+    <Button fx:id="closeButton" mnemonicParsing="false" text="Close" AnchorPane.bottomAnchor="9.0" AnchorPane.rightAnchor="17.0" />
+    <Label fx:id="versionLabel" prefWidth="232.0" text="Version" AnchorPane.bottomAnchor="16.0" AnchorPane.leftAnchor="214.0" AnchorPane.rightAnchor="130.0" />
+    <Text fill="#047c00" fontSmoothingType="LCD" strikethrough="false" stroke="#030007eb" strokeLineCap="BUTT" strokeMiterLimit="4.3" strokeType="INSIDE" strokeWidth="0.5" text="AutoPrimer3" underline="false" AnchorPane.leftAnchor="287.5" AnchorPane.rightAnchor="115.5" AnchorPane.topAnchor="14.03">
+      <font>
+        <Font size="32.0" />
+      </font>
+    </Text>
+    <TextArea editable="false" prefHeight="135.0" prefWidth="353.0" text="Copyright (C) 2014 David A. Parry&#10;&#10;Email d.a.parry@leeds.ac.uk&#10;&#10;For help and documentation please visit: &#10;&#10;https://github.com/gantzgraf/autoprimer3&#10;&#10;AutoPrimer3 - A program to automatically generate primer designs to genes and genomic coordinates using primer3&#10;&#10;Copyright (C) 2014, 2015 David A. Parry&#10;&#10;For details about primer3 please see http://primer3.sourceforge.net/&#10;&#10;This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.&#10;&#10;This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.&#10;&#10;You should have received a copy of the GNU General Public License along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.&#10; &#10;" wrapText="true" AnchorPane.bottomAnchor="41.0" AnchorPane.leftAnchor="206.0" AnchorPane.rightAnchor="17.0" AnchorPane.topAnchor="51.0">
+         <font>
+            <Font name="Monospaced Regular" size="12.0" />
+         </font></TextArea>
+  </children>
+</AnchorPane>
