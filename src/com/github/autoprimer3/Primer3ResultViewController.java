@@ -17,7 +17,6 @@
 
 package com.github.autoprimer3;
 
-import java.awt.Desktop;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -91,6 +90,10 @@ public class Primer3ResultViewController implements Initializable {
    @FXML
    MenuItem writeFileMenuItem;
    @FXML
+   MenuItem writeDesignMenuItem;
+   @FXML
+   MenuItem writeRefsMenuItem;
+   @FXML
    MenuItem closeMenuItem;
    @FXML
    TableView<Primer3Result> primerTable;
@@ -123,12 +126,11 @@ public class Primer3ResultViewController implements Initializable {
    @FXML
    ChoiceBox refChoiceBox;
    
-   AutoPrimer3 mainController = null;
-
    NumberFormat nf = NumberFormat.getNumberInstance();
    CoordComparator coordCompare = new CoordComparator();
    String server = null;
    String genome = null;
+   HashMap<String, String> refSeqs;
    
    private final ObservableList<Primer3Result> data = FXCollections.observableArrayList();
    
@@ -175,13 +177,60 @@ public class Primer3ResultViewController implements Initializable {
             public void handle(ActionEvent event) {
                 try{
                     writePrimersToFile();
-                }catch(IOException ex){
-                    Action writeFailed = Dialogs.create().title("Writing failed").
-                    masthead("Could not write primers to file").
-                    message("Exception encountered when attempting to write "
-                            + "primers to file. See below:").
-                    styleClass(Dialog.STYLE_CLASS_NATIVE).
-                    showException(ex);
+                }catch(final IOException ex){
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            Action writeFailed = Dialogs.create().title("Writing failed").
+                                masthead("Could not write primers to file").
+                                message("Exception encountered when attempting to write "
+                                        + "primers to file. See below:").
+                                styleClass(Dialog.STYLE_CLASS_NATIVE).
+                                showException(ex);
+                        }
+                    });
+                }
+            }
+        });
+        
+        writeDesignMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try{
+                    writeDesignToFile();
+                }catch(final IOException ex){
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            Action writeFailed = Dialogs.create().title("Writing failed").
+                                masthead("Could not write primer designs to file").
+                                message("Exception encountered when attempting to write "
+                                        + "design details to file. See below:").
+                                styleClass(Dialog.STYLE_CLASS_NATIVE).
+                                showException(ex);
+                        }
+                    });
+                }
+            }
+        });
+        
+        writeRefsMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try{
+                    writeRefSeqsToFile();
+                }catch(final IOException ex){
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            Action writeFailed = Dialogs.create().title("Writing failed").
+                                masthead("Could not write reference sequences to file").
+                                message("Exception encountered when attempting to write "
+                                        + "reference sequences to file. See below:").
+                                styleClass(Dialog.STYLE_CLASS_NATIVE).
+                                showException(ex);
+                        }
+                    });
                 }
             }
         });
@@ -250,8 +299,10 @@ public class Primer3ResultViewController implements Initializable {
             ArrayList<String> design, final HashMap<String, String> ref){
         int totalPairs = 0;
         int failures = 0;
+        refSeqs = ref;
         if (ref != null){
             refTab.setDisable(false);
+            writeRefsMenuItem.setDisable(false);
             refChoiceBox.getItems().clear();
             refChoiceBox.getItems().addAll(ref.keySet());
             refChoiceBox.getSelectionModel().selectedIndexProperty().addListener
@@ -276,6 +327,7 @@ public class Primer3ResultViewController implements Initializable {
             refChoiceBox.getSelectionModel().selectFirst();
         }else{
             refTab.setDisable(true);
+            writeRefsMenuItem.setDisable(true);
         }
         StringBuilder designString = new StringBuilder();
         for (Primer3Result r: regions){
@@ -345,6 +397,7 @@ public class Primer3ResultViewController implements Initializable {
            writePrimersToTsv(wFile);
        }
     }
+    
     private void writePrimersToExcel(final File f) throws IOException{
        Service<Void> service = new Service<Void>(){
             @Override
@@ -491,7 +544,7 @@ public class Primer3ResultViewController implements Initializable {
                                 message("Exception encountered when attempting to open "
                                         + "the saved file. See below:").
                                 styleClass(Dialog.STYLE_CLASS_NATIVE).
-                                showException(e.getSource().getException());
+                                showException(ex);
                         }
                     }
                 }
@@ -589,7 +642,7 @@ public class Primer3ResultViewController implements Initializable {
                                 message("Exception encountered when attempting to open "
                                         + "the saved file. See below:").
                                 styleClass(Dialog.STYLE_CLASS_NATIVE).
-                                showException(e.getSource().getException());
+                                showException(ex);
                         }
                     }
                 }
@@ -608,6 +661,111 @@ public class Primer3ResultViewController implements Initializable {
         service.start();
     }
     
+    private void writeDesignToFile() throws IOException{        
+        if (designTextSummary.getText().isEmpty()){
+            Dialogs noPrimersError = Dialogs.create().title("Nothing to save").
+                    masthead("No designs to save").
+                    message("No primer designs were made, no file can be saved.")
+                    .styleClass(Dialog.STYLE_CLASS_NATIVE);
+            noPrimersError.showError();
+            return;
+        }
+       FileChooser fileChooser = new FileChooser();
+       fileChooser.getExtensionFilters().add(
+               new FileChooser.ExtensionFilter("Text  (*.txt)", "*.txt"));
+       fileChooser.setTitle("Write primer designs to file...");
+       fileChooser.setInitialDirectory(new File(getProperty("user.home")));
+       File wFile = fileChooser.showSaveDialog(resultPane.getScene().getWindow());
+       if (wFile == null){
+           return;
+       }else if (!wFile.getName().endsWith(".txt")){
+            //annoying bug with filechooser means extension might not be appended
+            wFile = new File(wFile.getAbsolutePath() + ".txt");
+       }
+        FileWriter fw = new FileWriter(wFile.getAbsoluteFile());
+        BufferedWriter bw = new BufferedWriter(fw);
+        bw.write(designTextSummary.getText());
+        bw.close();
+        
+        Action response = Dialogs.create().title("Done").
+                    masthead("Finished writing").
+                    message("Primer designs successfully written to " + 
+                            wFile.getAbsolutePath() + "\n\nDo you want to open "
+                    + "this file now?").
+                    actions(Dialog.ACTION_YES, Dialog.ACTION_NO).
+                    styleClass(Dialog.STYLE_CLASS_NATIVE).
+                    showConfirm();
+
+        if (response == Dialog.ACTION_YES){
+            try{
+                //Desktop.getDesktop().open(f);
+                openFile(wFile);
+            }catch (IOException ex){
+                Action openFailed = Dialogs.create().title("Open failed").
+                    masthead("Could not open output file").
+                    message("Exception encountered when attempting to open "
+                            + "the saved file. See below:").
+                    styleClass(Dialog.STYLE_CLASS_NATIVE).
+                    showException(ex);
+            }
+        }
+    }
+    
+    private void writeRefSeqsToFile() throws IOException{        
+        if (refSeqs.isEmpty()){
+            Dialogs noPrimersError = Dialogs.create().title("Nothing to save").
+                    masthead("No reference sequences to save").
+                    message("No reference sequences created, no file to be saved.")
+                    .styleClass(Dialog.STYLE_CLASS_NATIVE);
+            noPrimersError.showError();
+            return;
+        }
+       FileChooser fileChooser = new FileChooser();
+       fileChooser.getExtensionFilters().add(
+               new FileChooser.ExtensionFilter("Text  (*.txt)", "*.txt"));
+       fileChooser.setTitle("Write reference sequences to file...");
+       fileChooser.setInitialDirectory(new File(getProperty("user.home")));
+       File wFile = fileChooser.showSaveDialog(resultPane.getScene().getWindow());
+       if (wFile == null){
+           return;
+       }else if (!wFile.getName().endsWith(".txt")){
+            //annoying bug with filechooser means extension might not be appended
+            wFile = new File(wFile.getAbsolutePath() + ".txt");
+       }
+        FileWriter fw = new FileWriter(wFile.getAbsoluteFile());
+        BufferedWriter bw = new BufferedWriter(fw);
+        for (String id: refSeqs.keySet()){
+            bw.write(">" + id);
+            bw.newLine();
+            bw.write(splitStringOnLength(refSeqs.get(id), 60));
+            bw.newLine();
+        }
+        bw.close();
+        
+        Action response = Dialogs.create().title("Done").
+                    masthead("Finished writing").
+                    message("Reference sequences successfully written to " + 
+                            wFile.getAbsolutePath() + "\n\nDo you want to open "
+                    + "this file now?").
+                    actions(Dialog.ACTION_YES, Dialog.ACTION_NO).
+                    styleClass(Dialog.STYLE_CLASS_NATIVE).
+                    showConfirm();
+
+        if (response == Dialog.ACTION_YES){
+            try{
+                //Desktop.getDesktop().open(f);
+                openFile(wFile);
+            }catch (IOException ex){
+                Action openFailed = Dialogs.create().title("Open failed").
+                    masthead("Could not open output file").
+                    message("Exception encountered when attempting to open "
+                            + "the saved file. See below:").
+                    styleClass(Dialog.STYLE_CLASS_NATIVE).
+                    showException(ex);
+            }
+        }
+    }
+    
     public void setServer (String s){
         server = s;
     }
@@ -621,11 +779,11 @@ public class Primer3ResultViewController implements Initializable {
         //Desktop.getDesktop().open(f);
         if (System.getProperty("os.name").equals("Linux")) {
             command = "xdg-open " + f;
-        } else if (System.getProperty("os.name").equals("Mac OS X")) {
+        }else if (System.getProperty("os.name").equals("Mac OS X")) {
             command = "open " + f;
         }else if (System.getProperty("os.name").contains("Windows")){
             command = "cmd /C start " + f;
-        } else {
+        }else {
             return;
         }
         Runtime.getRuntime().exec(command);
