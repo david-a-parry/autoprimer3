@@ -287,7 +287,7 @@
                            </children>
                         </HBox>
                         <Button fx:id="resetValuesButton" layoutX="484.0" layoutY="174.0" mnemonicParsing="false" text="Reset" AnchorPane.bottomAnchor="8.0" AnchorPane.rightAnchor="29.0" />
-                        <CheckBox fx:id="autoSelectMisprimingLibraryCheckBox" layoutX="348.0" layoutY="175.0" mnemonicParsing="false" selected="true" text="Autoselect Mispriming Library" />
+                        <CheckBox fx:id="autoSelectMisprimingLibraryCheckBox" layoutX="348.0" layoutY="183.0" mnemonicParsing="false" selected="true" text="Autoselect Mispriming Library" />
                      </children></AnchorPane>
           </content>
         </Tab>
