@@ -317,7 +317,7 @@ public class Primer3ResultViewController implements Initializable {
                                 System.out.println("Selecting " + id );
                                 System.out.println("Seq =  " + ref.get(id) );
                                 referenceTextArea.setText(splitStringOnLength(
-                                        ref.get(id), 60));
+                                        ref.get(id), 60, "\n"));
                             }
                         });
                     }
@@ -353,11 +353,11 @@ public class Primer3ResultViewController implements Initializable {
         }
         summaryLabel.setText(labelText.toString());
     }
-    private String splitStringOnLength(String s, Integer n){
+    private String splitStringOnLength(String s, Integer n, String sep){
         StringBuilder split = new StringBuilder();
         for (int i = 0; i < s.length(); i += n){
             split.append(s.substring(i, Math.min(i + n, s.length())));
-            split.append("\n");
+            split.append(sep);
         }
         return split.toString();
     }
@@ -682,9 +682,13 @@ public class Primer3ResultViewController implements Initializable {
             //annoying bug with filechooser means extension might not be appended
             wFile = new File(wFile.getAbsolutePath() + ".txt");
        }
+        String des[] = designTextSummary.getText().split("\n");//want platform agnostic newlines
         FileWriter fw = new FileWriter(wFile.getAbsoluteFile());
         BufferedWriter bw = new BufferedWriter(fw);
-        bw.write(designTextSummary.getText());
+        for (String d: des){
+            bw.write(d);
+            bw.newLine();
+        }
         bw.close();
         
         Action response = Dialogs.create().title("Done").
@@ -737,7 +741,7 @@ public class Primer3ResultViewController implements Initializable {
         for (String id: refSeqs.keySet()){
             bw.write(">" + id);
             bw.newLine();
-            bw.write(splitStringOnLength(refSeqs.get(id), 60));
+            bw.write(splitStringOnLength(refSeqs.get(id), 60, System.getProperty("line.separator")));
             bw.newLine();
         }
         bw.close();
