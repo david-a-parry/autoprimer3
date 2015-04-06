@@ -76,7 +76,7 @@
             <ProgressBar fx:id="progressBar" prefHeight="20.0" prefWidth="313.0" progress="0.0" HBox.hgrow="NEVER" />
          </children>
       </HBox>
-      <HBox alignment="CENTER_RIGHT" layoutX="606.0" layoutY="774.0" prefHeight="41.0" prefWidth="590.0" spacing="15.0" AnchorPane.rightAnchor="14.0">
+      <HBox alignment="CENTER_RIGHT" layoutX="606.0" layoutY="774.0" prefHeight="41.0" prefWidth="590.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="14.0">
          <children>
             <ChoiceBox fx:id="refChoiceBox" layoutX="726.0" layoutY="780.0" prefHeight="28.0" prefWidth="318.0" visible="false" HBox.hgrow="ALWAYS" />
             <Button fx:id="checkIsPcrButton" mnemonicParsing="false" text="Check isPCR Results" HBox.hgrow="SOMETIMES" />
