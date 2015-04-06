@@ -568,6 +568,8 @@ public class Primer3ResultViewController implements Initializable {
                     progressBar.setVisible(false);
                     summaryLabel.textProperty().unbind();
                     summaryLabel.setText(summary);
+                    closeButton.setDisable(false);
+                    closeMenuItem.setDisable(false);
                     setCheckIsPcrButton();
                 }
         });
@@ -583,6 +585,8 @@ public class Primer3ResultViewController implements Initializable {
                 progressBar.setVisible(false);
                 summaryLabel.textProperty().unbind();
                 summaryLabel.setText(summary);
+                closeButton.setDisable(false);
+                closeMenuItem.setDisable(false);
                 setCheckIsPcrButton();
             }
         });
@@ -599,12 +603,16 @@ public class Primer3ResultViewController implements Initializable {
                 progressBar.setVisible(false);
                 summaryLabel.textProperty().unbind();
                 summaryLabel.setText(summary);
+                closeButton.setDisable(false);
+                closeMenuItem.setDisable(false);
                 setCheckIsPcrButton();
             }
         });
         progressBar.setVisible(true);
         progressBar.progressProperty().bind(service.progressProperty());
         summaryLabel.textProperty().bind(service.messageProperty());
+        closeButton.setDisable(true);
+        closeMenuItem.setDisable(true);
         checkIsPcrButton.setText("Cancel");
         checkIsPcrButton.setOnAction(new EventHandler<ActionEvent>(){
            @Override
@@ -692,6 +700,13 @@ public class Primer3ResultViewController implements Initializable {
                                 showException(ex);
                         }
                     }
+                    progressBar.progressProperty().unbind();
+                    progressBar.setVisible(false);
+                    summaryLabel.textProperty().unbind();
+                    summaryLabel.setText(summary);
+                    closeButton.setDisable(false);
+                    closeMenuItem.setDisable(false);
+                    setCheckIsPcrButton();
                 }
         });
         service.setOnCancelled(new EventHandler<WorkerStateEvent>(){
@@ -706,6 +721,8 @@ public class Primer3ResultViewController implements Initializable {
                 progressBar.setVisible(false);
                 summaryLabel.textProperty().unbind();
                 summaryLabel.setText(summary);
+                closeButton.setDisable(false);
+                closeMenuItem.setDisable(false);
                 setCheckIsPcrButton();
             }
         });
@@ -722,12 +739,16 @@ public class Primer3ResultViewController implements Initializable {
                 progressBar.setVisible(false);
                 summaryLabel.textProperty().unbind();
                 summaryLabel.setText(summary);
+                closeButton.setDisable(false);
+                closeMenuItem.setDisable(false);
                 setCheckIsPcrButton();
             }
         });
         progressBar.setVisible(true);
         progressBar.progressProperty().bind(service.progressProperty());
         summaryLabel.textProperty().bind(service.messageProperty());
+        closeButton.setDisable(true);
+        closeMenuItem.setDisable(true);
         checkIsPcrButton.setText("Cancel");
         checkIsPcrButton.setOnAction(new EventHandler<ActionEvent>(){
            @Override
@@ -900,6 +921,9 @@ public class Primer3ResultViewController implements Initializable {
                     progressBar.setVisible(false);
                     summaryLabel.textProperty().unbind();
                     summaryLabel.setText(summary);
+                    writeFileMenuItem.setDisable(false);
+                    closeButton.setDisable(false);
+                    closeMenuItem.setDisable(false);
                     setCheckIsPcrButton();
                 }
         });
@@ -917,6 +941,9 @@ public class Primer3ResultViewController implements Initializable {
                 progressBar.setVisible(false);
                 summaryLabel.textProperty().unbind();
                 summaryLabel.setText(summary);
+                writeFileMenuItem.setDisable(false);
+                closeButton.setDisable(false);
+                closeMenuItem.setDisable(false);
                 setCheckIsPcrButton();
             }
         });
@@ -933,6 +960,9 @@ public class Primer3ResultViewController implements Initializable {
                 progressBar.setVisible(false);
                 summaryLabel.textProperty().unbind();
                 summaryLabel.setText(summary);
+                writeFileMenuItem.setDisable(false);
+                closeButton.setDisable(false);
+                closeMenuItem.setDisable(false);
                 setCheckIsPcrButton();
             }
         });
@@ -947,6 +977,9 @@ public class Primer3ResultViewController implements Initializable {
         progressBar.setVisible(true);
         progressBar.progressProperty().bind(service.progressProperty());
         summaryLabel.textProperty().bind(service.messageProperty());
+        writeFileMenuItem.setDisable(true);
+        closeButton.setDisable(true);
+        closeMenuItem.setDisable(true);
         service.start();
         
     }
