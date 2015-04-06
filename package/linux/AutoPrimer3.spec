@@ -1,6 +1,6 @@
 Summary: AutoPrimer3
 Name: AutoPrimer3
-Version: 3.0
+Version: 3.0.0
 Release: 1
 License: GPLv3
 Vendor: David A. Parry
