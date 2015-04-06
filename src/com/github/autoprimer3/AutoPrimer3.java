@@ -1587,8 +1587,6 @@ public class AutoPrimer3 extends Application implements Initializable{
                     //        .getResource("autoprimer3.css").toExternalForm());
                     resultView.displayData(result.get("primers"), 
                             result.get("design"), null);
-                    resultView.setServer(serverUrl);
-                    resultView.setGenome(genome);
                     tableStage.setTitle("AutoPrimer3 Results");
                     tableStage.getIcons().add(new Image(this.getClass()
                             .getResourceAsStream("icon.png")));
@@ -2123,8 +2121,6 @@ public class AutoPrimer3 extends Application implements Initializable{
                             resultView.displayData(result.get("primers"), 
                                     result.get("design"), 
                                     (HashMap<String, String>) result.get("ref").get(0));
-                            resultView.setServer(serverUrl);
-                            resultView.setGenome(genome);
                             tableStage.setTitle("AutoPrimer3 Results");
                             tableStage.getIcons().add(new Image(this.getClass()
                                     .getResourceAsStream("icon.png")));
@@ -2519,6 +2515,7 @@ public class AutoPrimer3 extends Application implements Initializable{
             pcrLink.setDisable(false);
             pcrLink.setUnderline(true);
             res.setIsPcrLink(pcrLink);
+            res.setIsPcrUrl(url);
         }
         String region = chrom + ":" + lpos + "-" + rpos;
         res.setRegion(region);

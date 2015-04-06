@@ -32,6 +32,8 @@ public class Primer3Result {
     private Integer productSize;
     private String region;
     private Hyperlink isPcrLink; 
+    private Integer isPcrResults;
+    private String isPcrUrl;
     
     Primer3Result(){
         this(0, null, null, null, null, 0, null, null);
@@ -74,6 +76,12 @@ public class Primer3Result {
     public void setIsPcrLink(Hyperlink h){
         isPcrLink = h;
     }
+    public void setIsPcrResults(int res){
+        isPcrResults = res;
+    }
+    public void setIsPcrUrl(String url){
+        isPcrUrl = url;
+    }
     public Integer getIndex(){
         return index;
     }
@@ -97,5 +105,12 @@ public class Primer3Result {
     }
     public Hyperlink getIsPcrLink(){
         return isPcrLink;
+    }
+    public Integer getIsPcrResults(){
+        return isPcrResults;
+    }
+    
+    public String getIsPcrUrl(){
+        return isPcrUrl;
     }
 }
