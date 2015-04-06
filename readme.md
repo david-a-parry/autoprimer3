@@ -4,6 +4,8 @@ AutoPrimer3 retrieves gene information, DNA sequences and SNP information from t
 
 Primers may be designed using information from any of the UCSC hosted genomes and primers can be made to avoid overlapping SNPs for genomes where SNP databases are available. 
 
+An instructions PDF can be viewed by selecting the 'Help' menu item from the application or by visiting [here](https://github.com/gantzgraf/autoprimer3/blob/master/src/com/github/autoprimer3/instructions.pdf).
+
 __CREDIT__
 
 AutoPrimer3 was written by David A. Parry (d.a.parry@leeds.ac.uk)
