@@ -18,15 +18,19 @@
 package com.github.autoprimer3;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import static java.lang.System.getProperty;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
@@ -48,6 +52,7 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
@@ -114,6 +119,10 @@ public class Primer3ResultViewController implements Initializable {
    @FXML
    TableColumn ispcrCol;
    @FXML
+   TableColumn ispcrResCol;
+   @FXML
+   Button checkIsPcrButton;
+   @FXML
    Button closeButton;
    @FXML 
    Label summaryLabel;
@@ -125,18 +134,21 @@ public class Primer3ResultViewController implements Initializable {
    Tab refTab;
    @FXML
    ChoiceBox refChoiceBox;
+   @FXML
+   ProgressBar progressBar;
+   
    
    NumberFormat nf = NumberFormat.getNumberInstance();
    CoordComparator coordCompare = new CoordComparator();
-   String server = null;
-   String genome = null;
    HashMap<String, String> refSeqs;
+   String summary = null; 
    
    private final ObservableList<Primer3Result> data = FXCollections.observableArrayList();
    
    @Override
     public void initialize(URL url, ResourceBundle rb) {
         menuBar.setUseSystemMenuBar(true);
+        progressBar.setVisible(false);
         
         indexCol.setCellValueFactory(new 
                 PropertyValueFactory<Primer3Result, Integer>("index"));
@@ -154,6 +166,9 @@ public class Primer3ResultViewController implements Initializable {
                 PropertyValueFactory<Primer3Result, String>("region"));
         ispcrCol.setCellValueFactory(new 
                 PropertyValueFactory<Primer3Result, Hyperlink>("isPcrLink"));
+        ispcrResCol.setCellValueFactory(new 
+                PropertyValueFactory<Primer3Result, Hyperlink>("isPcrResults"));
+        ispcrResCol.setVisible(false);
         primerTable.getSortOrder().add(indexCol);
         primerTable.getSortOrder().add(regionCol);
         primerTable.getSortOrder().add(productSizeCol);
@@ -234,6 +249,8 @@ public class Primer3ResultViewController implements Initializable {
                 }
             }
         });
+        
+        setCheckIsPcrButton();
                 
         closeMenuItem.setOnAction(new EventHandler<ActionEvent>(){
             @Override
@@ -351,8 +368,11 @@ public class Primer3ResultViewController implements Initializable {
             }
             labelText.append(" failed.");
         }
-        summaryLabel.setText(labelText.toString());
+        summary = labelText.toString();
+        summaryLabel.setText(summary);
+        
     }
+    
     private String splitStringOnLength(String s, Integer n, String sep){
         StringBuilder split = new StringBuilder();
         for (int i = 0; i < s.length(); i += n){
@@ -399,7 +419,7 @@ public class Primer3ResultViewController implements Initializable {
     }
     
     private void writePrimersToExcel(final File f) throws IOException{
-       Service<Void> service = new Service<Void>(){
+       final Service<Void> service = new Service<Void>(){
             @Override
             protected Task<Void> createTask(){
                 return new Task<Void>(){
@@ -433,6 +453,7 @@ public class Primer3ResultViewController implements Initializable {
                         updateProgress(0, data.size() * 3);
                         int n = 0;
                         for (Primer3Result r: data){
+                            n++;
                             updateMessage("Writing primer list " + n + " . . .");
                             row = listSheet.createRow(rowNo++);
                             int col = 0;
@@ -442,8 +463,7 @@ public class Primer3ResultViewController implements Initializable {
                             cell.setCellValue(r.getLeftPrimer());
                             cell = row.createCell(col++);
                             cell.setCellValue(r.getProductSize());
-                            n++;
-                            updateProgress(n, data.size());
+                            updateProgress(n, data.size() * 3);
                             updateMessage("Writing primer list " + n + " . . .");
                             row = listSheet.createRow(rowNo++);
                             col = 0;
@@ -454,15 +474,19 @@ public class Primer3ResultViewController implements Initializable {
                             cell = row.createCell(col++);
                             cell.setCellValue(r.getProductSize());
                             n++;
-                            updateProgress(n, data.size());
+                            updateProgress(n, data.size() * 3);
                         }
                         rowNo = 0;
                         row = detailsSheet.createRow(rowNo++);
-                        String detailsHeader[] = {"Name", "Other IDs", "Left Primer",
-                            "Right Primer", "Product Size (bp)", "Region", "in-silico PCR result"};
-                        for (int col = 0; col < detailsHeader.length; col ++){
+                        ArrayList<String> detailsHeader = new ArrayList<>(
+                        Arrays.asList("Name", "Other IDs", "Left Primer", "Right Primer", 
+                                "Product Size (bp)", "Region", "in-silico PCR"));
+                        if (ispcrResCol.isVisible()){
+                            detailsHeader.add("in-silico PCR Results");
+                        }
+                        for (int col = 0; col < detailsHeader.size(); col ++){
                             Cell cell = row.createCell(col);
-                            cell.setCellValue(detailsHeader[col]);
+                            cell.setCellValue(detailsHeader.get(col));
                         }
                         int m = 0;
                         for (Primer3Result r: data){
@@ -483,25 +507,25 @@ public class Primer3ResultViewController implements Initializable {
                             cell = row.createCell(col++);
                             cell.setCellValue(r.getRegion());
                             cell = row.createCell(col++);
-                            if (r.getProductSize() > 0 && server != null && 
-                                    genome != null){
-                                Integer wpSize = 4000 > Integer.valueOf(r.getProductSize()) * 2 ? 
-                                4000 : Integer.valueOf(r.getProductSize()) * 2;
-                                final String url = server + "/cgi-bin/hgPcr?db=" 
-                                    + genome + "&wp_target=genome&wp_f=" + 
-                                    r.getLeftPrimer() + "&wp_r=" + 
-                                    r.getRightPrimer() + "&wp_size=" + wpSize + 
-                                    "&wp_perfect=15&wp_good=15&boolshad.wp_flipReverse=0";
+                            if (r.getIsPcrUrl() != null){
                                 cell.setCellValue("isPCR");
                                 org.apache.poi.ss.usermodel.Hyperlink hl = 
                                     createHelper.createHyperlink(org.apache.poi.ss.usermodel.Hyperlink.LINK_URL);
-                                hl.setAddress(url);
+                                hl.setAddress(r.getIsPcrUrl());
                                 cell.setHyperlink(hl);
                                 cell.setCellStyle(hlink_style);
                             }else{
                                 cell.setCellValue("");
                             }
-                            updateProgress(n + m, data.size());
+                            if (ispcrResCol.isVisible()){
+                                cell = row.createCell(col++);
+                                if (r.getIsPcrResults() != null){
+                                    cell.setCellValue(r.getIsPcrResults());
+                                }else{
+                                    cell.setCellValue("");
+                                }
+                            }
+                            updateProgress(n + m, data.size() * 3);
                         }
                         
                         
@@ -514,14 +538,7 @@ public class Primer3ResultViewController implements Initializable {
             }
             
         };
-        
-        
-
-        Dialogs.create().owner(resultPane.getScene().getWindow())
-                .title("Writing Progress")
-                .masthead("Saving Primers to File")
-                .styleClass(Dialog.STYLE_CLASS_NATIVE)
-                .showWorkerProgress(service);
+       
         service.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
                 @Override
                 public void handle (WorkerStateEvent e){
@@ -547,7 +564,27 @@ public class Primer3ResultViewController implements Initializable {
                                 showException(ex);
                         }
                     }
+                    progressBar.progressProperty().unbind();
+                    progressBar.setVisible(false);
+                    summaryLabel.textProperty().unbind();
+                    summaryLabel.setText(summary);
+                    setCheckIsPcrButton();
                 }
+        });
+        service.setOnCancelled(new EventHandler<WorkerStateEvent>(){
+            @Override
+            public void handle (WorkerStateEvent e){
+                Dialogs writeCancelled = Dialogs.create().title("Writing Cancelled").
+                    masthead("Cancelled writing to file").
+                    message("User cancelled writing primers to file.").
+                    styleClass(Dialog.STYLE_CLASS_NATIVE);
+                writeCancelled.showInformation();
+                progressBar.progressProperty().unbind();
+                progressBar.setVisible(false);
+                summaryLabel.textProperty().unbind();
+                summaryLabel.setText(summary);
+                setCheckIsPcrButton();
+            }
         });
         service.setOnFailed(new EventHandler<WorkerStateEvent>(){
             @Override
@@ -558,8 +595,24 @@ public class Primer3ResultViewController implements Initializable {
                             + "primers to file. See below:").
                     styleClass(Dialog.STYLE_CLASS_NATIVE).
                     showException(e.getSource().getException());
+                progressBar.progressProperty().unbind();
+                progressBar.setVisible(false);
+                summaryLabel.textProperty().unbind();
+                summaryLabel.setText(summary);
+                setCheckIsPcrButton();
             }
         });
+        progressBar.setVisible(true);
+        progressBar.progressProperty().bind(service.progressProperty());
+        summaryLabel.textProperty().bind(service.messageProperty());
+        checkIsPcrButton.setText("Cancel");
+        checkIsPcrButton.setOnAction(new EventHandler<ActionEvent>(){
+           @Override
+           public void handle(ActionEvent actionEvent){
+                service.cancel();
+
+            }
+       });
         service.start();
     }
     
@@ -573,7 +626,7 @@ public class Primer3ResultViewController implements Initializable {
     
     //takes output file and delimiter string as arguments
     private void writePrimersToText(final File f, final String d) throws IOException{
-        Service<Void> service = new Service<Void>(){
+        final Service<Void> service = new Service<Void>(){
             @Override
             protected Task<Void> createTask(){
                 return new Task<Void>(){
@@ -606,12 +659,6 @@ public class Primer3ResultViewController implements Initializable {
         };
         
         
-
-        Dialogs.create().owner(resultPane.getScene().getWindow())
-                .title("Writing Progress")
-                .masthead("Saving Primers to File")
-                .styleClass(Dialog.STYLE_CLASS_NATIVE)
-                .showWorkerProgress(service);
         service.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
                 @Override
                 public void handle (WorkerStateEvent e){
@@ -647,6 +694,21 @@ public class Primer3ResultViewController implements Initializable {
                     }
                 }
         });
+        service.setOnCancelled(new EventHandler<WorkerStateEvent>(){
+            @Override
+            public void handle (WorkerStateEvent e){
+                Dialogs writeCancelled = Dialogs.create().title("Writing Cancelled").
+                    masthead("Cancelled writing to file").
+                    message("User cancelled writing primers to file.").
+                    styleClass(Dialog.STYLE_CLASS_NATIVE);
+                writeCancelled.showInformation();
+                progressBar.progressProperty().unbind();
+                progressBar.setVisible(false);
+                summaryLabel.textProperty().unbind();
+                summaryLabel.setText(summary);
+                setCheckIsPcrButton();
+            }
+        });
         service.setOnFailed(new EventHandler<WorkerStateEvent>(){
             @Override
             public void handle (WorkerStateEvent e){
@@ -656,8 +718,24 @@ public class Primer3ResultViewController implements Initializable {
                             + "primers to file. See below:").
                     styleClass(Dialog.STYLE_CLASS_NATIVE).
                     showException(e.getSource().getException());
+                progressBar.progressProperty().unbind();
+                progressBar.setVisible(false);
+                summaryLabel.textProperty().unbind();
+                summaryLabel.setText(summary);
+                setCheckIsPcrButton();
             }
         });
+        progressBar.setVisible(true);
+        progressBar.progressProperty().bind(service.progressProperty());
+        summaryLabel.textProperty().bind(service.messageProperty());
+        checkIsPcrButton.setText("Cancel");
+        checkIsPcrButton.setOnAction(new EventHandler<ActionEvent>(){
+           @Override
+           public void handle(ActionEvent actionEvent){
+                service.cancel();
+
+            }
+       });
         service.start();
     }
     
@@ -770,13 +848,133 @@ public class Primer3ResultViewController implements Initializable {
         }
     }
     
-    public void setServer (String s){
-        server = s;
+    private void checkIsPcrResults() throws MalformedURLException, IOException{
+        
+        final Service<ObservableList<Primer3Result>> service = new Service<ObservableList<Primer3Result>>(){
+            @Override
+            protected Task<ObservableList<Primer3Result>> createTask(){
+                return new Task<ObservableList<Primer3Result>>(){
+                    @Override
+                    protected ObservableList<Primer3Result> call() throws IOException {
+                        final ObservableList<Primer3Result> newData = FXCollections.observableArrayList();
+                        updateProgress(0, data.size());
+                        int p = 0;
+                        for (Primer3Result r: data){
+                            p++;
+                            updateMessage("Checking primer pair " + p + " . . .");
+                            r.setIsPcrResults(0);
+                            URL url = new URL(r.getIsPcrUrl());
+                            BufferedReader in = new BufferedReader(
+                                new InputStreamReader(url.openStream()));
+                            String inputLine;
+                            while ((inputLine = in.readLine()) != null){
+                                if (inputLine.contains("PcrResult=pack")){
+                                    Integer n = r.getIsPcrResults();
+                                    r.setIsPcrResults(++n);
+                                }
+                            }
+                            updateProgress(p, data.size());
+                            newData.add(r);
+                        }
+                        return newData;
+                    }
+                };
+            }
+            
+        };
+        
+        service.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
+                @Override
+                public void handle (WorkerStateEvent e){
+                    ObservableList<Primer3Result> d = 
+                            (ObservableList<Primer3Result>) e.getSource().getValue();
+                    data.removeAll(data);
+                    data.addAll(d);
+                    Dialogs inf = Dialogs.create().title("Done").
+                            masthead("Finished Checking isPCR Results").
+                            message(d.size() + " primer pairs checked by in-silico PCR").
+                            styleClass(Dialog.STYLE_CLASS_NATIVE);
+                    inf.showInformation();
+                    ispcrResCol.setVisible(true);
+                    progressBar.progressProperty().unbind();
+                    progressBar.setVisible(false);
+                    summaryLabel.textProperty().unbind();
+                    summaryLabel.setText(summary);
+                    setCheckIsPcrButton();
+                }
+        });
+        service.setOnFailed(new EventHandler<WorkerStateEvent>(){
+            @Override
+            public void handle (WorkerStateEvent e){
+                Action writeFailed = Dialogs.create().title("isPCR failed").
+                    masthead("Could not check primer pairs by in-silico PCR").
+                    message("Exception encountered when attempting to check "
+                            + "primers by in-silico PCR. See below:").
+                    styleClass(Dialog.STYLE_CLASS_NATIVE).
+                    showException(e.getSource().getException());
+                progressBar.progressProperty().unbind();
+                progressBar.setProgress(0);
+                progressBar.setVisible(false);
+                summaryLabel.textProperty().unbind();
+                summaryLabel.setText(summary);
+                setCheckIsPcrButton();
+            }
+        });
+        service.setOnCancelled(new EventHandler<WorkerStateEvent>(){
+            @Override
+            public void handle (WorkerStateEvent e){
+                Dialogs writeCancelled = Dialogs.create().title("isPCR Cancelled").
+                    masthead("Primer pair checks cancelled").
+                    message("isPCR checks by in-silico PCR were cancelled by user.").
+                    styleClass(Dialog.STYLE_CLASS_NATIVE);
+                writeCancelled.showInformation();
+                progressBar.progressProperty().unbind();
+                progressBar.setProgress(0);
+                progressBar.setVisible(false);
+                summaryLabel.textProperty().unbind();
+                summaryLabel.setText(summary);
+                setCheckIsPcrButton();
+            }
+        });
+        checkIsPcrButton.setText("Cancel");
+        checkIsPcrButton.setOnAction(new EventHandler<ActionEvent>(){
+           @Override
+           public void handle(ActionEvent actionEvent){
+                service.cancel();
+
+            }
+       });
+        progressBar.setVisible(true);
+        progressBar.progressProperty().bind(service.progressProperty());
+        summaryLabel.textProperty().bind(service.messageProperty());
+        service.start();
+        
     }
     
-    public void setGenome (String g){
-        genome = g;
+    private void setCheckIsPcrButton(){
+        checkIsPcrButton.setText("Check isPCR Results");
+        checkIsPcrButton.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent e){
+                try{
+                    checkIsPcrResults();
+                }catch(final IOException ex){
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            Action writeFailed = Dialogs.create().title("isPCR Check Failed").
+                                masthead("Error performing in-silico PCR checks on primers.").
+                                message("Exception encountered when attempting perform in-silico "
+                                        + "PCR checks via UCSC webiste. See below:").
+                                styleClass(Dialog.STYLE_CLASS_NATIVE).
+                                showException(ex);
+                        }
+                    });
+                }
+            }
+        });
     }
+    
     
     private void openFile(File f) throws IOException{
         String command;

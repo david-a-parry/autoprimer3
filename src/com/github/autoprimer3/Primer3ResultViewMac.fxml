@@ -15,14 +15,15 @@
                      <children>
                         <TableView fx:id="primerTable" layoutX="55.0" layoutY="35.0" prefHeight="326.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                           <columns>
-                              <TableColumn fx:id="indexCol" prefWidth="59.0" text="#" />
-                            <TableColumn fx:id="nameCol" prefWidth="147.0" text="Name" />
+                              <TableColumn fx:id="indexCol" prefWidth="39.0" text="#" />
+                            <TableColumn fx:id="nameCol" prefWidth="167.0" text="Name" />
                               <TableColumn fx:id="idCol" prefWidth="160.0" text="Other IDs" />
                             <TableColumn fx:id="leftPrimerCol" prefWidth="190.0" text="Left Primer" />
                               <TableColumn fx:id="rightPrimerCol" prefWidth="205.0" text="Right Primer" />
-                              <TableColumn fx:id="productSizeCol" prefWidth="114.0" text="Product Size" />
-                              <TableColumn fx:id="regionCol" prefWidth="147.0" text="Region" />
-                              <TableColumn fx:id="ispcrCol" prefWidth="101.0" text="in silico PCR" />
+                              <TableColumn fx:id="productSizeCol" prefWidth="97.0" text="Product Size" />
+                              <TableColumn fx:id="regionCol" prefWidth="146.0" text="Region" />
+                              <TableColumn fx:id="ispcrCol" prefWidth="86.0" text="in silico PCR" />
+                              <TableColumn fx:id="ispcrResCol" prefWidth="134.0" text="isPCR Results" />
                           </columns>
                         </TableView>
                      </children>
@@ -57,12 +58,17 @@
             </Tab>
         </tabs>
       </TabPane>
-      <HBox alignment="CENTER_RIGHT" layoutX="10.0" layoutY="774.0" prefHeight="41.0" prefWidth="1191.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="9.0">
+      <HBox alignment="CENTER_RIGHT" layoutX="611.0" layoutY="774.0" prefHeight="41.0" prefWidth="590.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="9.0">
          <children>
-            <Label fx:id="summaryLabel" layoutX="14.0" layoutY="793.0" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="14.0" HBox.hgrow="SOMETIMES" />
-            <Separator prefHeight="17.0" prefWidth="614.0" visible="false" HBox.hgrow="ALWAYS" />
-            <ChoiceBox fx:id="refChoiceBox" layoutX="726.0" layoutY="780.0" prefHeight="28.0" prefWidth="279.0" visible="false" HBox.hgrow="SOMETIMES" />
+            <ChoiceBox fx:id="refChoiceBox" layoutX="726.0" layoutY="780.0" prefHeight="28.0" prefWidth="318.0" visible="false" HBox.hgrow="ALWAYS" />
+            <Button fx:id="checkIsPcrButton" mnemonicParsing="false" text="Check isPCR Results" HBox.hgrow="SOMETIMES" />
             <Button fx:id="closeButton" layoutX="1138.0" layoutY="775.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="72.0" text="Close" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="20.0" HBox.hgrow="NEVER" />
+         </children>
+      </HBox>
+      <HBox alignment="CENTER_LEFT" layoutX="9.0" layoutY="774.0" prefHeight="41.0" prefWidth="590.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="9.0">
+         <children>
+            <Label fx:id="summaryLabel" prefHeight="16.0" prefWidth="365.0" HBox.hgrow="ALWAYS" />
+            <ProgressBar fx:id="progressBar" prefHeight="20.0" prefWidth="313.0" progress="0.0" HBox.hgrow="NEVER" />
          </children>
       </HBox>
       <MenuBar fx:id="menuBar" layoutX="-5.0" layoutY="-68.0" prefHeight="29.0" prefWidth="1210.0">
