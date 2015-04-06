@@ -943,7 +943,7 @@ public class AutoPrimer3 extends Application implements Initializable{
             protected Document call() 
                     throws DocumentException, MalformedURLException, IOException{
                 System.out.println("Called getTablesTask...");
-                return ap3Config.getBuildXmlDocument(id);// buildsAndTables.getAvailableTables(id);
+                return ap3Config.getBuildXmlDocument(id, true);// buildsAndTables.getAvailableTables(id);
             }
         };
 
