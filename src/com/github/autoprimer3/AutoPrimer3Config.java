@@ -319,11 +319,16 @@ public class AutoPrimer3Config {
         return new File (tableDir + fileSeparator + build);
     }
     
-    public Document getBuildXmlDocument(String build) throws DocumentException, 
-            MalformedURLException, IOException{
+    public Document getBuildXmlDocument(String build) 
+            throws DocumentException, MalformedURLException, IOException{
+        return getBuildXmlDocument(build, false);
+    }
+    
+    public Document getBuildXmlDocument(String build, Boolean forceRefresh) 
+            throws DocumentException, MalformedURLException, IOException{
         SAXReader reader = new SAXReader();
         File f = getBuildXmlFile(build);
-        if (! f.exists()){
+        if (! f.exists() || forceRefresh){
             Document dasXml = buildsAndTables.getTableXmlDocument(build);
             writeTableXmlFile(dasXml, build);
         }
