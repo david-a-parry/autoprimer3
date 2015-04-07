@@ -10,6 +10,8 @@ __CREDIT__
 
 AutoPrimer3 was written by David A. Parry (d.a.parry@leeds.ac.uk)
 
+If you use this program to generate primers used in a publication, please cite the URL 'https://github.com/gantzgraf/autoprimer3'.
+
 More information about Primer3, the primer design tool employed by AutoPrimer3, is available at http://primer3.sourceforge.net.
 
 __LICENSE__
