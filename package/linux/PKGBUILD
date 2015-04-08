@@ -1,0 +1,33 @@
+# Maintainer: David Parry <d.a.parry@leeds.ac.uk>
+pkgname=AutoPrimer3
+pkgver=3.0.1
+pkgrel=1
+epoch=
+pkgdesc="Automatically designs primers to genes or coordinates"
+arch=('x86_64')
+url="https://github.com/gantzgraf/autoprimer3"
+license=('GPL3')
+groups=()
+depends=()
+makedepends=()
+checkdepends=()
+optdepends=()
+provides=()
+conflicts=()
+replaces=()
+backup=()
+options=()
+install="${pkgname}.install"
+changelog=
+source=("https://github.com/gantzgraf/autoprimer3/releases/download/v3.0.1/autoprimer3-3.0.1.deb")
+noextract=()
+md5sums=("0c91710a4687e1b47554724b25d74330")
+validpgpkeys=()
+
+prepare() {
+    tar -zxvf data.tar.gz
+}
+
+package() {
+    tar -zxf data.tar.gz -C "${pkgdir}"
+}
