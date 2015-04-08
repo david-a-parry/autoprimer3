@@ -191,35 +191,29 @@ public class AutoPrimer3Config {
     
     public File extractTableXml() throws IOException, ZipException{
         boolean libsExist = true;
-        File tableZip = File.createTempFile("tables", ".zip" );
-        tableZip.deleteOnExit();
-        InputStream inputStream = this.getClass().
-                getResourceAsStream("tables.zip");
-        OutputStream outputStream = new FileOutputStream(tableZip);
-        int read = 0;
-        byte[] bytes = new byte[1024];    
-        while ((read = inputStream.read(bytes)) != -1) {
-                outputStream.write(bytes, 0, read);
-        }
-        inputStream.close();
-        outputStream.close();
-        ZipFile zip = new ZipFile(tableZip);
-
         if (! tableDir.exists()){
             tableDir.mkdir();
             libsExist = false;
         }
         if (libsExist){
-            List<FileHeader> fileHeaders = zip.getFileHeaders();
-            for (FileHeader fh: fileHeaders){
-                File f = new File(tableDir + fileSeparator + fh.getFileName());
-                if (! f.exists()){
-                    libsExist = false;
-                    break;
-                }
+            if (tableDir.listFiles().length == 0){
+                libsExist = false;
             }
         }
         if (!libsExist){
+            File tableZip = File.createTempFile("tables", ".zip" );
+            tableZip.deleteOnExit();
+            InputStream inputStream = this.getClass().
+                    getResourceAsStream("tables.zip");
+            OutputStream outputStream = new FileOutputStream(tableZip);
+            int read = 0;
+            byte[] bytes = new byte[1024];    
+            while ((read = inputStream.read(bytes)) != -1) {
+                    outputStream.write(bytes, 0, read);
+            }
+            inputStream.close();
+            outputStream.close();
+            ZipFile zip = new ZipFile(tableZip);
             zip.extractAll(tableDir.toString());
         }
         return tableDir;
@@ -314,7 +308,7 @@ public class AutoPrimer3Config {
             buildToTables.put(t.getName(), readTableFile(t));
         }
     }
-    
+     
     public File getBuildXmlFile(String build){
         return new File (tableDir + fileSeparator + build);
     }
