@@ -1732,7 +1732,6 @@ public class AutoPrimer3 extends Application implements Initializable{
         if (! checkDesignParameters()){
             return;
         }
-        final String genome = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
                             
         setRunning(true);
         final Task<GeneSearchResult> geneSearchTask = 
