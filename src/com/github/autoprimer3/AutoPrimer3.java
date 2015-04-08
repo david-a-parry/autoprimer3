@@ -2518,6 +2518,9 @@ public class AutoPrimer3 extends Application implements Initializable{
             pcrLink.setUnderline(true);
             res.setIsPcrLink(pcrLink);
             res.setIsPcrUrl(url);
+        }else{
+            res.setIsPcrLink(null);
+            res.setIsPcrUrl(null);
         }
         String region = chrom + ":" + lpos + "-" + rpos;
         res.setRegion(region);

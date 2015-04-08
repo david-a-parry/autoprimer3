@@ -331,8 +331,8 @@ public class Primer3ResultViewController implements Initializable {
                         Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
-                                System.out.println("Selecting " + id );
-                                System.out.println("Seq =  " + ref.get(id) );
+                                //System.out.println("Selecting " + id );
+                                //System.out.println("Seq =  " + ref.get(id) );
                                 referenceTextArea.setText(splitStringOnLength(
                                         ref.get(id), 60, "\n"));
                             }
@@ -884,14 +884,16 @@ public class Primer3ResultViewController implements Initializable {
                             p++;
                             updateMessage("Checking primer pair " + p + " . . .");
                             r.setIsPcrResults(0);
-                            URL url = new URL(r.getIsPcrUrl());
-                            BufferedReader in = new BufferedReader(
-                                new InputStreamReader(url.openStream()));
-                            String inputLine;
-                            while ((inputLine = in.readLine()) != null){
-                                if (inputLine.contains("PcrResult=pack")){
-                                    Integer n = r.getIsPcrResults();
-                                    r.setIsPcrResults(++n);
+                            if (r.getIsPcrUrl() != null){
+                                URL url = new URL(r.getIsPcrUrl());
+                                BufferedReader in = new BufferedReader(
+                                    new InputStreamReader(url.openStream()));
+                                String inputLine;
+                                while ((inputLine = in.readLine()) != null){
+                                    if (inputLine.contains("PcrResult=pack")){
+                                        Integer n = r.getIsPcrResults();
+                                        r.setIsPcrResults(++n);
+                                    }
                                 }
                             }
                             updateProgress(p, data.size());
@@ -911,20 +913,48 @@ public class Primer3ResultViewController implements Initializable {
                             (ObservableList<Primer3Result>) e.getSource().getValue();
                     data.removeAll(data);
                     data.addAll(d);
-                    Dialogs inf = Dialogs.create().title("Done").
+                    final ArrayList<Primer3Result> nonSpecific = new ArrayList<>();
+                    for (Primer3Result r: data){
+                        if (r.getIsPcrResults() > 1){
+                            nonSpecific.add(r);
+                        }
+                    }
+                    StringBuilder msg = new StringBuilder();
+                    if (nonSpecific.size() > 0){
+                        msg.append("WARNING: ").append(nonSpecific.size()).append(" primer pair");
+                        if (nonSpecific.size() == 1){
+                            msg.append( " appears ");
+                        }else{
+                            msg.append("s appear ");
+                        }
+                        msg.append("to amplify more than one genomic region.\n\n");
+                    }
+                    msg.append(d.size()).append(" total primer pairs checked by in-silico PCR");
+                    final String message = msg.toString();
+                    Platform.runLater(new Runnable(){
+                        @Override
+                        public void run(){
+                            ispcrResCol.setVisible(true);
+                            progressBar.progressProperty().unbind();
+                            progressBar.setVisible(false);
+                            summaryLabel.textProperty().unbind();
+                            summaryLabel.setText(summary);
+                            writeFileMenuItem.setDisable(false);
+                            closeButton.setDisable(false);
+                            closeMenuItem.setDisable(false);
+                            setCheckIsPcrButton();
+                            Dialogs inf = Dialogs.create().title("Done").
                             masthead("Finished Checking isPCR Results").
-                            message(d.size() + " primer pairs checked by in-silico PCR").
+                            message(message).
                             styleClass(Dialog.STYLE_CLASS_NATIVE);
-                    inf.showInformation();
-                    ispcrResCol.setVisible(true);
-                    progressBar.progressProperty().unbind();
-                    progressBar.setVisible(false);
-                    summaryLabel.textProperty().unbind();
-                    summaryLabel.setText(summary);
-                    writeFileMenuItem.setDisable(false);
-                    closeButton.setDisable(false);
-                    closeMenuItem.setDisable(false);
-                    setCheckIsPcrButton();
+                            if (nonSpecific.isEmpty()){
+                                inf.showInformation();
+                            }else{
+                                inf.showWarning();
+                            }
+                        }
+                    });
+                    
                 }
         });
         service.setOnFailed(new EventHandler<WorkerStateEvent>(){
