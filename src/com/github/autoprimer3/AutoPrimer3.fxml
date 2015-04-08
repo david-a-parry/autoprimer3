@@ -111,8 +111,8 @@
                 <HBox alignment="CENTER_RIGHT" layoutX="17.0" layoutY="159.0" prefHeight="47.0" prefWidth="620.0" spacing="15.0" AnchorPane.bottomAnchor="11.0" AnchorPane.rightAnchor="15.0">
                   <children>
                     <ProgressIndicator fx:id="progressIndicator" disable="false" opacity="1.0" progress="0.0" style="-fx-fill: null" visible="true" />
-                    <Label fx:id="progressLabel" prefHeight="17.0" prefWidth="233.0" text="AutoPrimer3" />
-                    <Button fx:id="refreshButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="155.0" text="Refresh/Reconnect" />
+                    <Label fx:id="progressLabel" prefHeight="17.0" prefWidth="308.0" text="AutoPrimer3" />
+                    <Button fx:id="refreshButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="81.0" text="Refresh" />
                     <Button fx:id="cancelButton" disable="false" mnemonicParsing="false" prefWidth="66.0" text="Cancel" />
                     <Button fx:id="runButton" defaultButton="true" mnemonicParsing="false" onAction="#designPrimersToGene" style="&#10;" text="Design" textAlignment="LEFT" />
                   </children>
@@ -130,8 +130,8 @@
                         <HBox alignment="CENTER_LEFT" layoutX="14.0" layoutY="156.0" prefHeight="47.0" prefWidth="613.0" spacing="10.0">
                            <children>
                               <ProgressIndicator fx:id="progressIndicator2" disable="false" opacity="1.0" prefHeight="47.0" prefWidth="52.0" progress="0.0" style="-fx-fill: null" visible="true" />
-                              <Label fx:id="progressLabel2" prefHeight="41.0" prefWidth="197.0" text="AutoPrimer3" />
-                              <Button fx:id="clearButton" layoutX="315.0" layoutY="166.0" mnemonicParsing="false" onAction="#clearRegions" text="Clear Regions" />
+                              <Label fx:id="progressLabel2" prefHeight="41.0" prefWidth="249.0" text="AutoPrimer3" />
+                              <Button fx:id="clearButton" layoutX="315.0" layoutY="166.0" mnemonicParsing="false" onAction="#clearRegions" text="Clear" />
                               <Button fx:id="loadFileButton" layoutX="407.0" layoutY="166.0" mnemonicParsing="false" onAction="#loadRegionsFile" text="Load File" />
                               <Button fx:id="cancelButton2" cancelButton="true" layoutX="487.0" layoutY="166.0" mnemonicParsing="false" text="Cancel" />
                               <Button fx:id="runButton2" layoutX="561.0" layoutY="166.0" mnemonicParsing="false" onAction="#designPrimersToCoordinates" text="Design" />
