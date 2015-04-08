@@ -97,7 +97,7 @@ import org.dom4j.DocumentException;
  */
 public class AutoPrimer3 extends Application implements Initializable{
     
-    String VERSION = "3.0.0";
+    String VERSION = "3.0.1";
     
     @FXML
     AnchorPane mainPane;
@@ -283,7 +283,7 @@ public class AutoPrimer3 extends Application implements Initializable{
         }
         try{
             ap3Config.readGenomeXmlFile();
-            ap3Config.readTablesXmlFiles();
+            //ap3Config.readTablesXmlFiles();
         }catch (IOException|DocumentException ex){
             Dialogs configError = Dialogs.create().title("Config Error").
                 masthead("Error Reading AutoPrimer3 Genome Database").
@@ -733,7 +733,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                          */
                         ap3Config.getBuildToTables().put(genome, tables);
                         try{
-                            System.out.println("Writing output");
+                            System.out.println("Writing new xml database file");
                             ap3Config.writeTableXmlFile(doc, genome);
                         }catch (IOException ex){
                             //ex.printStackTrace();
@@ -848,7 +848,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                 ap3Config.setBuildToDescription(buildIds);
                 ap3Config.setBuildToMapMaster(buildsAndTables.getBuildToMapMaster());
                 try{
-                    System.out.println("Writing output");
+                    System.out.println("Writing new xml database file");
                     ap3Config.writeGenomeXmlFile();
                 }catch (DocumentException|IOException ex){
                     //ex.printStackTrace();
@@ -924,7 +924,7 @@ public class AutoPrimer3 extends Application implements Initializable{
         snpsChoiceBox.getSelectionModel().selectFirst();
     }
     
-    private void getBuildTables(final String id, boolean forceRefresh){
+    private void getBuildTables(final String id, final boolean forceRefresh){
         databaseChoiceBox.getItems().clear();
         snpsChoiceBox.getItems().clear();
         if (ap3Config.getBuildToTables().containsKey(id) && !forceRefresh){
@@ -935,29 +935,31 @@ public class AutoPrimer3 extends Application implements Initializable{
             }
             return;
         }
-        checkedAlready.add(id);
+        if (! ap3Config.getBuildXmlFile(id).exists()){
+            checkedAlready.add(id);
+        }
         setLoading(true);
         progressLabel.setText("Getting database information for " + id);
         final Task<Document> getTablesTask = new Task<Document>(){
             @Override
             protected Document call() 
                     throws DocumentException, MalformedURLException, IOException{
-                System.out.println("Called getTablesTask...");
-                return ap3Config.getBuildXmlDocument(id, true);// buildsAndTables.getAvailableTables(id);
+                //System.out.println("Called getTablesTask...");
+                return ap3Config.getBuildXmlDocument(id, forceRefresh);// buildsAndTables.getAvailableTables(id);
             }
         };
 
         getTablesTask.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
             @Override
             public void handle (WorkerStateEvent e){
-                System.out.println("getTablesTask succeeded.");
+                //System.out.println("getTablesTask succeeded.");
                 Document doc = (Document) e.getSource().getValue();
                 try{
                     LinkedHashSet<String> tables = ap3Config.readTableFile(doc);
                     ap3Config.getBuildToTables().put(id, tables);    
-                    if (! doc.equals(ap3Config.getBuildXmlDocument(id))){
+                    if (! doc.asXML().equals(ap3Config.getBuildXmlDocument(id).asXML())){
                         try{
-                            System.out.println("Writing output");
+                            //System.out.println("Writing output");
                             ap3Config.writeTableXmlFile(doc, id);
                         }catch (IOException ex){
                             //ex.printStackTrace();
@@ -1011,7 +1013,7 @@ public class AutoPrimer3 extends Application implements Initializable{
             @Override
             public void handle (WorkerStateEvent e){
                 progressLabel.setText("Get Tables Task Cancelled");
-                System.out.println("getTablesTask cancelled.");
+                //System.out.println("getTablesTask cancelled.");
                 setLoading(false);
                 setCanRun(false);
             }
@@ -1977,8 +1979,8 @@ public class AutoPrimer3 extends Application implements Initializable{
                                     createReferenceSequence(dna, r.getStartPos(),
                                             flanks, exonRegions, onMinusStrand));
                             //DEBUG
-                            System.out.println("Ref " + r.getName() + ":" + r.getCoordinateString());
-                            System.out.println(referenceSeqs.get(r.getName()));
+                            //System.out.println("Ref " + r.getName() + ":" + r.getCoordinateString());
+                            //System.out.println(referenceSeqs.get(r.getName()));
                             
                             numberExons(exonRegions, onMinusStrand, geneExonOffsets);
                             exonRegions = splitLargeRegionsMergeSmallRegions(exonRegions, 
@@ -2516,6 +2518,9 @@ public class AutoPrimer3 extends Application implements Initializable{
             pcrLink.setUnderline(true);
             res.setIsPcrLink(pcrLink);
             res.setIsPcrUrl(url);
+        }else{
+            res.setIsPcrLink(null);
+            res.setIsPcrUrl(null);
         }
         String region = chrom + ":" + lpos + "-" + rpos;
         res.setRegion(region);
@@ -2568,7 +2573,7 @@ public class AutoPrimer3 extends Application implements Initializable{
             }
             
             p3_job.append("=");
-            System.out.println(p3_job.toString());//debug only
+            //System.out.println(p3_job.toString());//debug only
             ArrayList<String> command = new ArrayList<>();
             command.add(primer3ex.getAbsolutePath());
             command.add("-format_output");
@@ -2590,7 +2595,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                     result.add(line);
                 }
                 while ((line = errorbuf.readLine()) != null){
-                    System.out.println(line);//debug only
+                    //System.out.println(line);//debug only
                     error.append(line);
                 }
                 int exit = ps.waitFor();
@@ -2721,6 +2726,7 @@ public class AutoPrimer3 extends Application implements Initializable{
     private void setRunning(boolean running){
         setCanRun(!running);
         refreshButton.setDisable(running);
+        refreshMenuItem.setDisable(running);
         genomeChoiceBox.setDisable(running);
         genomeChoiceBox2.setDisable(running);
         databaseChoiceBox.setDisable(running);
