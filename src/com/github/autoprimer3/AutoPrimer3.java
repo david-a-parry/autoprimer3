@@ -2723,6 +2723,7 @@ public class AutoPrimer3 extends Application implements Initializable{
     private void setRunning(boolean running){
         setCanRun(!running);
         refreshButton.setDisable(running);
+        refreshMenuItem.setDisable(running);
         genomeChoiceBox.setDisable(running);
         genomeChoiceBox2.setDisable(running);
         databaseChoiceBox.setDisable(running);
