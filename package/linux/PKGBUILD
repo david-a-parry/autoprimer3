@@ -21,7 +21,7 @@ install="${pkgname}.install"
 changelog=
 source=("https://github.com/gantzgraf/autoprimer3/releases/download/v3.0.1/autoprimer3-3.0.1.deb")
 noextract=()
-md5sums=("0c91710a4687e1b47554724b25d74330")
+md5sums=("be7fba7b4d595ae43ee05e4cebd1abe8")
 validpgpkeys=()
 
 prepare() {
