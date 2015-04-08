@@ -1,0 +1,17 @@
+## arg 1:  the new package version
+post_install() {
+    cp /opt/AutoPrimer3/AutoPrimer3.desktop /usr/share/applications/AutoPrimer3.desktop 
+    ln -s /opt/AutoPrimer3/AutoPrimer3 /usr/bin/AutoPrimer3
+}
+
+## arg 1:  the new package version
+## arg 2:  the old package version
+post_upgrade() {
+    cp /opt/AutoPrimer3/AutoPrimer3.desktop /usr/share/applications/AutoPrimer3.desktop 
+}
+
+## arg 1:  the old package version
+post_remove() {
+    rm -f /usr/share/applications/AutoPrimer3.desktop 
+    rm -f /usr/bin/AutoPrimer3
+}
