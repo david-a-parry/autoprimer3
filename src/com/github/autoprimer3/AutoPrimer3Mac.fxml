@@ -37,7 +37,7 @@
                            <children>
                               <VBox layoutX="14.0" layoutY="59.0" spacing="10.0">
                                  <children>
-                          <Label alignment="CENTER" layoutX="15.0" layoutY="59.0" prefHeight="15.0" prefWidth="126.0" text="Min distance (bp)" />
+                          <Label alignment="CENTER" layoutX="15.0" layoutY="59.0" prefHeight="15.0" prefWidth="126.0" text="Min Distance (bp)" />
                           <TextField fx:id="minDistanceTextField" alignment="CENTER" layoutX="14.0" layoutY="83.0" prefHeight="27.0" prefWidth="119.0" promptText="Min distance between primer and target" text="50" HBox.hgrow="NEVER" />
                                  </children>
                               </VBox>
@@ -141,7 +141,7 @@
                         <Label layoutX="353.0" layoutY="14.0" text="Genome" />
                         <ChoiceBox fx:id="snpsChoiceBox2" layoutX="479.0" layoutY="38.0" prefHeight="28.0" prefWidth="147.0" />
                         <Label layoutX="512.0" layoutY="14.0" text="Avoid SNPs?" />
-                        <Label layoutX="328.0" layoutY="79.0" text="Min distance (bp)" />
+                        <Label layoutX="328.0" layoutY="79.0" text="Min Distance (bp)" />
                         <TextField fx:id="minDistanceTextField2" alignment="CENTER" layoutX="308.0" layoutY="100.0" prefHeight="28.0" prefWidth="145.0" text="50" />
                         <TextField fx:id="flankingRegionsTextField2" alignment="CENTER" layoutX="479.0" layoutY="100.0" prefHeight="28.0" prefWidth="145.0" text="500" />
                         <Label layoutX="500.0" layoutY="78.0" text="Flanking region (bp)" />
