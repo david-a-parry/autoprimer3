@@ -1870,7 +1870,6 @@ public class AutoPrimer3 extends Application implements Initializable{
 
                         ArrayList<Primer3Result> primers = new ArrayList<>();
                         ArrayList<String> designs = new ArrayList<>();
-                        HashMap<String, Integer> geneExonOffsets = new HashMap<>();
                         HashMap<String, String> referenceSeqs = new HashMap<>();
                         //get DNA
                         int regionNumber = 0;
@@ -1916,9 +1915,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                                 if (end < r.getStartPos()){
                                     continue;
                                 }
-                                if (! geneExonOffsets.containsKey(t.getSymbol())){
-                                    geneExonOffsets.put(t.getSymbol(), 0);
-                                }
+                                
                                 ArrayList<Exon> exons = t.getExons();
                                 if (t.getStrand().equals("-")){
                                     minus_strand++;
@@ -1929,15 +1926,6 @@ public class AutoPrimer3 extends Application implements Initializable{
                                     if (designToChoiceBox.getSelectionModel().getSelectedItem()
                                         .equals("Coding regions")){
                                         if (! e.isCodingExon()){
-                                            if (t.getStrand().equals("-") && 
-                                                    e.getEnd() > t.getCdsEnd()){
-                                                geneExonOffsets.put(t.getSymbol(), 
-                                                        geneExonOffsets.get(t.getSymbol()) + 1);
-                                            }else if (t.getStrand().equals("+") && 
-                                                    e.getStart() < t.getCdsStart()){
-                                                   geneExonOffsets.put(t.getSymbol(), 
-                                                        geneExonOffsets.get(t.getSymbol()) + 1);
-                                            }
                                             continue;
                                         }
                                     }
@@ -1982,7 +1970,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                             //System.out.println("Ref " + r.getName() + ":" + r.getCoordinateString());
                             //System.out.println(referenceSeqs.get(r.getName()));
                             
-                            numberExons(exonRegions, onMinusStrand, geneExonOffsets);
+                            numberExons(exonRegions, onMinusStrand);
                             exonRegions = splitLargeRegionsMergeSmallRegions(exonRegions, 
                                     optSize, designBuffer, onMinusStrand);
                             if (onMinusStrand){
@@ -2290,19 +2278,18 @@ public class AutoPrimer3 extends Application implements Initializable{
     }
     
     private void numberExons(ArrayList<GenomicRegionSummary> exonRegions,
-            boolean minusStrand, HashMap<String, Integer> symbolToOffset){
+            boolean minusStrand){
         int n = 0;
+        if (minusStrand){
+            Collections.reverse(exonRegions);
+        }
+        
         for (GenomicRegionSummary e: exonRegions){
-            int offset = 0;
-            if (symbolToOffset.containsKey(e.getName())){
-                offset = symbolToOffset.get(e.getName());
-            }
-            if (minusStrand){
-                e.setName(e.getName() + "_ex" + (exonRegions.size() - n + offset));
-            }else{
-                e.setName(e.getName() + "_ex" + (n+1 + offset));
-            }
+            e.setName(e.getName() + "_ex" + (n+1));
             n++;
+        }
+        if (minusStrand){//back to original order
+            Collections.reverse(exonRegions);
         }
     }
     
