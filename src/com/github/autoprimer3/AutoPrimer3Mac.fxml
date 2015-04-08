@@ -130,11 +130,11 @@
                         <HBox alignment="CENTER_RIGHT" layoutX="7.916346073150635" layoutY="141.0" spacing="15.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="7.916346073150635" AnchorPane.rightAnchor="19.083653926849365">
                            <children>
                               <ProgressIndicator fx:id="progressIndicator2" disable="false" opacity="1.0" prefHeight="25.0" prefWidth="47.0" progress="0.0" style="-fx-fill: null" visible="true" />
-                              <Label fx:id="progressLabel2" layoutX="83.0" layoutY="145.0" prefHeight="38.0" prefWidth="221.0" text="AutoPrimer3" />
+                              <Label fx:id="progressLabel2" layoutX="83.0" layoutY="145.0" prefHeight="38.0" prefWidth="232.0" text="AutoPrimer3" />
                               <Button fx:id="clearButton" layoutX="318.0" layoutY="146.0" mnemonicParsing="false" onAction="#clearRegions" prefHeight="26.0" prefWidth="67.0" text="Clear" />
-                              <Button fx:id="loadFileButton" layoutX="429.0" layoutY="146.0" mnemonicParsing="false" onAction="#loadRegionsFile" prefHeight="26.0" prefWidth="109.0" text="Load File" />
-                              <Button fx:id="cancelButton2" cancelButton="true" layoutX="512.0" layoutY="146.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="95.0" text="Cancel" />
-                              <Button fx:id="runButton2" layoutX="582.0" layoutY="146.0" mnemonicParsing="false" onAction="#designPrimersToCoordinates" prefHeight="26.0" prefWidth="93.0" text="Design" />
+                              <Button fx:id="loadFileButton" layoutX="429.0" layoutY="146.0" mnemonicParsing="false" onAction="#loadRegionsFile" prefHeight="26.0" prefWidth="84.0" text="Load File" />
+                              <Button fx:id="cancelButton2" cancelButton="true" layoutX="512.0" layoutY="146.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="71.0" text="Cancel" />
+                              <Button fx:id="runButton2" layoutX="582.0" layoutY="146.0" mnemonicParsing="false" onAction="#designPrimersToCoordinates" prefHeight="26.0" prefWidth="77.0" text="Design" />
                            </children>
                         </HBox>
                         <ChoiceBox fx:id="genomeChoiceBox2" layoutX="308.0" layoutY="38.0" prefHeight="28.0" prefWidth="145.0" />
