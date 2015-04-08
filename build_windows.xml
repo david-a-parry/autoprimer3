@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!-- You may freely edit this file. See commented blocks below for --><!-- some examples of how to customize the build. --><!-- (If you delete it and reopen the project it will be recreated.) --><!-- By default, only the Clean and Build commands use this build script. --><project name="baSeq" default="default" basedir="." xmlns:fx="javafx:com.sun.javafx.tools.ant">
+<?xml version="1.0" encoding="UTF-8"?><!-- You may freely edit this file. See commented blocks below for --><!-- some examples of how to customize the build. --><!-- (If you delete it and reopen the project it will be recreated.) --><!-- By default, only the Clean and Build commands use this build script. --><project name="AutoPrimer3" default="default" basedir="." xmlns:fx="javafx:com.sun.javafx.tools.ant">
     <description>Builds, tests, and runs the project AutoPrimer3.</description>
     <import file="nbproject/build-impl.xml"/>
        <target name="-post-jfx-deploy">
@@ -8,7 +8,7 @@
                   outdir="${basedir}/${dist.dir}" outfile="${application.title}">
           <fx:application name="${application.title}" 
                           mainClass="${javafx.main.class}"
-			  version="3.0.0"
+			  version="3.0.1"
 			  id="AutoPrimer3"/>
           <fx:resources>
  			   <fx:fileset dir="dist" includes="*.jar"/>  
