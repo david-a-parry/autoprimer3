@@ -6,6 +6,8 @@ Primers may be designed using information from any of the UCSC hosted genomes an
 
 An instructions PDF can be viewed by selecting the 'Help' menu item from the application or by visiting [here](https://github.com/gantzgraf/autoprimer3/blob/master/src/com/github/autoprimer3/instructions.pdf).
 
+Get the latest release [here](https://github.com/gantzgraf/autoprimer3/releases/latest).
+
 __CREDIT__
 
 AutoPrimer3 was written by David A. Parry (d.a.parry@leeds.ac.uk)
