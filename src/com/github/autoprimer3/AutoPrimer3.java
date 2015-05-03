@@ -2720,6 +2720,7 @@ public class AutoPrimer3 extends Application implements Initializable{
         snpsChoiceBox2.setDisable(running);
         designToChoiceBox.setDisable(running);
         minDistanceTextField.setDisable(running);
+        minDistanceTextField2.setDisable(running);
         flankingRegionsTextField.setDisable(running);
         flankingRegionsTextField2.setDisable(running);
         genesTextField.setDisable(running);
