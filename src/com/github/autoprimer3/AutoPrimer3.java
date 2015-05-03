@@ -2663,7 +2663,7 @@ public class AutoPrimer3 extends Application implements Initializable{
             }
             
         }else if (databaseChoiceBox.getSelectionModel().getSelectedItem().equals("knownGene")){
-            if (searchString.equals("uc\\d{3}[a-z]{3}\\.\\d")){
+            if (searchString.matches("uc\\d{3}[a-z]{3}\\.\\d")){
                 //is accession
                 genes.addAll(geneSearcher.getGeneFromId(searchString, 
                         (String) genomeChoiceBox.getSelectionModel().getSelectedItem(),
