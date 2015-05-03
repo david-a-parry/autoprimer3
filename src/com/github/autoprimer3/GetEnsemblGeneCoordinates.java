@@ -35,6 +35,7 @@ public class GetEnsemblGeneCoordinates extends GetUcscGeneCoordinates {
     public ArrayList<GeneDetails> getGeneFromSymbol(String symbol, String build, String db) 
             throws SQLException, GetGeneCoordinates.GetGeneExonsException{
         String fieldsToRetrieve = String.join(", ", fields);
+        checkConnection();
         stmt = conn.createStatement();
         ArrayList<GeneDetails> transcripts = new ArrayList<>();
         Statement stmt2 = conn.createStatement();
@@ -58,6 +59,7 @@ public class GetEnsemblGeneCoordinates extends GetUcscGeneCoordinates {
                 String build, String db, String fieldsToRetrieve) 
             throws SQLException, GetGeneExonsException{
         ArrayList<GeneDetails> transcripts = new ArrayList<>();
+        checkConnection();
         Statement stmt2 = conn.createStatement();
         System.out.println("SELECT name, value FROM '"
             + build + ".ensemblToGeneName' WHERE value='" + symbol +"';");
@@ -75,6 +77,7 @@ public class GetEnsemblGeneCoordinates extends GetUcscGeneCoordinates {
             String build, String db, String fieldsToRetrieve) 
             throws SQLException, GetGeneExonsException{
         ArrayList<GeneDetails> transcripts = new ArrayList<>();
+        checkConnection();
         Statement stmt2 = conn.createStatement();
         ResultSet rs2 = stmt2.executeQuery("SELECT COUNT(*) FROM "
                     + "information_schema.tables  WHERE table_schema = '"+ 
@@ -120,6 +123,7 @@ public class GetEnsemblGeneCoordinates extends GetUcscGeneCoordinates {
             throws SQLException, GetGeneExonsException{
         String fieldsToRetrieve = String.join(", ", fields);
         String symbol = new String();
+        checkConnection();
         stmt = conn.createStatement();
         System.out.println("SELECT " + fieldsToRetrieve + 
                 " FROM " + build + "." + db + " WHERE name='"+ id + "'");
@@ -142,6 +146,7 @@ public class GetEnsemblGeneCoordinates extends GetUcscGeneCoordinates {
     private String getSymbolFromEnsemblToName(String id, String build) 
             throws SQLException{
         String symbol = new String();
+        checkConnection();
         Statement stmt2 = conn.createStatement();
         ResultSet rs2 = stmt2.executeQuery("SELECT name, value FROM "
             + build + ".ensemblToGeneName WHERE name='" + id +"';");
@@ -153,6 +158,7 @@ public class GetEnsemblGeneCoordinates extends GetUcscGeneCoordinates {
     
     private String getSymbolViaKgId(String id, String build) throws SQLException{
         String symbol = new String();
+        checkConnection();
         Statement stmt2 = conn.createStatement();
         ResultSet rs2 = stmt2.executeQuery("SELECT COUNT(*) FROM "
                     + "information_schema.tables  WHERE table_schema = '"+ 

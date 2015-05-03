@@ -43,9 +43,18 @@ public class GetGeneCoordinates {//default handles RefSeq and Encode genes
             throw new ExceptionInInitializerError(ex);
         }
     }
+    
+    public void checkConnection() throws SQLException{
+        if (conn.isClosed()){
+            conn = DriverManager.getConnection("jdbc:mysql://genome-mysql.cse.ucsc.edu" +
+               "?user=genomep&password=password&no-auto-rehash");
+        }
+    }
+    
     public ArrayList<GeneDetails> getGeneFromSymbol(String symbol, String build, String db) 
             throws SQLException, GetGeneExonsException{
         String fieldsToRetrieve = String.join(", ", fields );
+        checkConnection();
         stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery("SELECT " + fieldsToRetrieve + 
                 " FROM " + build + "." + db +" WHERE name2='"+ symbol+ "'");
@@ -55,6 +64,7 @@ public class GetGeneCoordinates {//default handles RefSeq and Encode genes
     public ArrayList<GeneDetails> getGeneFromId(String id, String build, String db) 
             throws SQLException, GetGeneExonsException{
         String fieldsToRetrieve = String.join(", ", fields);
+        checkConnection();
         stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery("SELECT " + fieldsToRetrieve + 
                 " FROM " + build + "." + db + " WHERE name='"+ id + "'");
@@ -111,6 +121,7 @@ public class GetGeneCoordinates {//default handles RefSeq and Encode genes
             String chrom, int start, int end, String build, String db)
             throws SQLException{
         ArrayList<GenomicRegionSummary> snpCoordinates = new ArrayList<> ();
+        checkConnection();
         stmt = conn.createStatement();
         //user may not have preceded chromosome with 'chr' which is fine for
         //sequence retrieval but not for snp retrieval in genomes which use it

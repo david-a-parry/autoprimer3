@@ -39,6 +39,7 @@ public class GetUcscGeneCoordinates extends GetGeneCoordinates {
             throws SQLException, GetGeneExonsException{
         ArrayList<GeneDetails> transcripts = new ArrayList<>();
         String fieldsToRetrieve = String.join(", ", fields);
+        checkConnection();
         stmt = conn.createStatement();
         Statement stmt2 = conn.createStatement();
         ResultSet rs2 = stmt2.executeQuery("SELECT kgID, geneSymbol FROM " + build + ".kgXref WHERE "
@@ -56,6 +57,7 @@ public class GetUcscGeneCoordinates extends GetGeneCoordinates {
     public ArrayList<GeneDetails> getGeneFromId(String id, String build, String db) 
             throws SQLException, GetGeneExonsException{
         String fieldsToRetrieve = String.join(", ", fields);
+        checkConnection();
         stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery("SELECT " + fieldsToRetrieve + 
                 " FROM " + build + "." + db + " WHERE name='"+ id + "'");
