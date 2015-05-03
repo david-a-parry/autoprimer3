@@ -18,10 +18,8 @@ package com.github.autoprimer3;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import static com.github.autoprimer3.GetGeneCoordinates.conn;
 
 /**
  *
@@ -36,10 +34,8 @@ public class GetEnsemblGeneCoordinates extends GetUcscGeneCoordinates {
             throws SQLException, GetGeneCoordinates.GetGeneExonsException{
         String fieldsToRetrieve = String.join(", ", fields);
         checkConnection();
-        stmt = conn.createStatement();
         ArrayList<GeneDetails> transcripts = new ArrayList<>();
-        Statement stmt2 = conn.createStatement();
-        ResultSet rs2 = stmt2.executeQuery("SELECT COUNT(*) FROM "
+        ResultSet rs2 = doQuery("SELECT COUNT(*) FROM "
                 + "information_schema.tables  WHERE table_schema = '" + build +
                 "' AND table_name = 'ensemblToGeneName';");
         while (rs2.next()){
@@ -60,13 +56,12 @@ public class GetEnsemblGeneCoordinates extends GetUcscGeneCoordinates {
             throws SQLException, GetGeneExonsException{
         ArrayList<GeneDetails> transcripts = new ArrayList<>();
         checkConnection();
-        Statement stmt2 = conn.createStatement();
         System.out.println("SELECT name, value FROM '"
             + build + ".ensemblToGeneName' WHERE value='" + symbol +"';");
-            ResultSet rs2 = stmt2.executeQuery("SELECT name, value FROM "
+            ResultSet rs2 = doQuery("SELECT name, value FROM "
             + build + ".ensemblToGeneName WHERE value='" + symbol +"';");
         while (rs2.next()){
-            ResultSet rs = stmt.executeQuery("SELECT " + fieldsToRetrieve + 
+            ResultSet rs = doQuery("SELECT " + fieldsToRetrieve + 
                 " FROM " + build + "." + db +" WHERE name='"+ rs2.getString("name") + "'");
             transcripts.addAll(getTranscriptsFromResultSet(rs, symbol));
         }
@@ -78,18 +73,16 @@ public class GetEnsemblGeneCoordinates extends GetUcscGeneCoordinates {
             throws SQLException, GetGeneExonsException{
         ArrayList<GeneDetails> transcripts = new ArrayList<>();
         checkConnection();
-        Statement stmt2 = conn.createStatement();
-        ResultSet rs2 = stmt2.executeQuery("SELECT COUNT(*) FROM "
+        ResultSet rs2 = doQuery("SELECT COUNT(*) FROM "
                     + "information_schema.tables  WHERE table_schema = '"+ 
                 build +"' AND table_name = 'knownToEnsembl';");
         while (rs2.next()){
             if (rs2.getInt("COUNT(*)") > 0){
                 ArrayList<String> kgids = new ArrayList<>();
-                Statement stmt3 = conn.createStatement();
                 System.out.println("SELECT kgID, "
                         + "geneSymbol FROM " + build + ".kgXref WHERE "
                         + "geneSymbol='" + symbol +"';");
-                ResultSet rs3 = stmt3.executeQuery("SELECT kgID, "
+                ResultSet rs3 = doQuery("SELECT kgID, "
                         + "geneSymbol FROM " + build + ".kgXref WHERE "
                         + "geneSymbol='" + symbol +"';");
                 while(rs3.next()){
@@ -98,12 +91,11 @@ public class GetEnsemblGeneCoordinates extends GetUcscGeneCoordinates {
                 System.out.println("Select value FROM " + build 
                         + ".knownToEnsembl WHERE name='" + 
                         String.join(" or name=", kgids) + "';");
-                Statement stmt4 = conn.createStatement();
-                ResultSet rs4 = stmt4.executeQuery("Select value FROM " + build 
+                ResultSet rs4 = doQuery("Select value FROM " + build 
                         + ".knownToEnsembl WHERE name='" + 
                         String.join(" or name=", kgids) + "';");
                 while (rs4.next()){
-                    ResultSet rs = stmt.executeQuery("SELECT " + fieldsToRetrieve + 
+                    ResultSet rs = doQuery("SELECT " + fieldsToRetrieve + 
                         " FROM " + build + "." + db +" WHERE name='"+ rs4.getString("value") + "'");
                     transcripts.addAll(getTranscriptsFromResultSet(rs, symbol));
                 }
@@ -124,13 +116,11 @@ public class GetEnsemblGeneCoordinates extends GetUcscGeneCoordinates {
         String fieldsToRetrieve = String.join(", ", fields);
         String symbol = new String();
         checkConnection();
-        stmt = conn.createStatement();
         System.out.println("SELECT " + fieldsToRetrieve + 
                 " FROM " + build + "." + db + " WHERE name='"+ id + "'");
-        ResultSet rs = stmt.executeQuery("SELECT " + fieldsToRetrieve + 
+        ResultSet rs = doQuery("SELECT " + fieldsToRetrieve + 
                 " FROM " + build + "." + db + " WHERE name='"+ id + "'");
-        Statement stmt2 = conn.createStatement();
-        ResultSet rs2 = stmt2.executeQuery("SELECT COUNT(*) FROM "
+        ResultSet rs2 = doQuery("SELECT COUNT(*) FROM "
                 + "information_schema.tables  WHERE table_schema = '" + build +
                 "' AND table_name = 'ensemblToGeneName';");
         while (rs2.next()){
@@ -147,8 +137,7 @@ public class GetEnsemblGeneCoordinates extends GetUcscGeneCoordinates {
             throws SQLException{
         String symbol = new String();
         checkConnection();
-        Statement stmt2 = conn.createStatement();
-        ResultSet rs2 = stmt2.executeQuery("SELECT name, value FROM "
+        ResultSet rs2 = doQuery("SELECT name, value FROM "
             + build + ".ensemblToGeneName WHERE name='" + id +"';");
         while (rs2.next()){
             symbol = rs2.getString("value");
@@ -159,19 +148,16 @@ public class GetEnsemblGeneCoordinates extends GetUcscGeneCoordinates {
     private String getSymbolViaKgId(String id, String build) throws SQLException{
         String symbol = new String();
         checkConnection();
-        Statement stmt2 = conn.createStatement();
-        ResultSet rs2 = stmt2.executeQuery("SELECT COUNT(*) FROM "
+        ResultSet rs2 = doQuery("SELECT COUNT(*) FROM "
                     + "information_schema.tables  WHERE table_schema = '"+ 
                 build +"' AND table_name = 'knownToEnsembl';");
         while (rs2.next()){
             if (rs2.getInt("COUNT(*)") > 0){
-                Statement stmt3 = conn.createStatement();
-                ResultSet rs3 = stmt3.executeQuery("Select name FROM " + build 
+                ResultSet rs3 = doQuery("Select name FROM " + build 
                         + ".knownToEnsembl WHERE value='" + 
                         id + "';");
                 while (rs3.next()){
-                    Statement stmt4 = conn.createStatement();
-                    ResultSet rs4 = stmt4.executeQuery("SELECT geneSymbol FROM " 
+                    ResultSet rs4 = doQuery("SELECT geneSymbol FROM " 
                             + build + ".kgXref WHERE kgID='" + rs3.getString("name") +"';");
                     while (rs4.next()){
                         symbol = rs4.getString("geneSymbol");

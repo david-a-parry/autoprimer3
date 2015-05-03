@@ -18,11 +18,9 @@ package com.github.autoprimer3;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import static com.github.autoprimer3.GetGeneCoordinates.conn;
 
 /**
  *
@@ -40,12 +38,10 @@ public class GetUcscGeneCoordinates extends GetGeneCoordinates {
         ArrayList<GeneDetails> transcripts = new ArrayList<>();
         String fieldsToRetrieve = String.join(", ", fields);
         checkConnection();
-        stmt = conn.createStatement();
-        Statement stmt2 = conn.createStatement();
-        ResultSet rs2 = stmt2.executeQuery("SELECT kgID, geneSymbol FROM " + build + ".kgXref WHERE "
+        ResultSet rs2 = doQuery("SELECT kgID, geneSymbol FROM " + build + ".kgXref WHERE "
                         + "geneSymbol='" + symbol +"'");
         while (rs2.next()){
-            ResultSet rs = stmt.executeQuery("SELECT " + fieldsToRetrieve + 
+            ResultSet rs = doQuery("SELECT " + fieldsToRetrieve + 
                 " FROM " + build + "." + db +" WHERE name='"+ 
                     rs2.getString("kgID") + "'");
             transcripts.addAll(getTranscriptsFromResultSet(rs, symbol));
@@ -58,11 +54,9 @@ public class GetUcscGeneCoordinates extends GetGeneCoordinates {
             throws SQLException, GetGeneExonsException{
         String fieldsToRetrieve = String.join(", ", fields);
         checkConnection();
-        stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT " + fieldsToRetrieve + 
+        ResultSet rs = doQuery("SELECT " + fieldsToRetrieve + 
                 " FROM " + build + "." + db + " WHERE name='"+ id + "'");
-        Statement stmt2 = conn.createStatement();
-        ResultSet rs2 = stmt2.executeQuery("SELECT kgID, geneSymbol FROM " + build 
+        ResultSet rs2 = doQuery("SELECT kgID, geneSymbol FROM " + build 
                 + ".kgXref WHERE kgID='" + id +"'");
         String symbol = new String();
         while(rs2.next()){
