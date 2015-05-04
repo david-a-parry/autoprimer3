@@ -65,6 +65,7 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -264,6 +265,11 @@ public class Primer3ResultViewController implements Initializable {
                 });
             }
         });
+        
+        if (System.getProperty("os.name").equals("Mac OS X")){
+           closeMenuItem.setAccelerator
+                (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN));
+        }
         
         MenuItem copyItem = new MenuItem("Copy");
         copyItem.setOnAction(new EventHandler<ActionEvent>() {

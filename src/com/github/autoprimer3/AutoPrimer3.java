@@ -78,6 +78,9 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
@@ -97,7 +100,7 @@ import org.dom4j.DocumentException;
  */
 public class AutoPrimer3 extends Application implements Initializable{
     
-    String VERSION = "3.0.1";
+    String VERSION = "3.0.2";
     
     @FXML
     AnchorPane mainPane;
@@ -253,6 +256,19 @@ public class AutoPrimer3 extends Application implements Initializable{
                   System.exit(0);
                }
             });
+            final KeyCombination macCloseKeyComb = 
+                new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN);
+            if (System.getProperty("os.name").equals("Mac OS X")){
+               scene.addEventHandler(
+                    KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
+                    @Override
+                    public void handle(KeyEvent ev){
+                        if (macCloseKeyComb.match(ev)){
+                            primaryStage.close();
+                        }
+                    }
+                });
+            }
         } catch (Exception ex) {
             Logger.getLogger(AutoPrimer3.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -260,6 +276,7 @@ public class AutoPrimer3 extends Application implements Initializable{
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        
         menuBar.setUseSystemMenuBar(true);
         genesTextField.requestFocus();
         progressLabel2.textProperty().bind(progressLabel.textProperty());
