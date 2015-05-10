@@ -27,8 +27,13 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 /**
@@ -57,6 +62,22 @@ public class AboutController implements Initializable {
                 });
             }
         });
+        final KeyCombination macCloseKeyComb = 
+                new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN);
+            
+        if (System.getProperty("os.name").equals("Mac OS X")){
+                Scene scene = closeButton.getScene();
+                final Stage stage = (Stage) closeButton.getScene().getWindow();
+                scene.addEventHandler(
+                    KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
+                    @Override
+                    public void handle(KeyEvent ev){
+                        if (macCloseKeyComb.match(ev)){
+                            stage.close();
+                        }
+                    }
+                });
+        }
         
     }    
     
