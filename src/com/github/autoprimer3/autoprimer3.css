@@ -91,6 +91,22 @@ linear-gradient(#eeeeee 0%, #cdcdcd 25%, #bebfbe 75%, #ffffff 100%),
     -fx-border-color: black;
 }
 
+.choice-box:focused{
+    -fx-border-color:#0093ff;;
+}
+
+.button:focused{
+    -fx-border-color:#0093ff;;
+}
+
+.text-area:focused{
+    -fx-border-color:#0093ff;;
+}
+
+.text-field:focused{
+    -fx-border-color:#0093ff;;
+}
+
 .context-menu {
 -fx-background-color:
         linear-gradient(#eeeeee 0%, #cdcdcd 25%, #bebfbe 75%, #ffffff 100%),
