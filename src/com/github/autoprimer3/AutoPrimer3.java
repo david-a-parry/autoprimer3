@@ -2549,19 +2549,20 @@ public class AutoPrimer3 extends Application implements Initializable{
         res.setTranscripts(id);
         res.setIndex(index);
         res.setProductSize(Integer.valueOf(productSize));
+        
         if (Integer.valueOf(productSize) > 0){
             Integer wpSize = 4000 > Integer.valueOf(productSize) * 2 ? 
                     4000 : Integer.valueOf(productSize) * 2;
             lpos = baseCoordinate + leftStart;
             rpos = baseCoordinate + rightStart;
-            final String url = serverUrl + "/cgi-bin/hgPcr?db=" + db + 
+            final String pcrUrl = serverUrl + "/cgi-bin/hgPcr?db=" + db + 
                     "&wp_target=genome&wp_f=" + left + "&wp_r=" + right + 
                     "&wp_size=" + wpSize + 
                     "&wp_perfect=15&wp_good=15&boolshad.wp_flipReverse=0";
             pcrLink.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent e) {
-                    getHostServices().showDocument(url);
+                    getHostServices().showDocument(pcrUrl);
                     pcrLink.setVisited(true);
                     pcrLink.setUnderline(false);
                 }
@@ -2569,13 +2570,27 @@ public class AutoPrimer3 extends Application implements Initializable{
             pcrLink.setDisable(false);
             pcrLink.setUnderline(true);
             res.setIsPcrLink(pcrLink);
-            res.setIsPcrUrl(url);
+            res.setIsPcrUrl(pcrUrl);
+            String region = chrom + ":" + lpos + "-" + rpos;
+            final String regionUrl = serverUrl + "/cgi-bin/hgTracks?db=" + db + 
+                    "&position=" + region;
+            final Hyperlink regionLink = new Hyperlink();
+            regionLink.setText(region);
+            regionLink.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent e) {
+                    getHostServices().showDocument(regionUrl);
+                    pcrLink.setVisited(true);
+                    pcrLink.setUnderline(false);
+                }
+            });
+            res.setRegion(region);
+            res.setRegionLink(regionLink);
         }else{
             res.setIsPcrLink(null);
             res.setIsPcrUrl(null);
+            res.setRegion(null);
         }
-        String region = chrom + ":" + lpos + "-" + rpos;
-        res.setRegion(region);
         return res;
     }
     

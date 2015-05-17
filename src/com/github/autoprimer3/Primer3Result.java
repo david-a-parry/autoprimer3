@@ -34,15 +34,16 @@ public class Primer3Result {
     private Hyperlink isPcrLink; 
     private Integer isPcrResults;
     private String isPcrUrl;
+    private Hyperlink regionLink;
     
     Primer3Result(){
-        this(0, null, null, null, null, 0, null, null);
+        this(0, null, null, null, null, 0, null, null, null);
     }
     Primer3Result(Integer i, String id, String tr, String l, String r, Integer size){
-        this(i, id, tr, l, r, size, null, null);
+        this(i, id, tr, l, r, size, null, null, null);
     }
     Primer3Result(Integer i, String id, String tr, String l, String r, Integer size, 
-            String reg, Hyperlink h){
+            String reg, Hyperlink isLink, Hyperlink regLink){
         index = i;
         name = id;
         transcripts = tr;
@@ -50,7 +51,8 @@ public class Primer3Result {
         rightPrimer = r;
         productSize = size;
         region = reg;
-        isPcrLink = h;
+        isPcrLink = isLink;
+        regionLink = regLink;
     }
     public void setIndex(int i){
         index = i;
@@ -75,6 +77,9 @@ public class Primer3Result {
     }
     public void setIsPcrLink(Hyperlink h){
         isPcrLink = h;
+    }
+    public void setRegionLink(Hyperlink h){
+        regionLink = h;
     }
     public void setIsPcrResults(int res){
         isPcrResults = res;
@@ -102,6 +107,9 @@ public class Primer3Result {
     }
     public String getRegion(){
         return region;
+    }
+    public Hyperlink getRegionLink(){
+        return regionLink;
     }
     public Hyperlink getIsPcrLink(){
         return isPcrLink;
