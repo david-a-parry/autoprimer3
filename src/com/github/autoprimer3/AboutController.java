@@ -62,18 +62,18 @@ public class AboutController implements Initializable {
                 });
             }
         });
+        closeButton.setDefaultButton(true);
+        closeButton.setCancelButton(true);
         final KeyCombination macCloseKeyComb = 
                 new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN);
             
         if (System.getProperty("os.name").equals("Mac OS X")){
-                Scene scene = closeButton.getScene();
-                final Stage stage = (Stage) closeButton.getScene().getWindow();
-                scene.addEventHandler(
+                closeButton.addEventHandler(
                     KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
                     @Override
                     public void handle(KeyEvent ev){
                         if (macCloseKeyComb.match(ev)){
-                            stage.close();
+                            closeButton.fire();
                         }
                     }
                 });
