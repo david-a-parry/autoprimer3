@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.input.*?>
 <?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import java.net.*?>
@@ -17,22 +18,6 @@
           <content>
             <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="203.0" prefWidth="652.0" style="">
               <children>
-                      <MenuBar fx:id="menuBar" focusTraversable="true" layoutX="-165.0" layoutY="-10.0" prefHeight="39.0" prefWidth="656.0" style="" useSystemMenuBar="false" AnchorPane.leftAnchor="-165.0" AnchorPane.rightAnchor="165.0" AnchorPane.topAnchor="-10.0">
-                        <menus>
-                          <Menu mnemonicParsing="false" text="File">
-                            <items>
-                                    <MenuItem fx:id="refreshMenuItem" mnemonicParsing="false" text="Refresh/Reconnect" />
-                              <MenuItem fx:id="quitMenuItem" mnemonicParsing="false" text="Quit" />
-                            </items>
-                          </Menu>
-                          <Menu mnemonicParsing="false" text="Help">
-                            <items>
-                                    <MenuItem fx:id="helpMenuItem" mnemonicParsing="false" text="Help" />
-                              <MenuItem fx:id="aboutMenuItem" mnemonicParsing="false" text="About" />
-                            </items>
-                          </Menu>
-                        </menus>
-                      </MenuBar>
                         <HBox layoutX="16.0" layoutY="75.0" spacing="10.0" AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="17.0">
                            <children>
                               <VBox layoutX="14.0" layoutY="59.0" spacing="10.0">
@@ -83,7 +68,7 @@
                               </VBox>
                               <VBox alignment="TOP_CENTER" layoutX="288.0" layoutY="6.0" spacing="10.0">
                                  <children>
-                          <Label alignment="CENTER" layoutX="288.0" layoutY="6.0" prefWidth="131.0" text="Avoid SNPs?" />
+                              <Label alignment="CENTER" layoutX="288.0" layoutY="6.0" prefWidth="131.0" text="Avoid SNPs?" />
                           <ChoiceBox fx:id="snpsChoiceBox" layoutX="298.0" layoutY="27.0" prefHeight="27.0" prefWidth="176.0" HBox.hgrow="ALWAYS">
                             <items>
                               <FXCollections fx:factory="observableArrayList">
@@ -110,7 +95,7 @@
                         </HBox>
                 <HBox alignment="CENTER_RIGHT" focusTraversable="true" layoutX="16.0" layoutY="138.0" prefHeight="47.0" prefWidth="620.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="16.0">
                   <children>
-                    <ProgressIndicator fx:id="progressIndicator" disable="false" opacity="1.0" prefHeight="25.0" prefWidth="47.0" progress="0.0" style="-fx-fill: null" visible="true" />
+                    <ProgressIndicator fx:id="progressIndicator" disable="false" opacity="1.0" prefHeight="25.0" prefWidth="47.0" progress="0.0" style="-fx-fill: null;" visible="true" />
                       <Label fx:id="progressLabel" prefHeight="16.0" prefWidth="295.0" text="AutoPrimer3" />
                     <Button fx:id="refreshButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="72.0" text="Refresh" />
                     <Button fx:id="cancelButton" disable="false" mnemonicParsing="false" prefHeight="26.0" prefWidth="75.0" text="Cancel" />
@@ -293,5 +278,29 @@
         </Tab>
       </tabs>
     </TabPane>
+    <MenuBar fx:id="menuBar" focusTraversable="true" layoutY="-86.0" prefHeight="39.0" prefWidth="656.0" style="" useSystemMenuBar="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-86.0">
+      <menus>
+        <Menu mnemonicParsing="false" text="File">
+          <items>
+                  <MenuItem fx:id="refreshMenuItem" mnemonicParsing="false" text="Refresh/Reconnect">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="R" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                     </accelerator>
+                  </MenuItem>
+            <MenuItem fx:id="quitMenuItem" mnemonicParsing="false" text="Quit">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="Q" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                     </accelerator>
+                  </MenuItem>
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Help">
+          <items>
+                  <MenuItem fx:id="helpMenuItem" mnemonicParsing="false" text="Help" />
+            <MenuItem fx:id="aboutMenuItem" mnemonicParsing="false" text="About" />
+          </items>
+        </Menu>
+      </menus>
+    </MenuBar>
   </children>
 </AnchorPane>
