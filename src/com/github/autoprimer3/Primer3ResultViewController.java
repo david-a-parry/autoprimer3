@@ -164,7 +164,7 @@ public class Primer3ResultViewController implements Initializable {
         productSizeCol.setCellValueFactory(new 
                 PropertyValueFactory<Primer3Result, Integer>("productSize"));
         regionCol.setCellValueFactory(new 
-                PropertyValueFactory<Primer3Result, String>("region"));
+                PropertyValueFactory<Primer3Result, String>("regionLink"));
         ispcrCol.setCellValueFactory(new 
                 PropertyValueFactory<Primer3Result, Hyperlink>("isPcrLink"));
         ispcrResCol.setCellValueFactory(new 
@@ -282,6 +282,10 @@ public class Primer3ResultViewController implements Initializable {
                     int r = p.getRow();
                     int c = p.getColumn();
                     Object cell = primerTable.getColumns().get(c).getCellData(r);
+                    if (cell instanceof Hyperlink){
+                        Hyperlink link = (Hyperlink) cell;
+                        cell = link.getText();
+                    }
                     if (cell == null)
                         cell = "";
                     if (old_r == r)
