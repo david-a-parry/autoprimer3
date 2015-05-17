@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.input.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
@@ -75,10 +76,22 @@
         <menus>
           <Menu text="File">
             <items>
-                  <MenuItem fx:id="writeFileMenuItem" text="Save Primers to File" />
-                  <MenuItem fx:id="writeDesignMenuItem" text="Save Design Details to File" />
-                  <MenuItem fx:id="writeRefsMenuItem" text="Save Reference Sequences to File" />
-              <MenuItem fx:id="closeMenuItem" text="Close" />
+                  <MenuItem fx:id="writeFileMenuItem" text="Save Primers to File">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="S" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                     </accelerator></MenuItem>
+                  <MenuItem fx:id="writeDesignMenuItem" text="Save Design Details to File">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="D" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                     </accelerator></MenuItem>
+                  <MenuItem fx:id="writeRefsMenuItem" text="Save Reference Sequences to File">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="S" control="UP" meta="UP" shift="DOWN" shortcut="DOWN" />
+                     </accelerator></MenuItem>
+              <MenuItem fx:id="closeMenuItem" text="Close">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="W" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                     </accelerator></MenuItem>
             </items>
           </Menu>
         </menus>
