@@ -384,6 +384,55 @@ public class AutoPrimer3 extends Application implements Initializable{
             }
         });
         
+        genomeChoiceBox.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
+                    event.consume();
+                }else if (event.getCode().isLetterKey()){
+                    String c = event.getText().toLowerCase();
+                    List items = genomeChoiceBox.getItems();
+                    int s = genomeChoiceBox.getSelectionModel().selectedIndexProperty().get();
+                    for (int i = s + 1; i < items.size(); i++){
+                        if (items.get(i).toString().toLowerCase().startsWith(c)){
+                            genomeChoiceBox.getSelectionModel().select(i);
+                            return;
+                        }
+                    }
+                    for (int i = 0; i < s; i++){//wrap around
+                        if (items.get(i).toString().toLowerCase().startsWith(c)){
+                            genomeChoiceBox.getSelectionModel().select(i);
+                            return;
+                        }
+                    }
+                }
+            }
+        });
+        genomeChoiceBox2.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
+                    event.consume();
+                }else if (event.getCode().isLetterKey()){
+                    String c = event.getText().toLowerCase();
+                    List items = genomeChoiceBox2.getItems();
+                    int s = genomeChoiceBox2.getSelectionModel().selectedIndexProperty().get();
+                    for (int i = s + 1; i < items.size(); i++){
+                        if (items.get(i).toString().toLowerCase().startsWith(c)){
+                            genomeChoiceBox2.getSelectionModel().select(i);
+                            return;
+                        }
+                    }
+                    for (int i = 0; i < s; i++){//wrap around
+                        if (items.get(i).toString().toLowerCase().startsWith(c)){
+                            genomeChoiceBox2.getSelectionModel().select(i);
+                            return;
+                        }
+                    }
+                }
+            }
+        });
+        
         autoSelectMisprimingLibraryCheckBox.selectedProperty().addListener(
                 new ChangeListener<Boolean>(){
             @Override
