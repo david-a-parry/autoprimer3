@@ -288,6 +288,7 @@ public class AutoPrimer3 extends Application implements Initializable{
         snpsChoiceBox2.selectionModelProperty().bind(snpsChoiceBox.selectionModelProperty());
         cancelButton2.cancelButtonProperty().bind(cancelButton.cancelButtonProperty());
         cancelButton2.onActionProperty().bind(cancelButton.onActionProperty());
+        cancelButton.setCancelButton(true);
         setLoading(true);
         try{
             ap3Config = new AutoPrimer3Config();
