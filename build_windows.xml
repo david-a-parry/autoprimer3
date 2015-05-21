@@ -8,7 +8,7 @@
                   outdir="${basedir}/${dist.dir}" outfile="${application.title}">
           <fx:application name="${application.title}" 
                           mainClass="${javafx.main.class}"
-			  version="3.0.1"
+			  version="3.0.2"
 			  id="AutoPrimer3"/>
           <fx:resources>
  			   <fx:fileset dir="dist" includes="*.jar"/>  
