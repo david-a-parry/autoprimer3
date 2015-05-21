@@ -2183,10 +2183,13 @@ public class AutoPrimer3 extends Application implements Initializable{
                             tableStage.initModality(Modality.NONE);
                             tableStage.show();
                        }catch (Exception ex){
-            //               Dialogs.showErrorDialog(null, "Error displaying"
-            //                       + " results from Find Regions Method.",
-            //                       "Find Regions Error!", "SnpViewer", ex);
-                           //ex.printStackTrace();
+                           Dialogs designErr = Dialogs.create().title("Error").
+                                masthead("Design Failed!").
+                                message("AutoPrimer3 encountered an error designing "
+                                + "attempting to display your results. See exception below.").
+                                styleClass(Dialog.STYLE_CLASS_NATIVE);
+                            designErr.showException(ex);
+                            ex.printStackTrace();
                        }
                     }
                 });
