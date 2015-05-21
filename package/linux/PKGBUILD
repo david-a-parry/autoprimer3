@@ -1,6 +1,6 @@
 # Maintainer: David Parry <d.a.parry@leeds.ac.uk>
 pkgname=AutoPrimer3
-pkgver=3.0.1
+pkgver=3.0.2
 pkgrel=1
 epoch=
 pkgdesc="Automatically designs primers to genes or coordinates"
@@ -19,9 +19,9 @@ backup=()
 options=()
 install="${pkgname}.install"
 changelog=
-source=("https://github.com/gantzgraf/autoprimer3/releases/download/v3.0.1/autoprimer3-3.0.1.deb")
+source=("https://github.com/gantzgraf/autoprimer3/releases/download/v3.0.2/autoprimer3-3.0.2.deb")
 noextract=()
-md5sums=("e37b633af430a33f3df3684cc2b4fd39")
+md5sums=("3686a7fba7aceb593e6f2dd10f5837db")
 validpgpkeys=()
 
 prepare() {
