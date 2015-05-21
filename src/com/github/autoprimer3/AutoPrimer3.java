@@ -985,6 +985,7 @@ public class AutoPrimer3 extends Application implements Initializable{
             }else{
                 databaseChoiceBox.getSelectionModel().selectFirst();
             }
+            setCanRun(true);
         }
         snpsChoiceBox.getItems().clear();
         snpsChoiceBox.getItems().add("No");
