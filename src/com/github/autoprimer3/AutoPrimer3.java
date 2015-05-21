@@ -83,6 +83,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -2519,6 +2520,7 @@ public class AutoPrimer3 extends Application implements Initializable{
         String db = (String) genomeChoiceBox.getSelectionModel().getSelectedItem();
         final Hyperlink pcrLink = new Hyperlink();
         pcrLink.setText("in-silico PCR");
+        pcrLink.setTextFill(Color.BLUE);
         pcrLink.setDisable(true);
         String left = "NOT FOUND";
         String right = "NOT FOUND";
@@ -2576,6 +2578,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                     "&position=" + region;
             final Hyperlink regionLink = new Hyperlink();
             regionLink.setText(region);
+            regionLink.setTextFill(Color.BLUE);
             regionLink.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent e) {
