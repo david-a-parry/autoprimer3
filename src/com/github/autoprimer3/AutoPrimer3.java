@@ -1386,7 +1386,9 @@ public class AutoPrimer3 extends Application implements Initializable{
             //region parser methods
             GenomicRegionSummary region = RegionParser.readRegion(r);
             if (region != null){
-                region.setName("Region_" + n++);
+                if (region.getName() == null || region.getName().isEmpty()){
+                    region.setName("Region_" + n++);
+                }
                 region.setId(region.getChromosome() + ":" + region.getStartPos()
                         + "-" + region.getEndPos());
                 regions.add(region);
