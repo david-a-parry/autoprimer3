@@ -1555,7 +1555,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                                     Dialogs.create().title("Error").
                                     masthead("Error retrieving DNA").
                                     message("Exception encountered while retrieving DNA for"
-                                            + "region " + rString + ". See below:")
+                                            + " region " + rString + ". See below:")
                                     .styleClass(Dialog.STYLE_CLASS_NATIVE);
                                 seqError.showException(seqex);
                         }
@@ -1993,7 +1993,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                                                 Dialogs.create().title("Error").
                                                 masthead("Error retrieving DNA").
                                                 message("Exception encountered while retrieving DNA for"
-                                                        + "region " + rString + " for gene " 
+                                                        + " region " + rString + " for gene " 
                                                         + rName + ". See below:")
                                                 .styleClass(Dialog.STYLE_CLASS_NATIVE);
                                             seqError.showException(seqex);
