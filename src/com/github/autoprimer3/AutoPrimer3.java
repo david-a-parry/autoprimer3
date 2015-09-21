@@ -176,6 +176,8 @@ public class AutoPrimer3 extends Application implements Initializable{
     Button clearButton;
     @FXML
     Label regionsLabel;
+    @FXML
+    CheckBox useRegionNamesCheckBox;
     
     
     //Primer3 Settings tab components
@@ -1386,7 +1388,8 @@ public class AutoPrimer3 extends Application implements Initializable{
             //region parser methods
             GenomicRegionSummary region = RegionParser.readRegion(r);
             if (region != null){
-                if (region.getName() == null || region.getName().isEmpty()){
+                if (region.getName() == null || region.getName().isEmpty() || 
+                        !useRegionNamesCheckBox.isSelected()){
                     region.setName("Region_" + n++);
                 }
                 region.setId(region.getChromosome() + ":" + region.getStartPos()
