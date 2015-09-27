@@ -176,6 +176,8 @@ public class AutoPrimer3 extends Application implements Initializable{
     Button clearButton;
     @FXML
     Label regionsLabel;
+    @FXML
+    CheckBox useRegionNamesCheckBox;
     
     
     //Primer3 Settings tab components
@@ -1386,7 +1388,10 @@ public class AutoPrimer3 extends Application implements Initializable{
             //region parser methods
             GenomicRegionSummary region = RegionParser.readRegion(r);
             if (region != null){
-                region.setName("Region_" + n++);
+                if (region.getName() == null || region.getName().isEmpty() || 
+                        !useRegionNamesCheckBox.isSelected()){
+                    region.setName("Region_" + n++);
+                }
                 region.setId(region.getChromosome() + ":" + region.getStartPos()
                         + "-" + region.getEndPos());
                 regions.add(region);
@@ -1537,8 +1542,26 @@ public class AutoPrimer3 extends Application implements Initializable{
                         + end);
                 updateMessage("Retrieving DNA for region " + n + 
                         " of " + regions.size() + "...");
-                String dna = seqFromDas.retrieveSequence(
+                String dna;
+                try {
+                    dna= seqFromDas.retrieveSequence(
                         genome, r.getChromosome(), start, end);
+                }catch(DocumentException | MalformedURLException seqex){
+                    final String rString = r.getChromosome() + ":" + start + "-" + end;
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            Dialogs seqError = 
+                                    Dialogs.create().title("Error").
+                                    masthead("Error retrieving DNA").
+                                    message("Exception encountered while retrieving DNA for"
+                                            + " region " + rString + ". See below:")
+                                    .styleClass(Dialog.STYLE_CLASS_NATIVE);
+                                seqError.showException(seqex);
+                        }
+                    });
+                    return null;
+                }
                 updateProgress(++p, regions.size() * 3);
                 //System.out.println(dna);//debug only
                 String snpDb = (String) snpsChoiceBox.getSelectionModel().getSelectedItem();
@@ -1954,8 +1977,30 @@ public class AutoPrimer3 extends Application implements Initializable{
                             HashMap<String, String> checkedTranscript = new HashMap<>();
                                 //only want to check names/ID has already been 
                                 //used once per region i.e. for previous regions
-                            String dna = seqFromDas.retrieveSequence(
+                            String dna;
+                            try{
+                                dna = seqFromDas.retrieveSequence(
                                     genome, r.getChromosome(), r.getStartPos(), r.getEndPos());
+                            }catch (DocumentException | MalformedURLException seqex){
+                                final String rString = r.getChromosome() + ":" + 
+                                                    r.getStartPos() + "-" + r.getEndPos();
+                                final String rName = r.getName();
+                                Platform.runLater(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            
+                                            Dialogs seqError = 
+                                                Dialogs.create().title("Error").
+                                                masthead("Error retrieving DNA").
+                                                message("Exception encountered while retrieving DNA for"
+                                                        + " region " + rString + " for gene " 
+                                                        + rName + ". See below:")
+                                                .styleClass(Dialog.STYLE_CLASS_NATIVE);
+                                            seqError.showException(seqex);
+                                        }
+                                });
+                                return null;
+                            }
                             //System.out.println(dna);//debug only
                             String snpDb = (String) snpsChoiceBox.getSelectionModel().getSelectedItem();
                             ArrayList<GenomicRegionSummary> snps = new ArrayList<>();

@@ -33,7 +33,7 @@ public class RegionParser {
         if (r != null){
             return r;
         }
-        String[] spaceSplit = s.split("\\s");
+        String[] spaceSplit = s.split("\\s+");
         r = parseAsBed(spaceSplit);
         if (r != null){
             return r;
@@ -44,11 +44,12 @@ public class RegionParser {
 //------------------------------------------------------------------------------    
     public static GenomicRegionSummary parseAsRegion(String s){
         
-        if (! s.matches("^\\w+:[\\d,]+$") && 
-                ! s.matches("^\\w+:[\\d,]+-[\\d,]+$")){
+        if (! s.matches("^\\w+:[\\d,]+(\\s+\\S+)*$") && 
+                ! s.matches("^\\w+:[\\d,]+-[\\d,]+(\\s+\\S+)*$")){
             return null;
         }
-        String[] chromSplit = s.split(":");
+        String[] spaceSplit = s.split("\\s+");
+        String[] chromSplit = spaceSplit[0].split(":");
         if (chromSplit.length < 2){
             return null;
         }
@@ -70,8 +71,14 @@ public class RegionParser {
         if (! checkInteger(start) || ! checkInteger(end)){
             return null;
         }
-        return new GenomicRegionSummary(chromSplit[0], 
+        GenomicRegionSummary gr = new GenomicRegionSummary(chromSplit[0], 
                 Integer.parseInt(start), Integer.parseInt(end));
+        if (spaceSplit.length > 1){
+            if (spaceSplit[1].matches(".*\\w.*")){
+                gr.setName(spaceSplit[1]);
+            }       
+        }
+        return gr;
     }
 //------------------------------------------------------------------------------
     
@@ -84,8 +91,14 @@ public class RegionParser {
         if (! checkInteger(start) || ! checkInteger(end)){
             return null;
         }
-        return new GenomicRegionSummary(split[0], 
+        GenomicRegionSummary gr = new GenomicRegionSummary(split[0], 
                 Integer.parseInt(start) + 1, Integer.parseInt(end));
+        if (split.length >= 4){
+            if (split[3].matches(".*\\w.*")){
+                gr.setName(split[3]);
+            }
+        }
+        return gr;
     }
 //------------------------------------------------------------------------------
     
@@ -97,11 +110,12 @@ public class RegionParser {
         if (! checkInteger(start)){
             return null;
         }
+        GenomicRegionSummary gr = null;
         if (split.length >= 8){
             Pattern p = Pattern.compile("END=(\\d+)");
             Matcher m = p.matcher(split[7]);
             if (m.find()){
-                return new GenomicRegionSummary(split[0], 
+                gr = new GenomicRegionSummary(split[0], 
                         Integer.parseInt(start), Integer.parseInt(m.group(1)));
             }
         }
@@ -113,17 +127,24 @@ public class RegionParser {
                 for (int i = 2; i <= m.groupCount(); i++){
                     length = m.group(i).length() > length ? m.group(i).length() : length;
                 }
-                return new GenomicRegionSummary(split[0], 
+                gr = new GenomicRegionSummary(split[0], 
                         Integer.parseInt(start), Integer.parseInt(start) + length -1);
             }
         }
-        if (split.length == 2){
+        if (split.length >= 2){
             //we can take regions that are just chromosome and coordinate if
             //no other fields are present
-            return new GenomicRegionSummary(split[0], 
+            gr = new GenomicRegionSummary(split[0], 
                 Integer.parseInt(start), Integer.parseInt(start) );
         }
-        return null;        
+        
+        //check if there is an ID for this variant
+        if (split.length >= 3 && gr != null){
+            if (split[2].matches(".*\\w.*")){
+                gr.setName(split[2]);
+            }
+        }    
+        return gr;        
     }
     
 //------------------------------------------------------------------------------    
