@@ -1208,8 +1208,24 @@ public class AutoPrimer3 extends Application implements Initializable{
         }
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select input file");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
-                "BED file", "*.bed", "VCF file", "*.vcf", "*vcf.gz", "text file", "*.txt", "*txt.gz"));
+        
+        HashMap<String, ArrayList<String>> extFilters = new HashMap<>(); 
+        extFilters.put("Any Region file", new ArrayList<>(
+                Arrays.asList("*.bed", "*.bed.gz", "*.vcf", "*vcf.gz", "*.txt", "*txt.gz",
+                "*.BED", "*.BED.GZ", "*.VCF", "*VCF.GZ", "*.TXT", "*TXT.GZ") ) );
+        extFilters.put("BED file",  new ArrayList<>(
+                Arrays.asList("*.bed", "*.bed.gz", "*.BED", "*.BED.GZ") ) );
+        extFilters.put("VCF file", new ArrayList<>(
+                Arrays.asList("*.vcf", "*vcf.gz", "*.VCF", "*VCF.GZ") ) ); 
+        extFilters.put("Text file", new ArrayList<>(
+                Arrays.asList("*.txt", "*txt.gz", "*.TXT", "*TXT.GZ") ) );
+        extFilters.put("Any", new ArrayList<>(Arrays.asList("*") ) );
+        ArrayList<String> keys = new ArrayList<>(extFilters.keySet()); 
+        Collections.sort(keys);
+        for (String ext: keys){
+            fileChooser.getExtensionFilters().add(
+                    new FileChooser.ExtensionFilter(ext, extFilters.get(ext)));
+        }
         fileChooser.setInitialDirectory(new File (System.getProperty("user.home")));
         setCanRun(false);
         final File inFile = fileChooser.showOpenDialog(mainPane.getScene().getWindow());
