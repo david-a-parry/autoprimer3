@@ -1,4 +1,4 @@
-# Maintainer: David Parry <d.a.parry@leeds.ac.uk>
+# Maintainer: David Parry <david.parry@igmm.ed.ac.uk>
 pkgname=AutoPrimer3
 pkgver=3.0.3
 pkgrel=1
@@ -19,7 +19,7 @@ backup=()
 options=()
 install="${pkgname}.install"
 changelog=
-source=("https://github.com/gantzgraf/autoprimer3/releases/download/v3.0.2/autoprimer3-3.0.2.deb")
+source=("https://github.com/gantzgraf/autoprimer3/releases/download/v3.0.3/autoprimer3-3.0.3.deb")
 noextract=()
 md5sums=("ccbc63b655da4c8e514ef7c283eba0de")
 validpgpkeys=()
