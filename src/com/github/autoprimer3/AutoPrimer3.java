@@ -1378,7 +1378,9 @@ public class AutoPrimer3 extends Application implements Initializable{
     
     public void clearRegions(){
         regionsTextArea.clear();
-        progressLabel.setText("");
+        if (! progressLabel.textProperty().isBound()){
+            progressLabel.setText("");
+        }
     }
     
     private ArrayList<GenomicRegionSummary> getRegionsForDesign(String regionsInput){
