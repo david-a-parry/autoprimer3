@@ -557,6 +557,9 @@ public class AutoPrimer3 extends Application implements Initializable{
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
+                        if (progressLabel.textProperty().isBound()){
+                            return;
+                        }
                         String reg = newValue.replaceAll("(?m)^\\s", "");
                         int regions = reg.split("\\n").length;
                         progressLabel.setText(regions + " lines"); 
@@ -626,6 +629,9 @@ public class AutoPrimer3 extends Application implements Initializable{
     }
     
     private void displayValidRegions(){
+        if (progressLabel.textProperty().isBound()){
+            return;
+        }
         int validRegions = 0;
         int invalidRegions = 0;
         String[] lines = regionsTextArea.getText().replaceAll("(?m)^\\s", "").split("\\n");
