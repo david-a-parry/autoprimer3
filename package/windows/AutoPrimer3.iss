@@ -3,8 +3,8 @@
 [Setup]
 AppId={{AutoPrimer3}}
 AppName=AutoPrimer3
-AppVersion=3.0.2
-AppVerName=AutoPrimer3 3.0.2
+AppVersion=3.0.3
+AppVerName=AutoPrimer3 3.0.3
 AppPublisher=David A. Parry
 AppComments=AutoPrimer3
 AppCopyright=Copyright (C) 2015
@@ -23,7 +23,7 @@ DefaultGroupName=AutoPrimer3
 LicenseFile=
 ;WinXP or above
 MinVersion=0,5.1 
-OutputBaseFilename=AutoPrimer3-3.0.2
+OutputBaseFilename=AutoPrimer3-3.0.3
 Compression=lzma
 SolidCompression=yes
 PrivilegesRequired=lowest
