@@ -10,7 +10,7 @@ Get the latest release [here](https://github.com/gantzgraf/autoprimer3/releases/
 
 __CREDIT__
 
-AutoPrimer3 was written by David A. Parry (d.a.parry@leeds.ac.uk)
+AutoPrimer3 was written by David A. Parry (david.parry@igmm.ed.ac.uk)
 
 If you use this program to generate primers used in a publication, please cite the URL 'https://github.com/gantzgraf/autoprimer3'.
 

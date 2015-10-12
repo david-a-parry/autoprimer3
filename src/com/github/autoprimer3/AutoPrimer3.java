@@ -101,7 +101,7 @@ import org.dom4j.DocumentException;
  */
 public class AutoPrimer3 extends Application implements Initializable{
     
-    String VERSION = "3.0.2";
+    String VERSION = "3.0.3";
     
     @FXML
     AnchorPane mainPane;
@@ -557,6 +557,9 @@ public class AutoPrimer3 extends Application implements Initializable{
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
+                        if (progressLabel.textProperty().isBound()){
+                            return;
+                        }
                         String reg = newValue.replaceAll("(?m)^\\s", "");
                         int regions = reg.split("\\n").length;
                         progressLabel.setText(regions + " lines"); 
@@ -626,6 +629,9 @@ public class AutoPrimer3 extends Application implements Initializable{
     }
     
     private void displayValidRegions(){
+        if (progressLabel.textProperty().isBound()){
+            return;
+        }
         int validRegions = 0;
         int invalidRegions = 0;
         String[] lines = regionsTextArea.getText().replaceAll("(?m)^\\s", "").split("\\n");
@@ -1202,8 +1208,24 @@ public class AutoPrimer3 extends Application implements Initializable{
         }
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select input file");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
-                "BED file", "*.bed", "VCF file", "*.vcf", "*vcf.gz", "text file", "*.txt", "*txt.gz"));
+        
+        HashMap<String, ArrayList<String>> extFilters = new HashMap<>(); 
+        extFilters.put("Any Region file", new ArrayList<>(
+                Arrays.asList("*.bed", "*.bed.gz", "*.vcf", "*vcf.gz", "*.txt", "*txt.gz",
+                "*.BED", "*.BED.GZ", "*.VCF", "*VCF.GZ", "*.TXT", "*TXT.GZ") ) );
+        extFilters.put("BED file",  new ArrayList<>(
+                Arrays.asList("*.bed", "*.bed.gz", "*.BED", "*.BED.GZ") ) );
+        extFilters.put("VCF file", new ArrayList<>(
+                Arrays.asList("*.vcf", "*vcf.gz", "*.VCF", "*VCF.GZ") ) ); 
+        extFilters.put("Text file", new ArrayList<>(
+                Arrays.asList("*.txt", "*txt.gz", "*.TXT", "*TXT.GZ") ) );
+        extFilters.put("Any", new ArrayList<>(Arrays.asList("*") ) );
+        ArrayList<String> keys = new ArrayList<>(extFilters.keySet()); 
+        Collections.sort(keys);
+        for (String ext: keys){
+            fileChooser.getExtensionFilters().add(
+                    new FileChooser.ExtensionFilter(ext, extFilters.get(ext)));
+        }
         fileChooser.setInitialDirectory(new File (System.getProperty("user.home")));
         setCanRun(false);
         final File inFile = fileChooser.showOpenDialog(mainPane.getScene().getWindow());
@@ -1239,6 +1261,9 @@ public class AutoPrimer3 extends Application implements Initializable{
                            if (region != null){
                                String r = region.getChromosome() + ":" + 
                                        region.getStartPos() + "-" + region.getEndPos();
+                               if (region.getName() != null && !region.getName().isEmpty()){
+                                   r = r + " " + region.getName();
+                               }
                                if (totalRegions > MAX_LINES_PER_DESIGN){
                                    final int lastLine = n - 1;
                                    final int validRegions = valid;
@@ -1372,7 +1397,9 @@ public class AutoPrimer3 extends Application implements Initializable{
     
     public void clearRegions(){
         regionsTextArea.clear();
-        progressLabel.setText("");
+        if (! progressLabel.textProperty().isBound()){
+            progressLabel.setText("");
+        }
     }
     
     private ArrayList<GenomicRegionSummary> getRegionsForDesign(String regionsInput){

@@ -1,834 +1,835 @@
-<?xml version="1.0" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE DASDSN SYSTEM "http://www.biodas.org/dtd/dasdsn.dtd">
+
 <DASDSN>
-   <DSN>
-     <SOURCE id="hg38" version="1.00">Dec. 2013 (GRCh38/hg38) at UCSC</SOURCE>
-     <DESCRIPTION>Human Dec. 2013 (GRCh38/hg38) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/hg38</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="hg19" version="1.00">Feb. 2009 (GRCh37/hg19) at UCSC</SOURCE>
-     <DESCRIPTION>Human Feb. 2009 (GRCh37/hg19) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/hg19</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="hg18" version="1.00">Mar. 2006 (NCBI36/hg18) at UCSC</SOURCE>
-     <DESCRIPTION>Human Mar. 2006 (NCBI36/hg18) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/hg18</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="hg17" version="1.00">May 2004 (NCBI35/hg17) at UCSC</SOURCE>
-     <DESCRIPTION>Human May 2004 (NCBI35/hg17) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/hg17</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="hg16" version="1.00">July 2003 (NCBI34/hg16) at UCSC</SOURCE>
-     <DESCRIPTION>Human July 2003 (NCBI34/hg16) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/hg16</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="mm10" version="1.00">Dec. 2011 (GRCm38/mm10) at UCSC</SOURCE>
-     <DESCRIPTION>Mouse Dec. 2011 (GRCm38/mm10) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/mm10</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="mm9" version="1.00">July 2007 (NCBI37/mm9) at UCSC</SOURCE>
-     <DESCRIPTION>Mouse July 2007 (NCBI37/mm9) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/mm9</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="mm8" version="1.00">Feb. 2006 (NCBI36/mm8) at UCSC</SOURCE>
-     <DESCRIPTION>Mouse Feb. 2006 (NCBI36/mm8) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/mm8</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="mm7" version="1.00">Aug. 2005 (NCBI35/mm7) at UCSC</SOURCE>
-     <DESCRIPTION>Mouse Aug. 2005 (NCBI35/mm7) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/mm7</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="anoGam1" version="1.00">Feb. 2003 (IAGEC MOZ2/anoGam1) at UCSC</SOURCE>
-     <DESCRIPTION>A. gambiae Feb. 2003 (IAGEC MOZ2/anoGam1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/anoGam1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="apiMel2" version="1.00">Jan. 2005 (Baylor 2.0/apiMel2) at UCSC</SOURCE>
-     <DESCRIPTION>A. mellifera Jan. 2005 (Baylor 2.0/apiMel2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/apiMel2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="apiMel1" version="1.00">July 2004 (Baylor 1.2/apiMel1) at UCSC</SOURCE>
-     <DESCRIPTION>A. mellifera July 2004 (Baylor 1.2/apiMel1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/apiMel1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="vicPac2" version="1.00">Mar. 2013 (Vicugna_pacos-2.0.1/vicPac2) at UCSC</SOURCE>
-     <DESCRIPTION>Alpaca Mar. 2013 (Vicugna_pacos-2.0.1/vicPac2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/vicPac2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="vicPac1" version="1.00">Jul. 2008 (Broad/vicPac1) at UCSC</SOURCE>
-     <DESCRIPTION>Alpaca Jul. 2008 (Broad/vicPac1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/vicPac1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="allMis1" version="1.00">Aug. 2012 (allMis0.2/allMis1) at UCSC</SOURCE>
-     <DESCRIPTION>American alligator Aug. 2012 (allMis0.2/allMis1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/allMis1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="dasNov3" version="1.00">Dec. 2011 (Baylor/dasNov3) at UCSC</SOURCE>
-     <DESCRIPTION>Armadillo Dec. 2011 (Baylor/dasNov3) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/dasNov3</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="gadMor1" version="1.00">May 2010 (Genofisk GadMor_May2010/gadMor1) at UCSC</SOURCE>
-     <DESCRIPTION>Atlantic cod May 2010 (Genofisk GadMor_May2010/gadMor1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/gadMor1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="papAnu2" version="1.00">Mar. 2012 (Baylor Panu_2.0/papAnu2) at UCSC</SOURCE>
-     <DESCRIPTION>Baboon Mar. 2012 (Baylor Panu_2.0/papAnu2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/papAnu2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="papHam1" version="1.00">Nov. 2008 (Baylor Pham_1.0/papHam1) at UCSC</SOURCE>
-     <DESCRIPTION>Baboon Nov. 2008 (Baylor Pham_1.0/papHam1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/papHam1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="melUnd1" version="1.00">Sep. 2011 (WUSTL v6.3/melUnd1) at UCSC</SOURCE>
-     <DESCRIPTION>Budgerigar Sep. 2011 (WUSTL v6.3/melUnd1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/melUnd1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="otoGar3" version="1.00">Mar. 2011 (Broad/otoGar3) at UCSC</SOURCE>
-     <DESCRIPTION>Bushbaby Mar. 2011 (Broad/otoGar3) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/otoGar3</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="caePb2" version="1.00">Feb. 2008 (WUGSC 6.0.1/caePb2) at UCSC</SOURCE>
-     <DESCRIPTION>C. brenneri Feb. 2008 (WUGSC 6.0.1/caePb2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/caePb2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="caePb1" version="1.00">Jan. 2007 (WUGSC 4.0/caePb1) at UCSC</SOURCE>
-     <DESCRIPTION>C. brenneri Jan. 2007 (WUGSC 4.0/caePb1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/caePb1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="cb3" version="1.00">Jan. 2007 (WUGSC 1.0/cb3) at UCSC</SOURCE>
-     <DESCRIPTION>C. briggsae Jan. 2007 (WUGSC 1.0/cb3) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/cb3</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="cb1" version="1.00">July 2002 (WormBase cb25.agp8/cb1) at UCSC</SOURCE>
-     <DESCRIPTION>C. briggsae July 2002 (WormBase cb25.agp8/cb1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/cb1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="ce10" version="1.00">Oct. 2010 (WS220/ce10) at UCSC</SOURCE>
-     <DESCRIPTION>C. elegans Oct. 2010 (WS220/ce10) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/ce10</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="ce6" version="1.00">May 2008 (WS190/ce6) at UCSC</SOURCE>
-     <DESCRIPTION>C. elegans May 2008 (WS190/ce6) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/ce6</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="ce4" version="1.00">Jan. 2007 (WS170/ce4) at UCSC</SOURCE>
-     <DESCRIPTION>C. elegans Jan. 2007 (WS170/ce4) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/ce4</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="ce2" version="1.00">Mar. 2004 (WS120/ce2) at UCSC</SOURCE>
-     <DESCRIPTION>C. elegans Mar. 2004 (WS120/ce2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/ce2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="ci2" version="1.00">Mar. 2005 (JGI 2.1/ci2) at UCSC</SOURCE>
-     <DESCRIPTION>C. intestinalis Mar. 2005 (JGI 2.1/ci2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/ci2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="ci1" version="1.00">Dec. 2002 (JGI 1.0/ci1) at UCSC</SOURCE>
-     <DESCRIPTION>C. intestinalis Dec. 2002 (JGI 1.0/ci1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/ci1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="caeJap1" version="1.00">Mar. 2008 (WUGSC 3.0.2/caeJap1) at UCSC</SOURCE>
-     <DESCRIPTION>C. japonica Mar. 2008 (WUGSC 3.0.2/caeJap1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/caeJap1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="caeRem3" version="1.00">May 2007 (WUGSC 15.0.1/caeRem3) at UCSC</SOURCE>
-     <DESCRIPTION>C. remanei May 2007 (WUGSC 15.0.1/caeRem3) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/caeRem3</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="caeRem2" version="1.00">Mar. 2006 (WUGSC 1.0/caeRem2) at UCSC</SOURCE>
-     <DESCRIPTION>C. remanei Mar. 2006 (WUGSC 1.0/caeRem2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/caeRem2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="felCat5" version="1.00">Sep. 2011 (ICGSC Felis_catus 6.2/felCat5) at UCSC</SOURCE>
-     <DESCRIPTION>Cat Sep. 2011 (ICGSC Felis_catus 6.2/felCat5) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/felCat5</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="felCat4" version="1.00">Dec. 2008 (NHGRI/GTB V17e/felCat4) at UCSC</SOURCE>
-     <DESCRIPTION>Cat Dec. 2008 (NHGRI/GTB V17e/felCat4) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/felCat4</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="felCat3" version="1.00">Mar. 2006 (Broad/felCat3) at UCSC</SOURCE>
-     <DESCRIPTION>Cat Mar. 2006 (Broad/felCat3) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/felCat3</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="galGal4" version="1.00">Nov. 2011 (ICGSC Gallus_gallus-4.0/galGal4) at UCSC</SOURCE>
-     <DESCRIPTION>Chicken Nov. 2011 (ICGSC Gallus_gallus-4.0/galGal4) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/galGal4</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="galGal3" version="1.00">May 2006 (WUGSC 2.1/galGal3) at UCSC</SOURCE>
-     <DESCRIPTION>Chicken May 2006 (WUGSC 2.1/galGal3) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/galGal3</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="galGal2" version="1.00">Feb. 2004 (WUGSC 1.0/galGal2) at UCSC</SOURCE>
-     <DESCRIPTION>Chicken Feb. 2004 (WUGSC 1.0/galGal2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/galGal2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="panTro4" version="1.00">Feb. 2011 (CSAC 2.1.4/panTro4) at UCSC</SOURCE>
-     <DESCRIPTION>Chimp Feb. 2011 (CSAC 2.1.4/panTro4) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/panTro4</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="panTro3" version="1.00">Oct. 2010 (CGSC 2.1.3/panTro3) at UCSC</SOURCE>
-     <DESCRIPTION>Chimp Oct. 2010 (CGSC 2.1.3/panTro3) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/panTro3</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="panTro2" version="1.00">Mar. 2006 (CGSC 2.1/panTro2) at UCSC</SOURCE>
-     <DESCRIPTION>Chimp Mar. 2006 (CGSC 2.1/panTro2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/panTro2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="panTro1" version="1.00">Nov. 2003 (CGSC 1.1/panTro1) at UCSC</SOURCE>
-     <DESCRIPTION>Chimp Nov. 2003 (CGSC 1.1/panTro1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/panTro1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="criGri1" version="1.00">Jul. 2013 (C_griseus_v1.0/criGri1) at UCSC</SOURCE>
-     <DESCRIPTION>Chinese hamster Jul. 2013 (C_griseus_v1.0/criGri1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/criGri1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="latCha1" version="1.00">Aug. 2011 (Broad/latCha1) at UCSC</SOURCE>
-     <DESCRIPTION>Coelacanth Aug. 2011 (Broad/latCha1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/latCha1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="bosTau8" version="1.00">Jun. 2014 (Bos_taurus_UMD_3.1.1/bosTau8) at UCSC</SOURCE>
-     <DESCRIPTION>Cow Jun. 2014 (Bos_taurus_UMD_3.1.1/bosTau8) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/bosTau8</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="bosTau7" version="1.00">Oct. 2011 (Baylor Btau_4.6.1/bosTau7) at UCSC</SOURCE>
-     <DESCRIPTION>Cow Oct. 2011 (Baylor Btau_4.6.1/bosTau7) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/bosTau7</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="bosTau6" version="1.00">Nov. 2009 (Bos_taurus_UMD_3.1/bosTau6) at UCSC</SOURCE>
-     <DESCRIPTION>Cow Nov. 2009 (Bos_taurus_UMD_3.1/bosTau6) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/bosTau6</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="bosTau4" version="1.00">Oct. 2007 (Baylor 4.0/bosTau4) at UCSC</SOURCE>
-     <DESCRIPTION>Cow Oct. 2007 (Baylor 4.0/bosTau4) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/bosTau4</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="bosTau3" version="1.00">Aug. 2006 (Baylor 3.1/bosTau3) at UCSC</SOURCE>
-     <DESCRIPTION>Cow Aug. 2006 (Baylor 3.1/bosTau3) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/bosTau3</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="bosTau2" version="1.00">Mar. 2005 (Baylor 2.0/bosTau2) at UCSC</SOURCE>
-     <DESCRIPTION>Cow Mar. 2005 (Baylor 2.0/bosTau2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/bosTau2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="droAna2" version="1.00">Aug. 2005 (Agencourt prelim/droAna2) at UCSC</SOURCE>
-     <DESCRIPTION>D. ananassae Aug. 2005 (Agencourt prelim/droAna2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/droAna2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="droAna1" version="1.00">July 2004 (TIGR/droAna1) at UCSC</SOURCE>
-     <DESCRIPTION>D. ananassae July 2004 (TIGR/droAna1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/droAna1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="droEre1" version="1.00">Aug. 2005 (Agencourt prelim/droEre1) at UCSC</SOURCE>
-     <DESCRIPTION>D. erecta Aug. 2005 (Agencourt prelim/droEre1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/droEre1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="droGri1" version="1.00">Aug. 2005 (Agencourt prelim/droGri1) at UCSC</SOURCE>
-     <DESCRIPTION>D. grimshawi Aug. 2005 (Agencourt prelim/droGri1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/droGri1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="dm6" version="1.00">Aug. 2014 (BDGP Release 6 + ISO1 MT/dm6) at UCSC</SOURCE>
-     <DESCRIPTION>D. melanogaster Aug. 2014 (BDGP Release 6 + ISO1 MT/dm6) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/dm6</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="dm3" version="1.00">Apr. 2006 (BDGP R5/dm3) at UCSC</SOURCE>
-     <DESCRIPTION>D. melanogaster Apr. 2006 (BDGP R5/dm3) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/dm3</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="dm2" version="1.00">Apr. 2004 (BDGP R4/dm2) at UCSC</SOURCE>
-     <DESCRIPTION>D. melanogaster Apr. 2004 (BDGP R4/dm2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/dm2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="dm1" version="1.00">Jan. 2003 (BDGP R3/dm1) at UCSC</SOURCE>
-     <DESCRIPTION>D. melanogaster Jan. 2003 (BDGP R3/dm1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/dm1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="droMoj2" version="1.00">Aug. 2005 (Agencourt prelim/droMoj2) at UCSC</SOURCE>
-     <DESCRIPTION>D. mojavensis Aug. 2005 (Agencourt prelim/droMoj2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/droMoj2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="droMoj1" version="1.00">Aug. 2004 (Agencourt prelim/droMoj1) at UCSC</SOURCE>
-     <DESCRIPTION>D. mojavensis Aug. 2004 (Agencourt prelim/droMoj1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/droMoj1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="droPer1" version="1.00">Oct. 2005 (Broad/droPer1) at UCSC</SOURCE>
-     <DESCRIPTION>D. persimilis Oct. 2005 (Broad/droPer1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/droPer1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="dp3" version="1.00">Nov. 2004 (FlyBase 1.03/dp3) at UCSC</SOURCE>
-     <DESCRIPTION>D. pseudoobscura Nov. 2004 (FlyBase 1.03/dp3) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/dp3</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="dp2" version="1.00">Aug. 2003 (Baylor freeze1/dp2) at UCSC</SOURCE>
-     <DESCRIPTION>D. pseudoobscura Aug. 2003 (Baylor freeze1/dp2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/dp2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="droSec1" version="1.00">Oct. 2005 (Broad/droSec1) at UCSC</SOURCE>
-     <DESCRIPTION>D. sechellia Oct. 2005 (Broad/droSec1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/droSec1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="droSim1" version="1.00">Apr. 2005 (WUGSC mosaic 1.0/droSim1) at UCSC</SOURCE>
-     <DESCRIPTION>D. simulans Apr. 2005 (WUGSC mosaic 1.0/droSim1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/droSim1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="droVir2" version="1.00">Aug. 2005 (Agencourt prelim/droVir2) at UCSC</SOURCE>
-     <DESCRIPTION>D. virilis Aug. 2005 (Agencourt prelim/droVir2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/droVir2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="droVir1" version="1.00">July 2004 (Agencourt prelim/droVir1) at UCSC</SOURCE>
-     <DESCRIPTION>D. virilis July 2004 (Agencourt prelim/droVir1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/droVir1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="droYak2" version="1.00">Nov. 2005 (WUGSC 7.1/droYak2) at UCSC</SOURCE>
-     <DESCRIPTION>D. yakuba Nov. 2005 (WUGSC 7.1/droYak2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/droYak2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="droYak1" version="1.00">Apr. 2004 (WUGSC 1.0/droYak1) at UCSC</SOURCE>
-     <DESCRIPTION>D. yakuba Apr. 2004 (WUGSC 1.0/droYak1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/droYak1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="canFam3" version="1.00">Sep. 2011 (Broad CanFam3.1/canFam3) at UCSC</SOURCE>
-     <DESCRIPTION>Dog Sep. 2011 (Broad CanFam3.1/canFam3) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/canFam3</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="canFam2" version="1.00">May 2005 (Broad/canFam2) at UCSC</SOURCE>
-     <DESCRIPTION>Dog May 2005 (Broad/canFam2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/canFam2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="canFam1" version="1.00">July 2004 (Broad/canFam1) at UCSC</SOURCE>
-     <DESCRIPTION>Dog July 2004 (Broad/canFam1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/canFam1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="turTru2" version="1.00">Oct. 2011 (Baylor Ttru_1.4/turTru2) at UCSC</SOURCE>
-     <DESCRIPTION>Dolphin Oct. 2011 (Baylor Ttru_1.4/turTru2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/turTru2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="eboVir3" version="1.00">Sierra Leone 2014 (G3683/KM034562.1/eboVir3) at UCSC</SOURCE>
-     <DESCRIPTION>Ebola virus Sierra Leone 2014 (G3683/KM034562.1/eboVir3) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/eboVir3</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="loxAfr3" version="1.00">Jul. 2009 (Broad/loxAfr3) at UCSC</SOURCE>
-     <DESCRIPTION>Elephant Jul. 2009 (Broad/loxAfr3) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/loxAfr3</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="calMil1" version="1.00">Dec. 2013 (Callorhinchus_milii-6.1.3/calMil1) at UCSC</SOURCE>
-     <DESCRIPTION>Elephant shark Dec. 2013 (Callorhinchus_milii-6.1.3/calMil1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/calMil1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="musFur1" version="1.00">Apr. 2011 (MusPutFur1.0/musFur1) at UCSC</SOURCE>
-     <DESCRIPTION>Ferret  Apr. 2011 (MusPutFur1.0/musFur1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/musFur1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="fr3" version="1.00">Oct. 2011 (FUGU5/fr3) at UCSC</SOURCE>
-     <DESCRIPTION>Fugu Oct. 2011 (FUGU5/fr3) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/fr3</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="fr2" version="1.00">Oct. 2004 (JGI 4.0/fr2) at UCSC</SOURCE>
-     <DESCRIPTION>Fugu Oct. 2004 (JGI 4.0/fr2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/fr2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="fr1" version="1.00">Aug. 2002 (JGI 3.0/fr1) at UCSC</SOURCE>
-     <DESCRIPTION>Fugu Aug. 2002 (JGI 3.0/fr1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/fr1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="nomLeu3" version="1.00">Oct. 2012 (GGSC Nleu3.0/nomLeu3) at UCSC</SOURCE>
-     <DESCRIPTION>Gibbon Oct. 2012 (GGSC Nleu3.0/nomLeu3) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/nomLeu3</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="nomLeu2" version="1.00">Jun. 2011 (GGSC Nleu1.1/nomLeu2) at UCSC</SOURCE>
-     <DESCRIPTION>Gibbon Jun. 2011 (GGSC Nleu1.1/nomLeu2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/nomLeu2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="nomLeu1" version="1.00">Jan. 2010 (GGSC Nleu1.0/nomLeu1) at UCSC</SOURCE>
-     <DESCRIPTION>Gibbon Jan. 2010 (GGSC Nleu1.0/nomLeu1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/nomLeu1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="gorGor3" version="1.00">May 2011 (gorGor3.1/gorGor3) at UCSC</SOURCE>
-     <DESCRIPTION>Gorilla May 2011 (gorGor3.1/gorGor3) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/gorGor3</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="hg38Patch2" version="1.00">Dec. 2014 at UCSC</SOURCE>
-     <DESCRIPTION>GRCh38.p2 Dec. 2014 Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/hg38Patch2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="cavPor3" version="1.00">Feb. 2008 (Broad/cavPor3) at UCSC</SOURCE>
-     <DESCRIPTION>Guinea pig Feb. 2008 (Broad/cavPor3) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/cavPor3</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="eriEur2" version="1.00">May 2012 (EriEur2.0/eriEur2) at UCSC</SOURCE>
-     <DESCRIPTION>Hedgehog May 2012 (EriEur2.0/eriEur2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/eriEur2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="eriEur1" version="1.00">June 2006 (Broad/eriEur1) at UCSC</SOURCE>
-     <DESCRIPTION>Hedgehog June 2006 (Broad/eriEur1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/eriEur1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="equCab2" version="1.00">Sep. 2007 (Broad/equCab2) at UCSC</SOURCE>
-     <DESCRIPTION>Horse Sep. 2007 (Broad/equCab2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/equCab2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="equCab1" version="1.00">Jan. 2007 (Broad/equCab1) at UCSC</SOURCE>
-     <DESCRIPTION>Horse Jan. 2007 (Broad/equCab1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/equCab1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="dipOrd1" version="1.00">Jul. 2008 (Broad/dipOrd1) at UCSC</SOURCE>
-     <DESCRIPTION>Kangaroo rat Jul. 2008 (Broad/dipOrd1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/dipOrd1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="petMar2" version="1.00">Sep. 2010 (WUGSC 7.0/petMar2) at UCSC</SOURCE>
-     <DESCRIPTION>Lamprey Sep. 2010 (WUGSC 7.0/petMar2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/petMar2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="petMar1" version="1.00">Mar. 2007 (WUGSC 3.0/petMar1) at UCSC</SOURCE>
-     <DESCRIPTION>Lamprey Mar. 2007 (WUGSC 3.0/petMar1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/petMar1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="braFlo1" version="1.00">Mar. 2006 (JGI 1.0/braFlo1) at UCSC</SOURCE>
-     <DESCRIPTION>Lancelet Mar. 2006 (JGI 1.0/braFlo1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/braFlo1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="anoCar2" version="1.00">May 2010 (Broad AnoCar2.0/anoCar2) at UCSC</SOURCE>
-     <DESCRIPTION>Lizard May 2010 (Broad AnoCar2.0/anoCar2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/anoCar2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="anoCar1" version="1.00">Feb. 2007 (Broad/anoCar1) at UCSC</SOURCE>
-     <DESCRIPTION>Lizard Feb. 2007 (Broad/anoCar1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/anoCar1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="triMan1" version="1.00">Oct. 2011 (Broad v1.0/triMan1) at UCSC</SOURCE>
-     <DESCRIPTION>Manatee Oct. 2011 (Broad v1.0/triMan1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/triMan1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="calJac3" version="1.00">March 2009 (WUGSC 3.2/calJac3) at UCSC</SOURCE>
-     <DESCRIPTION>Marmoset March 2009 (WUGSC 3.2/calJac3) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/calJac3</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="calJac1" version="1.00">June 2007 (WUGSC 2.0.2/calJac1) at UCSC</SOURCE>
-     <DESCRIPTION>Marmoset June 2007 (WUGSC 2.0.2/calJac1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/calJac1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="oryLat2" version="1.00">Oct. 2005 (NIG/UT MEDAKA1/oryLat2) at UCSC</SOURCE>
-     <DESCRIPTION>Medaka Oct. 2005 (NIG/UT MEDAKA1/oryLat2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/oryLat2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="geoFor1" version="1.00">Apr. 2012 (GeoFor_1.0/geoFor1) at UCSC</SOURCE>
-     <DESCRIPTION>Medium ground finch Apr. 2012 (GeoFor_1.0/geoFor1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/geoFor1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="pteVam1" version="1.00">Jul. 2008 (Broad/pteVam1) at UCSC</SOURCE>
-     <DESCRIPTION>Megabat Jul. 2008 (Broad/pteVam1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/pteVam1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="myoLuc2" version="1.00">Jul. 2010 (Broad Institute Myoluc2.0/myoLuc2) at UCSC</SOURCE>
-     <DESCRIPTION>Microbat Jul. 2010 (Broad Institute Myoluc2.0/myoLuc2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/myoLuc2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="balAcu1" version="1.00">Oct. 2013 (BalAcu1.0/balAcu1) at UCSC</SOURCE>
-     <DESCRIPTION>Minke whale Oct. 2013 (BalAcu1.0/balAcu1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/balAcu1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="micMur1" version="1.00">Jul. 2007 (Broad/micMur1) at UCSC</SOURCE>
-     <DESCRIPTION>Mouse lemur Jul. 2007 (Broad/micMur1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/micMur1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="hetGla2" version="1.00">Jan. 2012 (Broad HetGla_female_1.0/hetGla2) at UCSC</SOURCE>
-     <DESCRIPTION>Naked mole-rat Jan. 2012 (Broad HetGla_female_1.0/hetGla2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/hetGla2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="hetGla1" version="1.00">Jul. 2011 (BGI HetGla_1.0/hetGla1) at UCSC</SOURCE>
-     <DESCRIPTION>Naked mole-rat Jul. 2011 (BGI HetGla_1.0/hetGla1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/hetGla1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="oreNil2" version="1.00">Jan. 2011 (Broad oreNil1.1/oreNil2) at UCSC</SOURCE>
-     <DESCRIPTION>Nile tilapia Jan. 2011 (Broad oreNil1.1/oreNil2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/oreNil2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="monDom5" version="1.00">Oct. 2006 (Broad/monDom5) at UCSC</SOURCE>
-     <DESCRIPTION>Opossum Oct. 2006 (Broad/monDom5) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/monDom5</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="monDom4" version="1.00">Jan. 2006 (Broad/monDom4) at UCSC</SOURCE>
-     <DESCRIPTION>Opossum Jan. 2006 (Broad/monDom4) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/monDom4</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="monDom1" version="1.00">Oct. 2004 (Broad prelim/monDom1) at UCSC</SOURCE>
-     <DESCRIPTION>Opossum Oct. 2004 (Broad prelim/monDom1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/monDom1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="ponAbe2" version="1.00">July 2007 (WUGSC 2.0.2/ponAbe2) at UCSC</SOURCE>
-     <DESCRIPTION>Orangutan July 2007 (WUGSC 2.0.2/ponAbe2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/ponAbe2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="priPac1" version="1.00">Feb. 2007 (WUGSC 5.0/priPac1) at UCSC</SOURCE>
-     <DESCRIPTION>P. pacificus Feb. 2007 (WUGSC 5.0/priPac1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/priPac1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="chrPic1" version="1.00">Dec. 2011 (v3.0.1/chrPic1) at UCSC</SOURCE>
-     <DESCRIPTION>Painted turtle Dec. 2011 (v3.0.1/chrPic1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/chrPic1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="ailMel1" version="1.00">Dec. 2009 (BGI-Shenzhen 1.0/ailMel1) at UCSC</SOURCE>
-     <DESCRIPTION>Panda Dec. 2009 (BGI-Shenzhen 1.0/ailMel1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/ailMel1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="susScr3" version="1.00">Aug. 2011 (SGSC Sscrofa10.2/susScr3) at UCSC</SOURCE>
-     <DESCRIPTION>Pig Aug. 2011 (SGSC Sscrofa10.2/susScr3) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/susScr3</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="susScr2" version="1.00">Nov. 2009 (SGSC Sscrofa9.2/susScr2) at UCSC</SOURCE>
-     <DESCRIPTION>Pig Nov. 2009 (SGSC Sscrofa9.2/susScr2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/susScr2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="ochPri3" version="1.00">May 2012 (OchPri3.0/ochPri3) at UCSC</SOURCE>
-     <DESCRIPTION>Pika May 2012 (OchPri3.0/ochPri3) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/ochPri3</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="ochPri2" version="1.00">Jul. 2008 (Broad/ochPri2) at UCSC</SOURCE>
-     <DESCRIPTION>Pika Jul. 2008 (Broad/ochPri2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/ochPri2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="ornAna1" version="1.00">Mar. 2007 (WUGSC 5.0.1/ornAna1) at UCSC</SOURCE>
-     <DESCRIPTION>Platypus Mar. 2007 (WUGSC 5.0.1/ornAna1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/ornAna1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="oryCun2" version="1.00">Apr. 2009 (Broad/oryCun2) at UCSC</SOURCE>
-     <DESCRIPTION>Rabbit Apr. 2009 (Broad/oryCun2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/oryCun2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="rn6" version="1.00">Jul. 2014 (RGSC 6.0/rn6) at UCSC</SOURCE>
-     <DESCRIPTION>Rat Jul. 2014 (RGSC 6.0/rn6) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/rn6</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="rn5" version="1.00">Mar. 2012 (RGSC 5.0/rn5) at UCSC</SOURCE>
-     <DESCRIPTION>Rat Mar. 2012 (RGSC 5.0/rn5) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/rn5</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="rn4" version="1.00">Nov. 2004 (Baylor 3.4/rn4) at UCSC</SOURCE>
-     <DESCRIPTION>Rat Nov. 2004 (Baylor 3.4/rn4) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/rn4</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="rn3" version="1.00">June 2003 (Baylor 3.1/rn3) at UCSC</SOURCE>
-     <DESCRIPTION>Rat June 2003 (Baylor 3.1/rn3) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/rn3</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="rheMac3" version="1.00">Oct. 2010 (BGI CR_1.0/rheMac3) at UCSC</SOURCE>
-     <DESCRIPTION>Rhesus Oct. 2010 (BGI CR_1.0/rheMac3) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/rheMac3</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="rheMac2" version="1.00">Jan. 2006 (MGSC Merged 1.0/rheMac2) at UCSC</SOURCE>
-     <DESCRIPTION>Rhesus Jan. 2006 (MGSC Merged 1.0/rheMac2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/rheMac2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="proCap1" version="1.00">Jul. 2008 (Broad/proCap1) at UCSC</SOURCE>
-     <DESCRIPTION>Rock hyrax Jul. 2008 (Broad/proCap1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/proCap1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="sacCer3" version="1.00">Apr. 2011 (SacCer_Apr2011/sacCer3) at UCSC</SOURCE>
-     <DESCRIPTION>S. cerevisiae Apr. 2011 (SacCer_Apr2011/sacCer3) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/sacCer3</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="sacCer2" version="1.00">June 2008 (SGD/sacCer2) at UCSC</SOURCE>
-     <DESCRIPTION>S. cerevisiae June 2008 (SGD/sacCer2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/sacCer2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="sacCer1" version="1.00">Oct. 2003 (SGD/sacCer1) at UCSC</SOURCE>
-     <DESCRIPTION>S. cerevisiae Oct. 2003 (SGD/sacCer1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/sacCer1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="strPur2" version="1.00">Sep. 2006 (Baylor 2.1/strPur2) at UCSC</SOURCE>
-     <DESCRIPTION>S. purpuratus Sep. 2006 (Baylor 2.1/strPur2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/strPur2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="strPur1" version="1.00">Apr. 2005 (Baylor 1.1/strPur1) at UCSC</SOURCE>
-     <DESCRIPTION>S. purpuratus Apr. 2005 (Baylor 1.1/strPur1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/strPur1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="aplCal1" version="1.00">Sept. 2008 (Broad 2.0/aplCal1) at UCSC</SOURCE>
-     <DESCRIPTION>Sea hare Sept. 2008 (Broad 2.0/aplCal1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/aplCal1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="oviAri3" version="1.00">Aug. 2012 (ISGC Oar_v3.1/oviAri3) at UCSC</SOURCE>
-     <DESCRIPTION>Sheep Aug. 2012 (ISGC Oar_v3.1/oviAri3) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/oviAri3</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="oviAri1" version="1.00">Feb. 2010 (ISGC Ovis_aries_1.0/oviAri1) at UCSC</SOURCE>
-     <DESCRIPTION>Sheep Feb. 2010 (ISGC Ovis_aries_1.0/oviAri1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/oviAri1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="sorAra2" version="1.00">Aug. 2008 (Broad/sorAra2) at UCSC</SOURCE>
-     <DESCRIPTION>Shrew Aug. 2008 (Broad/sorAra2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/sorAra2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="sorAra1" version="1.00">June 2006 (Broad/sorAra1) at UCSC</SOURCE>
-     <DESCRIPTION>Shrew June 2006 (Broad/sorAra1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/sorAra1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="choHof1" version="1.00">Jul. 2008 (Broad/choHof1) at UCSC</SOURCE>
-     <DESCRIPTION>Sloth Jul. 2008 (Broad/choHof1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/choHof1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="speTri2" version="1.00">Nov. 2011 (Broad/speTri2) at UCSC</SOURCE>
-     <DESCRIPTION>Squirrel Nov. 2011 (Broad/speTri2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/speTri2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="saiBol1" version="1.00">Oct. 2011 (Broad/saiBol1) at UCSC</SOURCE>
-     <DESCRIPTION>Squirrel monkey Oct. 2011 (Broad/saiBol1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/saiBol1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="gasAcu1" version="1.00">Feb. 2006 (Broad/gasAcu1) at UCSC</SOURCE>
-     <DESCRIPTION>Stickleback Feb. 2006 (Broad/gasAcu1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/gasAcu1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="tarSyr2" version="1.00">Sep. 2013 (Tarsius_syrichta-2.0.1/tarSyr2) at UCSC</SOURCE>
-     <DESCRIPTION>Tarsier Sep. 2013 (Tarsius_syrichta-2.0.1/tarSyr2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/tarSyr2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="tarSyr1" version="1.00">Aug. 2008 (Broad/tarSyr1) at UCSC</SOURCE>
-     <DESCRIPTION>Tarsier Aug. 2008 (Broad/tarSyr1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/tarSyr1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="sarHar1" version="1.00">Feb. 2011 (WTSI Devil_ref v7.0/sarHar1) at UCSC</SOURCE>
-     <DESCRIPTION>Tasmanian devil Feb. 2011 (WTSI Devil_ref v7.0/sarHar1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/sarHar1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="echTel2" version="1.00">Nov. 2012 (Broad/echTel2) at UCSC</SOURCE>
-     <DESCRIPTION>Tenrec Nov. 2012 (Broad/echTel2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/echTel2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="echTel1" version="1.00">July 2005 (Broad/echTel1) at UCSC</SOURCE>
-     <DESCRIPTION>Tenrec July 2005 (Broad/echTel1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/echTel1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="tetNig2" version="1.00">Mar. 2007 (Genoscope 8.0/tetNig2) at UCSC</SOURCE>
-     <DESCRIPTION>Tetraodon Mar. 2007 (Genoscope 8.0/tetNig2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/tetNig2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="tetNig1" version="1.00">Feb. 2004 (Genoscope 7/tetNig1) at UCSC</SOURCE>
-     <DESCRIPTION>Tetraodon Feb. 2004 (Genoscope 7/tetNig1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/tetNig1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="tupBel1" version="1.00">Dec. 2006 (Broad/tupBel1) at UCSC</SOURCE>
-     <DESCRIPTION>Tree shrew Dec. 2006 (Broad/tupBel1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/tupBel1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="melGal1" version="1.00">Dec. 2009 (TGC Turkey_2.01/melGal1) at UCSC</SOURCE>
-     <DESCRIPTION>Turkey Dec. 2009 (TGC Turkey_2.01/melGal1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/melGal1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="macEug2" version="1.00">Sep. 2009 (TWGS Meug_1.1/macEug2) at UCSC</SOURCE>
-     <DESCRIPTION>Wallaby Sep. 2009 (TWGS Meug_1.1/macEug2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/macEug2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="cerSim1" version="1.00">May 2012 (CerSimSim1.0/cerSim1) at UCSC</SOURCE>
-     <DESCRIPTION>White rhinoceros May 2012 (CerSimSim1.0/cerSim1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/cerSim1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="xenTro3" version="1.00">Nov. 2009 (JGI 4.2/xenTro3) at UCSC</SOURCE>
-     <DESCRIPTION>X. tropicalis Nov. 2009 (JGI 4.2/xenTro3) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/xenTro3</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="xenTro2" version="1.00">Aug. 2005 (JGI 4.1/xenTro2) at UCSC</SOURCE>
-     <DESCRIPTION>X. tropicalis Aug. 2005 (JGI 4.1/xenTro2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/xenTro2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="xenTro1" version="1.00">Oct. 2004 (JGI 3.0/xenTro1) at UCSC</SOURCE>
-     <DESCRIPTION>X. tropicalis Oct. 2004 (JGI 3.0/xenTro1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/xenTro1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="taeGut2" version="1.00">Feb. 2013 (WashU taeGut324/taeGut2) at UCSC</SOURCE>
-     <DESCRIPTION>Zebra finch Feb. 2013 (WashU taeGut324/taeGut2) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/taeGut2</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="taeGut1" version="1.00">Jul. 2008 (WUGSC 3.2.4/taeGut1) at UCSC</SOURCE>
-     <DESCRIPTION>Zebra finch Jul. 2008 (WUGSC 3.2.4/taeGut1) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/taeGut1</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="danRer10" version="1.00">Sep. 2014 (GRCz10/danRer10) at UCSC</SOURCE>
-     <DESCRIPTION>Zebrafish Sep. 2014 (GRCz10/danRer10) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/danRer10</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="danRer7" version="1.00">Jul. 2010 (Zv9/danRer7) at UCSC</SOURCE>
-     <DESCRIPTION>Zebrafish Jul. 2010 (Zv9/danRer7) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/danRer7</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="danRer6" version="1.00">Dec. 2008 (Zv8/danRer6) at UCSC</SOURCE>
-     <DESCRIPTION>Zebrafish Dec. 2008 (Zv8/danRer6) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/danRer6</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="danRer5" version="1.00">July 2007 (Zv7/danRer5) at UCSC</SOURCE>
-     <DESCRIPTION>Zebrafish July 2007 (Zv7/danRer5) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/danRer5</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="danRer4" version="1.00">Mar. 2006 (Zv6/danRer4) at UCSC</SOURCE>
-     <DESCRIPTION>Zebrafish Mar. 2006 (Zv6/danRer4) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/danRer4</MAPMASTER>
-   </DSN>
-   <DSN>
-     <SOURCE id="danRer3" version="1.00">May 2005 (Zv5/danRer3) at UCSC</SOURCE>
-     <DESCRIPTION>Zebrafish May 2005 (Zv5/danRer3) Genome at UCSC</DESCRIPTION>
-     <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/danRer3</MAPMASTER>
-   </DSN>
+  <DSN>
+    <SOURCE id="hg38" version="1.00">Dec. 2013 (GRCh38/hg38) at UCSC</SOURCE>
+    <DESCRIPTION>Human Dec. 2013 (GRCh38/hg38) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/hg38</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="hg19" version="1.00">Feb. 2009 (GRCh37/hg19) at UCSC</SOURCE>
+    <DESCRIPTION>Human Feb. 2009 (GRCh37/hg19) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/hg19</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="hg18" version="1.00">Mar. 2006 (NCBI36/hg18) at UCSC</SOURCE>
+    <DESCRIPTION>Human Mar. 2006 (NCBI36/hg18) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/hg18</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="hg17" version="1.00">May 2004 (NCBI35/hg17) at UCSC</SOURCE>
+    <DESCRIPTION>Human May 2004 (NCBI35/hg17) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/hg17</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="hg16" version="1.00">July 2003 (NCBI34/hg16) at UCSC</SOURCE>
+    <DESCRIPTION>Human July 2003 (NCBI34/hg16) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/hg16</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="mm10" version="1.00">Dec. 2011 (GRCm38/mm10) at UCSC</SOURCE>
+    <DESCRIPTION>Mouse Dec. 2011 (GRCm38/mm10) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/mm10</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="mm9" version="1.00">July 2007 (NCBI37/mm9) at UCSC</SOURCE>
+    <DESCRIPTION>Mouse July 2007 (NCBI37/mm9) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/mm9</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="mm8" version="1.00">Feb. 2006 (NCBI36/mm8) at UCSC</SOURCE>
+    <DESCRIPTION>Mouse Feb. 2006 (NCBI36/mm8) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/mm8</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="mm7" version="1.00">Aug. 2005 (NCBI35/mm7) at UCSC</SOURCE>
+    <DESCRIPTION>Mouse Aug. 2005 (NCBI35/mm7) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/mm7</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="anoGam1" version="1.00">Feb. 2003 (IAGEC MOZ2/anoGam1) at UCSC</SOURCE>
+    <DESCRIPTION>A. gambiae Feb. 2003 (IAGEC MOZ2/anoGam1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/anoGam1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="apiMel2" version="1.00">Jan. 2005 (Baylor 2.0/apiMel2) at UCSC</SOURCE>
+    <DESCRIPTION>A. mellifera Jan. 2005 (Baylor 2.0/apiMel2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/apiMel2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="apiMel1" version="1.00">July 2004 (Baylor 1.2/apiMel1) at UCSC</SOURCE>
+    <DESCRIPTION>A. mellifera July 2004 (Baylor 1.2/apiMel1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/apiMel1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="vicPac2" version="1.00">Mar. 2013 (Vicugna_pacos-2.0.1/vicPac2) at UCSC</SOURCE>
+    <DESCRIPTION>Alpaca Mar. 2013 (Vicugna_pacos-2.0.1/vicPac2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/vicPac2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="vicPac1" version="1.00">Jul. 2008 (Broad/vicPac1) at UCSC</SOURCE>
+    <DESCRIPTION>Alpaca Jul. 2008 (Broad/vicPac1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/vicPac1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="allMis1" version="1.00">Aug. 2012 (allMis0.2/allMis1) at UCSC</SOURCE>
+    <DESCRIPTION>American alligator Aug. 2012 (allMis0.2/allMis1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/allMis1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="dasNov3" version="1.00">Dec. 2011 (Baylor/dasNov3) at UCSC</SOURCE>
+    <DESCRIPTION>Armadillo Dec. 2011 (Baylor/dasNov3) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/dasNov3</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="gadMor1" version="1.00">May 2010 (Genofisk GadMor_May2010/gadMor1) at UCSC</SOURCE>
+    <DESCRIPTION>Atlantic cod May 2010 (Genofisk GadMor_May2010/gadMor1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/gadMor1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="papAnu2" version="1.00">Mar. 2012 (Baylor Panu_2.0/papAnu2) at UCSC</SOURCE>
+    <DESCRIPTION>Baboon Mar. 2012 (Baylor Panu_2.0/papAnu2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/papAnu2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="papHam1" version="1.00">Nov. 2008 (Baylor Pham_1.0/papHam1) at UCSC</SOURCE>
+    <DESCRIPTION>Baboon Nov. 2008 (Baylor Pham_1.0/papHam1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/papHam1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="panPan1" version="1.00">May 2012 (Max-Planck/panPan1) at UCSC</SOURCE>
+    <DESCRIPTION>Bonobo May 2012 (Max-Planck/panPan1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/panPan1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="melUnd1" version="1.00">Sep. 2011 (WUSTL v6.3/melUnd1) at UCSC</SOURCE>
+    <DESCRIPTION>Budgerigar Sep. 2011 (WUSTL v6.3/melUnd1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/melUnd1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="otoGar3" version="1.00">Mar. 2011 (Broad/otoGar3) at UCSC</SOURCE>
+    <DESCRIPTION>Bushbaby Mar. 2011 (Broad/otoGar3) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/otoGar3</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="caePb2" version="1.00">Feb. 2008 (WUGSC 6.0.1/caePb2) at UCSC</SOURCE>
+    <DESCRIPTION>C. brenneri Feb. 2008 (WUGSC 6.0.1/caePb2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/caePb2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="caePb1" version="1.00">Jan. 2007 (WUGSC 4.0/caePb1) at UCSC</SOURCE>
+    <DESCRIPTION>C. brenneri Jan. 2007 (WUGSC 4.0/caePb1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/caePb1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="cb3" version="1.00">Jan. 2007 (WUGSC 1.0/cb3) at UCSC</SOURCE>
+    <DESCRIPTION>C. briggsae Jan. 2007 (WUGSC 1.0/cb3) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/cb3</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="cb1" version="1.00">July 2002 (WormBase cb25.agp8/cb1) at UCSC</SOURCE>
+    <DESCRIPTION>C. briggsae July 2002 (WormBase cb25.agp8/cb1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/cb1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="ce10" version="1.00">Oct. 2010 (WS220/ce10) at UCSC</SOURCE>
+    <DESCRIPTION>C. elegans Oct. 2010 (WS220/ce10) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/ce10</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="ce6" version="1.00">May 2008 (WS190/ce6) at UCSC</SOURCE>
+    <DESCRIPTION>C. elegans May 2008 (WS190/ce6) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/ce6</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="ce4" version="1.00">Jan. 2007 (WS170/ce4) at UCSC</SOURCE>
+    <DESCRIPTION>C. elegans Jan. 2007 (WS170/ce4) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/ce4</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="ce2" version="1.00">Mar. 2004 (WS120/ce2) at UCSC</SOURCE>
+    <DESCRIPTION>C. elegans Mar. 2004 (WS120/ce2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/ce2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="ci2" version="1.00">Mar. 2005 (JGI 2.1/ci2) at UCSC</SOURCE>
+    <DESCRIPTION>C. intestinalis Mar. 2005 (JGI 2.1/ci2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/ci2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="ci1" version="1.00">Dec. 2002 (JGI 1.0/ci1) at UCSC</SOURCE>
+    <DESCRIPTION>C. intestinalis Dec. 2002 (JGI 1.0/ci1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/ci1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="caeJap1" version="1.00">Mar. 2008 (WUGSC 3.0.2/caeJap1) at UCSC</SOURCE>
+    <DESCRIPTION>C. japonica Mar. 2008 (WUGSC 3.0.2/caeJap1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/caeJap1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="caeRem3" version="1.00">May 2007 (WUGSC 15.0.1/caeRem3) at UCSC</SOURCE>
+    <DESCRIPTION>C. remanei May 2007 (WUGSC 15.0.1/caeRem3) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/caeRem3</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="caeRem2" version="1.00">Mar. 2006 (WUGSC 1.0/caeRem2) at UCSC</SOURCE>
+    <DESCRIPTION>C. remanei Mar. 2006 (WUGSC 1.0/caeRem2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/caeRem2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="felCat5" version="1.00">Sep. 2011 (ICGSC Felis_catus 6.2/felCat5) at UCSC</SOURCE>
+    <DESCRIPTION>Cat Sep. 2011 (ICGSC Felis_catus 6.2/felCat5) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/felCat5</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="felCat4" version="1.00">Dec. 2008 (NHGRI/GTB V17e/felCat4) at UCSC</SOURCE>
+    <DESCRIPTION>Cat Dec. 2008 (NHGRI/GTB V17e/felCat4) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/felCat4</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="felCat3" version="1.00">Mar. 2006 (Broad/felCat3) at UCSC</SOURCE>
+    <DESCRIPTION>Cat Mar. 2006 (Broad/felCat3) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/felCat3</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="galGal4" version="1.00">Nov. 2011 (ICGSC Gallus_gallus-4.0/galGal4) at UCSC</SOURCE>
+    <DESCRIPTION>Chicken Nov. 2011 (ICGSC Gallus_gallus-4.0/galGal4) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/galGal4</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="galGal3" version="1.00">May 2006 (WUGSC 2.1/galGal3) at UCSC</SOURCE>
+    <DESCRIPTION>Chicken May 2006 (WUGSC 2.1/galGal3) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/galGal3</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="galGal2" version="1.00">Feb. 2004 (WUGSC 1.0/galGal2) at UCSC</SOURCE>
+    <DESCRIPTION>Chicken Feb. 2004 (WUGSC 1.0/galGal2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/galGal2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="panTro4" version="1.00">Feb. 2011 (CSAC 2.1.4/panTro4) at UCSC</SOURCE>
+    <DESCRIPTION>Chimp Feb. 2011 (CSAC 2.1.4/panTro4) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/panTro4</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="panTro3" version="1.00">Oct. 2010 (CGSC 2.1.3/panTro3) at UCSC</SOURCE>
+    <DESCRIPTION>Chimp Oct. 2010 (CGSC 2.1.3/panTro3) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/panTro3</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="panTro2" version="1.00">Mar. 2006 (CGSC 2.1/panTro2) at UCSC</SOURCE>
+    <DESCRIPTION>Chimp Mar. 2006 (CGSC 2.1/panTro2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/panTro2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="panTro1" version="1.00">Nov. 2003 (CGSC 1.1/panTro1) at UCSC</SOURCE>
+    <DESCRIPTION>Chimp Nov. 2003 (CGSC 1.1/panTro1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/panTro1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="criGri1" version="1.00">Jul. 2013 (C_griseus_v1.0/criGri1) at UCSC</SOURCE>
+    <DESCRIPTION>Chinese hamster Jul. 2013 (C_griseus_v1.0/criGri1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/criGri1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="latCha1" version="1.00">Aug. 2011 (Broad/latCha1) at UCSC</SOURCE>
+    <DESCRIPTION>Coelacanth Aug. 2011 (Broad/latCha1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/latCha1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="bosTau8" version="1.00">Jun. 2014 (Bos_taurus_UMD_3.1.1/bosTau8) at UCSC</SOURCE>
+    <DESCRIPTION>Cow Jun. 2014 (Bos_taurus_UMD_3.1.1/bosTau8) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/bosTau8</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="bosTau7" version="1.00">Oct. 2011 (Baylor Btau_4.6.1/bosTau7) at UCSC</SOURCE>
+    <DESCRIPTION>Cow Oct. 2011 (Baylor Btau_4.6.1/bosTau7) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/bosTau7</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="bosTau6" version="1.00">Nov. 2009 (Bos_taurus_UMD_3.1/bosTau6) at UCSC</SOURCE>
+    <DESCRIPTION>Cow Nov. 2009 (Bos_taurus_UMD_3.1/bosTau6) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/bosTau6</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="bosTau4" version="1.00">Oct. 2007 (Baylor 4.0/bosTau4) at UCSC</SOURCE>
+    <DESCRIPTION>Cow Oct. 2007 (Baylor 4.0/bosTau4) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/bosTau4</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="bosTau3" version="1.00">Aug. 2006 (Baylor 3.1/bosTau3) at UCSC</SOURCE>
+    <DESCRIPTION>Cow Aug. 2006 (Baylor 3.1/bosTau3) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/bosTau3</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="bosTau2" version="1.00">Mar. 2005 (Baylor 2.0/bosTau2) at UCSC</SOURCE>
+    <DESCRIPTION>Cow Mar. 2005 (Baylor 2.0/bosTau2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/bosTau2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="droAna2" version="1.00">Aug. 2005 (Agencourt prelim/droAna2) at UCSC</SOURCE>
+    <DESCRIPTION>D. ananassae Aug. 2005 (Agencourt prelim/droAna2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/droAna2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="droAna1" version="1.00">July 2004 (TIGR/droAna1) at UCSC</SOURCE>
+    <DESCRIPTION>D. ananassae July 2004 (TIGR/droAna1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/droAna1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="droEre1" version="1.00">Aug. 2005 (Agencourt prelim/droEre1) at UCSC</SOURCE>
+    <DESCRIPTION>D. erecta Aug. 2005 (Agencourt prelim/droEre1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/droEre1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="droGri1" version="1.00">Aug. 2005 (Agencourt prelim/droGri1) at UCSC</SOURCE>
+    <DESCRIPTION>D. grimshawi Aug. 2005 (Agencourt prelim/droGri1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/droGri1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="dm6" version="1.00">Aug. 2014 (BDGP Release 6 + ISO1 MT/dm6) at UCSC</SOURCE>
+    <DESCRIPTION>D. melanogaster Aug. 2014 (BDGP Release 6 + ISO1 MT/dm6) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/dm6</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="dm3" version="1.00">Apr. 2006 (BDGP R5/dm3) at UCSC</SOURCE>
+    <DESCRIPTION>D. melanogaster Apr. 2006 (BDGP R5/dm3) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/dm3</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="dm2" version="1.00">Apr. 2004 (BDGP R4/dm2) at UCSC</SOURCE>
+    <DESCRIPTION>D. melanogaster Apr. 2004 (BDGP R4/dm2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/dm2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="dm1" version="1.00">Jan. 2003 (BDGP R3/dm1) at UCSC</SOURCE>
+    <DESCRIPTION>D. melanogaster Jan. 2003 (BDGP R3/dm1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/dm1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="droMoj2" version="1.00">Aug. 2005 (Agencourt prelim/droMoj2) at UCSC</SOURCE>
+    <DESCRIPTION>D. mojavensis Aug. 2005 (Agencourt prelim/droMoj2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/droMoj2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="droMoj1" version="1.00">Aug. 2004 (Agencourt prelim/droMoj1) at UCSC</SOURCE>
+    <DESCRIPTION>D. mojavensis Aug. 2004 (Agencourt prelim/droMoj1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/droMoj1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="droPer1" version="1.00">Oct. 2005 (Broad/droPer1) at UCSC</SOURCE>
+    <DESCRIPTION>D. persimilis Oct. 2005 (Broad/droPer1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/droPer1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="dp3" version="1.00">Nov. 2004 (FlyBase 1.03/dp3) at UCSC</SOURCE>
+    <DESCRIPTION>D. pseudoobscura Nov. 2004 (FlyBase 1.03/dp3) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/dp3</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="dp2" version="1.00">Aug. 2003 (Baylor freeze1/dp2) at UCSC</SOURCE>
+    <DESCRIPTION>D. pseudoobscura Aug. 2003 (Baylor freeze1/dp2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/dp2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="droSec1" version="1.00">Oct. 2005 (Broad/droSec1) at UCSC</SOURCE>
+    <DESCRIPTION>D. sechellia Oct. 2005 (Broad/droSec1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/droSec1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="droSim1" version="1.00">Apr. 2005 (WUGSC mosaic 1.0/droSim1) at UCSC</SOURCE>
+    <DESCRIPTION>D. simulans Apr. 2005 (WUGSC mosaic 1.0/droSim1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/droSim1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="droVir2" version="1.00">Aug. 2005 (Agencourt prelim/droVir2) at UCSC</SOURCE>
+    <DESCRIPTION>D. virilis Aug. 2005 (Agencourt prelim/droVir2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/droVir2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="droVir1" version="1.00">July 2004 (Agencourt prelim/droVir1) at UCSC</SOURCE>
+    <DESCRIPTION>D. virilis July 2004 (Agencourt prelim/droVir1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/droVir1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="droYak2" version="1.00">Nov. 2005 (WUGSC 7.1/droYak2) at UCSC</SOURCE>
+    <DESCRIPTION>D. yakuba Nov. 2005 (WUGSC 7.1/droYak2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/droYak2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="droYak1" version="1.00">Apr. 2004 (WUGSC 1.0/droYak1) at UCSC</SOURCE>
+    <DESCRIPTION>D. yakuba Apr. 2004 (WUGSC 1.0/droYak1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/droYak1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="canFam3" version="1.00">Sep. 2011 (Broad CanFam3.1/canFam3) at UCSC</SOURCE>
+    <DESCRIPTION>Dog Sep. 2011 (Broad CanFam3.1/canFam3) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/canFam3</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="canFam2" version="1.00">May 2005 (Broad/canFam2) at UCSC</SOURCE>
+    <DESCRIPTION>Dog May 2005 (Broad/canFam2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/canFam2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="canFam1" version="1.00">July 2004 (Broad/canFam1) at UCSC</SOURCE>
+    <DESCRIPTION>Dog July 2004 (Broad/canFam1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/canFam1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="turTru2" version="1.00">Oct. 2011 (Baylor Ttru_1.4/turTru2) at UCSC</SOURCE>
+    <DESCRIPTION>Dolphin Oct. 2011 (Baylor Ttru_1.4/turTru2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/turTru2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="eboVir3" version="1.00">Sierra Leone 2014 (G3683/KM034562.1/eboVir3) at UCSC</SOURCE>
+    <DESCRIPTION>Ebola virus Sierra Leone 2014 (G3683/KM034562.1/eboVir3) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/eboVir3</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="loxAfr3" version="1.00">Jul. 2009 (Broad/loxAfr3) at UCSC</SOURCE>
+    <DESCRIPTION>Elephant Jul. 2009 (Broad/loxAfr3) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/loxAfr3</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="calMil1" version="1.00">Dec. 2013 (Callorhinchus_milii-6.1.3/calMil1) at UCSC</SOURCE>
+    <DESCRIPTION>Elephant shark Dec. 2013 (Callorhinchus_milii-6.1.3/calMil1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/calMil1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="musFur1" version="1.00">Apr. 2011 (MusPutFur1.0/musFur1) at UCSC</SOURCE>
+    <DESCRIPTION>Ferret Apr. 2011 (MusPutFur1.0/musFur1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/musFur1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="fr3" version="1.00">Oct. 2011 (FUGU5/fr3) at UCSC</SOURCE>
+    <DESCRIPTION>Fugu Oct. 2011 (FUGU5/fr3) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/fr3</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="fr2" version="1.00">Oct. 2004 (JGI 4.0/fr2) at UCSC</SOURCE>
+    <DESCRIPTION>Fugu Oct. 2004 (JGI 4.0/fr2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/fr2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="fr1" version="1.00">Aug. 2002 (JGI 3.0/fr1) at UCSC</SOURCE>
+    <DESCRIPTION>Fugu Aug. 2002 (JGI 3.0/fr1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/fr1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="nomLeu3" version="1.00">Oct. 2012 (GGSC Nleu3.0/nomLeu3) at UCSC</SOURCE>
+    <DESCRIPTION>Gibbon Oct. 2012 (GGSC Nleu3.0/nomLeu3) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/nomLeu3</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="nomLeu2" version="1.00">Jun. 2011 (GGSC Nleu1.1/nomLeu2) at UCSC</SOURCE>
+    <DESCRIPTION>Gibbon Jun. 2011 (GGSC Nleu1.1/nomLeu2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/nomLeu2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="nomLeu1" version="1.00">Jan. 2010 (GGSC Nleu1.0/nomLeu1) at UCSC</SOURCE>
+    <DESCRIPTION>Gibbon Jan. 2010 (GGSC Nleu1.0/nomLeu1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/nomLeu1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="gorGor3" version="1.00">May 2011 (gorGor3.1/gorGor3) at UCSC</SOURCE>
+    <DESCRIPTION>Gorilla May 2011 (gorGor3.1/gorGor3) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/gorGor3</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="cavPor3" version="1.00">Feb. 2008 (Broad/cavPor3) at UCSC</SOURCE>
+    <DESCRIPTION>Guinea pig Feb. 2008 (Broad/cavPor3) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/cavPor3</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="eriEur2" version="1.00">May 2012 (EriEur2.0/eriEur2) at UCSC</SOURCE>
+    <DESCRIPTION>Hedgehog May 2012 (EriEur2.0/eriEur2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/eriEur2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="eriEur1" version="1.00">June 2006 (Broad/eriEur1) at UCSC</SOURCE>
+    <DESCRIPTION>Hedgehog June 2006 (Broad/eriEur1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/eriEur1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="equCab2" version="1.00">Sep. 2007 (Broad/equCab2) at UCSC</SOURCE>
+    <DESCRIPTION>Horse Sep. 2007 (Broad/equCab2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/equCab2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="equCab1" version="1.00">Jan. 2007 (Broad/equCab1) at UCSC</SOURCE>
+    <DESCRIPTION>Horse Jan. 2007 (Broad/equCab1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/equCab1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="dipOrd1" version="1.00">Jul. 2008 (Broad/dipOrd1) at UCSC</SOURCE>
+    <DESCRIPTION>Kangaroo rat Jul. 2008 (Broad/dipOrd1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/dipOrd1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="petMar2" version="1.00">Sep. 2010 (WUGSC 7.0/petMar2) at UCSC</SOURCE>
+    <DESCRIPTION>Lamprey Sep. 2010 (WUGSC 7.0/petMar2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/petMar2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="petMar1" version="1.00">Mar. 2007 (WUGSC 3.0/petMar1) at UCSC</SOURCE>
+    <DESCRIPTION>Lamprey Mar. 2007 (WUGSC 3.0/petMar1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/petMar1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="braFlo1" version="1.00">Mar. 2006 (JGI 1.0/braFlo1) at UCSC</SOURCE>
+    <DESCRIPTION>Lancelet Mar. 2006 (JGI 1.0/braFlo1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/braFlo1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="anoCar2" version="1.00">May 2010 (Broad AnoCar2.0/anoCar2) at UCSC</SOURCE>
+    <DESCRIPTION>Lizard May 2010 (Broad AnoCar2.0/anoCar2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/anoCar2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="anoCar1" version="1.00">Feb. 2007 (Broad/anoCar1) at UCSC</SOURCE>
+    <DESCRIPTION>Lizard Feb. 2007 (Broad/anoCar1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/anoCar1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="triMan1" version="1.00">Oct. 2011 (Broad v1.0/triMan1) at UCSC</SOURCE>
+    <DESCRIPTION>Manatee Oct. 2011 (Broad v1.0/triMan1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/triMan1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="calJac3" version="1.00">March 2009 (WUGSC 3.2/calJac3) at UCSC</SOURCE>
+    <DESCRIPTION>Marmoset March 2009 (WUGSC 3.2/calJac3) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/calJac3</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="calJac1" version="1.00">June 2007 (WUGSC 2.0.2/calJac1) at UCSC</SOURCE>
+    <DESCRIPTION>Marmoset June 2007 (WUGSC 2.0.2/calJac1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/calJac1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="oryLat2" version="1.00">Oct. 2005 (NIG/UT MEDAKA1/oryLat2) at UCSC</SOURCE>
+    <DESCRIPTION>Medaka Oct. 2005 (NIG/UT MEDAKA1/oryLat2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/oryLat2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="geoFor1" version="1.00">Apr. 2012 (GeoFor_1.0/geoFor1) at UCSC</SOURCE>
+    <DESCRIPTION>Medium ground finch Apr. 2012 (GeoFor_1.0/geoFor1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/geoFor1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="pteVam1" version="1.00">Jul. 2008 (Broad/pteVam1) at UCSC</SOURCE>
+    <DESCRIPTION>Megabat Jul. 2008 (Broad/pteVam1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/pteVam1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="myoLuc2" version="1.00">Jul. 2010 (Broad Institute Myoluc2.0/myoLuc2) at UCSC</SOURCE>
+    <DESCRIPTION>Microbat Jul. 2010 (Broad Institute Myoluc2.0/myoLuc2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/myoLuc2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="balAcu1" version="1.00">Oct. 2013 (BalAcu1.0/balAcu1) at UCSC</SOURCE>
+    <DESCRIPTION>Minke whale Oct. 2013 (BalAcu1.0/balAcu1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/balAcu1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="micMur1" version="1.00">Jul. 2007 (Broad/micMur1) at UCSC</SOURCE>
+    <DESCRIPTION>Mouse lemur Jul. 2007 (Broad/micMur1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/micMur1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="hetGla2" version="1.00">Jan. 2012 (Broad HetGla_female_1.0/hetGla2) at UCSC</SOURCE>
+    <DESCRIPTION>Naked mole-rat Jan. 2012 (Broad HetGla_female_1.0/hetGla2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/hetGla2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="hetGla1" version="1.00">Jul. 2011 (BGI HetGla_1.0/hetGla1) at UCSC</SOURCE>
+    <DESCRIPTION>Naked mole-rat Jul. 2011 (BGI HetGla_1.0/hetGla1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/hetGla1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="oreNil2" version="1.00">Jan. 2011 (Broad oreNil1.1/oreNil2) at UCSC</SOURCE>
+    <DESCRIPTION>Nile tilapia Jan. 2011 (Broad oreNil1.1/oreNil2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/oreNil2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="monDom5" version="1.00">Oct. 2006 (Broad/monDom5) at UCSC</SOURCE>
+    <DESCRIPTION>Opossum Oct. 2006 (Broad/monDom5) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/monDom5</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="monDom4" version="1.00">Jan. 2006 (Broad/monDom4) at UCSC</SOURCE>
+    <DESCRIPTION>Opossum Jan. 2006 (Broad/monDom4) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/monDom4</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="monDom1" version="1.00">Oct. 2004 (Broad prelim/monDom1) at UCSC</SOURCE>
+    <DESCRIPTION>Opossum Oct. 2004 (Broad prelim/monDom1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/monDom1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="ponAbe2" version="1.00">July 2007 (WUGSC 2.0.2/ponAbe2) at UCSC</SOURCE>
+    <DESCRIPTION>Orangutan July 2007 (WUGSC 2.0.2/ponAbe2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/ponAbe2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="priPac1" version="1.00">Feb. 2007 (WUGSC 5.0/priPac1) at UCSC</SOURCE>
+    <DESCRIPTION>P. pacificus Feb. 2007 (WUGSC 5.0/priPac1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/priPac1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="chrPic1" version="1.00">Dec. 2011 (v3.0.1/chrPic1) at UCSC</SOURCE>
+    <DESCRIPTION>Painted turtle Dec. 2011 (v3.0.1/chrPic1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/chrPic1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="ailMel1" version="1.00">Dec. 2009 (BGI-Shenzhen 1.0/ailMel1) at UCSC</SOURCE>
+    <DESCRIPTION>Panda Dec. 2009 (BGI-Shenzhen 1.0/ailMel1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/ailMel1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="susScr3" version="1.00">Aug. 2011 (SGSC Sscrofa10.2/susScr3) at UCSC</SOURCE>
+    <DESCRIPTION>Pig Aug. 2011 (SGSC Sscrofa10.2/susScr3) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/susScr3</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="susScr2" version="1.00">Nov. 2009 (SGSC Sscrofa9.2/susScr2) at UCSC</SOURCE>
+    <DESCRIPTION>Pig Nov. 2009 (SGSC Sscrofa9.2/susScr2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/susScr2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="ochPri3" version="1.00">May 2012 (OchPri3.0/ochPri3) at UCSC</SOURCE>
+    <DESCRIPTION>Pika May 2012 (OchPri3.0/ochPri3) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/ochPri3</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="ochPri2" version="1.00">Jul. 2008 (Broad/ochPri2) at UCSC</SOURCE>
+    <DESCRIPTION>Pika Jul. 2008 (Broad/ochPri2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/ochPri2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="ornAna1" version="1.00">Mar. 2007 (WUGSC 5.0.1/ornAna1) at UCSC</SOURCE>
+    <DESCRIPTION>Platypus Mar. 2007 (WUGSC 5.0.1/ornAna1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/ornAna1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="oryCun2" version="1.00">Apr. 2009 (Broad/oryCun2) at UCSC</SOURCE>
+    <DESCRIPTION>Rabbit Apr. 2009 (Broad/oryCun2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/oryCun2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="rn6" version="1.00">Jul. 2014 (RGSC 6.0/rn6) at UCSC</SOURCE>
+    <DESCRIPTION>Rat Jul. 2014 (RGSC 6.0/rn6) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/rn6</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="rn5" version="1.00">Mar. 2012 (RGSC 5.0/rn5) at UCSC</SOURCE>
+    <DESCRIPTION>Rat Mar. 2012 (RGSC 5.0/rn5) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/rn5</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="rn4" version="1.00">Nov. 2004 (Baylor 3.4/rn4) at UCSC</SOURCE>
+    <DESCRIPTION>Rat Nov. 2004 (Baylor 3.4/rn4) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/rn4</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="rn3" version="1.00">June 2003 (Baylor 3.1/rn3) at UCSC</SOURCE>
+    <DESCRIPTION>Rat June 2003 (Baylor 3.1/rn3) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/rn3</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="rheMac3" version="1.00">Oct. 2010 (BGI CR_1.0/rheMac3) at UCSC</SOURCE>
+    <DESCRIPTION>Rhesus Oct. 2010 (BGI CR_1.0/rheMac3) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/rheMac3</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="rheMac2" version="1.00">Jan. 2006 (MGSC Merged 1.0/rheMac2) at UCSC</SOURCE>
+    <DESCRIPTION>Rhesus Jan. 2006 (MGSC Merged 1.0/rheMac2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/rheMac2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="proCap1" version="1.00">Jul. 2008 (Broad/proCap1) at UCSC</SOURCE>
+    <DESCRIPTION>Rock hyrax Jul. 2008 (Broad/proCap1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/proCap1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="sacCer3" version="1.00">Apr. 2011 (SacCer_Apr2011/sacCer3) at UCSC</SOURCE>
+    <DESCRIPTION>S. cerevisiae Apr. 2011 (SacCer_Apr2011/sacCer3) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/sacCer3</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="sacCer2" version="1.00">June 2008 (SGD/sacCer2) at UCSC</SOURCE>
+    <DESCRIPTION>S. cerevisiae June 2008 (SGD/sacCer2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/sacCer2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="sacCer1" version="1.00">Oct. 2003 (SGD/sacCer1) at UCSC</SOURCE>
+    <DESCRIPTION>S. cerevisiae Oct. 2003 (SGD/sacCer1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/sacCer1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="strPur2" version="1.00">Sep. 2006 (Baylor 2.1/strPur2) at UCSC</SOURCE>
+    <DESCRIPTION>S. purpuratus Sep. 2006 (Baylor 2.1/strPur2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/strPur2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="strPur1" version="1.00">Apr. 2005 (Baylor 1.1/strPur1) at UCSC</SOURCE>
+    <DESCRIPTION>S. purpuratus Apr. 2005 (Baylor 1.1/strPur1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/strPur1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="aplCal1" version="1.00">Sept. 2008 (Broad 2.0/aplCal1) at UCSC</SOURCE>
+    <DESCRIPTION>Sea hare Sept. 2008 (Broad 2.0/aplCal1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/aplCal1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="oviAri3" version="1.00">Aug. 2012 (ISGC Oar_v3.1/oviAri3) at UCSC</SOURCE>
+    <DESCRIPTION>Sheep Aug. 2012 (ISGC Oar_v3.1/oviAri3) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/oviAri3</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="oviAri1" version="1.00">Feb. 2010 (ISGC Ovis_aries_1.0/oviAri1) at UCSC</SOURCE>
+    <DESCRIPTION>Sheep Feb. 2010 (ISGC Ovis_aries_1.0/oviAri1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/oviAri1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="sorAra2" version="1.00">Aug. 2008 (Broad/sorAra2) at UCSC</SOURCE>
+    <DESCRIPTION>Shrew Aug. 2008 (Broad/sorAra2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/sorAra2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="sorAra1" version="1.00">June 2006 (Broad/sorAra1) at UCSC</SOURCE>
+    <DESCRIPTION>Shrew June 2006 (Broad/sorAra1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/sorAra1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="choHof1" version="1.00">Jul. 2008 (Broad/choHof1) at UCSC</SOURCE>
+    <DESCRIPTION>Sloth Jul. 2008 (Broad/choHof1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/choHof1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="speTri2" version="1.00">Nov. 2011 (Broad/speTri2) at UCSC</SOURCE>
+    <DESCRIPTION>Squirrel Nov. 2011 (Broad/speTri2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/speTri2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="saiBol1" version="1.00">Oct. 2011 (Broad/saiBol1) at UCSC</SOURCE>
+    <DESCRIPTION>Squirrel monkey Oct. 2011 (Broad/saiBol1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/saiBol1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="gasAcu1" version="1.00">Feb. 2006 (Broad/gasAcu1) at UCSC</SOURCE>
+    <DESCRIPTION>Stickleback Feb. 2006 (Broad/gasAcu1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/gasAcu1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="tarSyr2" version="1.00">Sep. 2013 (Tarsius_syrichta-2.0.1/tarSyr2) at UCSC</SOURCE>
+    <DESCRIPTION>Tarsier Sep. 2013 (Tarsius_syrichta-2.0.1/tarSyr2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/tarSyr2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="tarSyr1" version="1.00">Aug. 2008 (Broad/tarSyr1) at UCSC</SOURCE>
+    <DESCRIPTION>Tarsier Aug. 2008 (Broad/tarSyr1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/tarSyr1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="sarHar1" version="1.00">Feb. 2011 (WTSI Devil_ref v7.0/sarHar1) at UCSC</SOURCE>
+    <DESCRIPTION>Tasmanian devil Feb. 2011 (WTSI Devil_ref v7.0/sarHar1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/sarHar1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="echTel2" version="1.00">Nov. 2012 (Broad/echTel2) at UCSC</SOURCE>
+    <DESCRIPTION>Tenrec Nov. 2012 (Broad/echTel2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/echTel2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="echTel1" version="1.00">July 2005 (Broad/echTel1) at UCSC</SOURCE>
+    <DESCRIPTION>Tenrec July 2005 (Broad/echTel1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/echTel1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="tetNig2" version="1.00">Mar. 2007 (Genoscope 8.0/tetNig2) at UCSC</SOURCE>
+    <DESCRIPTION>Tetraodon Mar. 2007 (Genoscope 8.0/tetNig2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/tetNig2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="tetNig1" version="1.00">Feb. 2004 (Genoscope 7/tetNig1) at UCSC</SOURCE>
+    <DESCRIPTION>Tetraodon Feb. 2004 (Genoscope 7/tetNig1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/tetNig1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="tupBel1" version="1.00">Dec. 2006 (Broad/tupBel1) at UCSC</SOURCE>
+    <DESCRIPTION>Tree shrew Dec. 2006 (Broad/tupBel1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/tupBel1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="melGal1" version="1.00">Dec. 2009 (TGC Turkey_2.01/melGal1) at UCSC</SOURCE>
+    <DESCRIPTION>Turkey Dec. 2009 (TGC Turkey_2.01/melGal1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/melGal1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="macEug2" version="1.00">Sep. 2009 (TWGS Meug_1.1/macEug2) at UCSC</SOURCE>
+    <DESCRIPTION>Wallaby Sep. 2009 (TWGS Meug_1.1/macEug2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/macEug2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="cerSim1" version="1.00">May 2012 (CerSimSim1.0/cerSim1) at UCSC</SOURCE>
+    <DESCRIPTION>White rhinoceros May 2012 (CerSimSim1.0/cerSim1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/cerSim1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="xenTro3" version="1.00">Nov. 2009 (JGI 4.2/xenTro3) at UCSC</SOURCE>
+    <DESCRIPTION>X. tropicalis Nov. 2009 (JGI 4.2/xenTro3) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/xenTro3</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="xenTro2" version="1.00">Aug. 2005 (JGI 4.1/xenTro2) at UCSC</SOURCE>
+    <DESCRIPTION>X. tropicalis Aug. 2005 (JGI 4.1/xenTro2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/xenTro2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="xenTro1" version="1.00">Oct. 2004 (JGI 3.0/xenTro1) at UCSC</SOURCE>
+    <DESCRIPTION>X. tropicalis Oct. 2004 (JGI 3.0/xenTro1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/xenTro1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="taeGut2" version="1.00">Feb. 2013 (WashU taeGut324/taeGut2) at UCSC</SOURCE>
+    <DESCRIPTION>Zebra finch Feb. 2013 (WashU taeGut324/taeGut2) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/taeGut2</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="taeGut1" version="1.00">Jul. 2008 (WUGSC 3.2.4/taeGut1) at UCSC</SOURCE>
+    <DESCRIPTION>Zebra finch Jul. 2008 (WUGSC 3.2.4/taeGut1) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/taeGut1</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="danRer10" version="1.00">Sep. 2014 (GRCz10/danRer10) at UCSC</SOURCE>
+    <DESCRIPTION>Zebrafish Sep. 2014 (GRCz10/danRer10) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/danRer10</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="danRer7" version="1.00">Jul. 2010 (Zv9/danRer7) at UCSC</SOURCE>
+    <DESCRIPTION>Zebrafish Jul. 2010 (Zv9/danRer7) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/danRer7</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="danRer6" version="1.00">Dec. 2008 (Zv8/danRer6) at UCSC</SOURCE>
+    <DESCRIPTION>Zebrafish Dec. 2008 (Zv8/danRer6) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/danRer6</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="danRer5" version="1.00">July 2007 (Zv7/danRer5) at UCSC</SOURCE>
+    <DESCRIPTION>Zebrafish July 2007 (Zv7/danRer5) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/danRer5</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="danRer4" version="1.00">Mar. 2006 (Zv6/danRer4) at UCSC</SOURCE>
+    <DESCRIPTION>Zebrafish Mar. 2006 (Zv6/danRer4) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/danRer4</MAPMASTER>
+  </DSN>
+  <DSN>
+    <SOURCE id="danRer3" version="1.00">May 2005 (Zv5/danRer3) at UCSC</SOURCE>
+    <DESCRIPTION>Zebrafish May 2005 (Zv5/danRer3) Genome at UCSC</DESCRIPTION>
+    <MAPMASTER>http://genome.cse.ucsc.edu:80/cgi-bin/das/danRer3</MAPMASTER>
+  </DSN>
 </DASDSN>
