@@ -1219,7 +1219,7 @@ public class AutoPrimer3 extends Application implements Initializable{
                 Arrays.asList("*.vcf", "*vcf.gz", "*.VCF", "*VCF.GZ") ) ); 
         extFilters.put("Text file", new ArrayList<>(
                 Arrays.asList("*.txt", "*txt.gz", "*.TXT", "*TXT.GZ") ) );
-        extFilters.put("Any", new ArrayList<>(Arrays.asList("*") ) );
+        extFilters.put("Any", new ArrayList<>(Arrays.asList("*.*") ) );
         ArrayList<String> keys = new ArrayList<>(extFilters.keySet()); 
         Collections.sort(keys);
         for (String ext: keys){
