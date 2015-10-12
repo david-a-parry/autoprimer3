@@ -2586,7 +2586,7 @@ public class AutoPrimer3 extends Application implements Initializable{
             name = geneName1.get(0) + "_ex" + sizes.get(0) + 
                     "-" + sizes.get(sizes.size()-1);
         }else{
-            name = name1 + "_and_" +  name2;
+            name = name1 + "/" +  name2;
         }
         return name;
     }
