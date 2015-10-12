@@ -1245,6 +1245,9 @@ public class AutoPrimer3 extends Application implements Initializable{
                            if (region != null){
                                String r = region.getChromosome() + ":" + 
                                        region.getStartPos() + "-" + region.getEndPos();
+                               if (region.getName() != null && !region.getName().isEmpty()){
+                                   r = r + " " + region.getName();
+                               }
                                if (totalRegions > MAX_LINES_PER_DESIGN){
                                    final int lastLine = n - 1;
                                    final int validRegions = valid;
