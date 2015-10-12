@@ -1,6 +1,6 @@
 # Maintainer: David Parry <d.a.parry@leeds.ac.uk>
 pkgname=AutoPrimer3
-pkgver=3.0.2
+pkgver=3.0.3
 pkgrel=1
 epoch=
 pkgdesc="Automatically designs primers to genes or coordinates"
