@@ -33,7 +33,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.net.MalformedURLException;
@@ -2535,6 +2534,61 @@ public class AutoPrimer3 extends Application implements Initializable{
             }else{
                 idToEx1.put(d, d);
             }
+
+        });
+        geneSearchTask.setOnFailed(new EventHandler<WorkerStateEvent>(){
+            @Override
+            public void handle (WorkerStateEvent e){
+                setRunning(false);
+                progressLabel.textProperty().unbind();
+                progressLabel.setText("Search failed!");
+                progressIndicator.progressProperty().unbind();
+                progressIndicator.progressProperty().set(0);
+            }
+
+        });
+        cancelButton.setOnAction(new EventHandler<ActionEvent>(){
+           @Override
+           public void handle(ActionEvent actionEvent){
+                geneSearchTask.cancel();
+            }
+        });
+        setRunning(true);
+        progressIndicator.progressProperty().unbind();
+        progressIndicator.progressProperty().bind(geneSearchTask.progressProperty());
+        progressLabel.textProperty().unbind(); 
+        progressLabel.textProperty().bind(geneSearchTask.messageProperty());
+        new Thread(geneSearchTask).start();   
+    
+    }
+    
+    private String createRefserenceSequence(String dna, int offset, int flanks,
+            ArrayList<GenomicRegionSummary> exons, boolean revComp){
+        StringBuilder dnaTarget = new StringBuilder();
+        int prevEnd = 0;
+        for (int i = 0; i < exons.size(); i++){
+            int tStart = exons.get(i).getStartPos() - offset;
+            int tEnd = 1 + exons.get(i).getEndPos() - offset;
+            int subsStart = tStart - flanks > 0 ? tStart - flanks : 0;
+            int subsEnd = tEnd + flanks - 1 < dna.length() ?  tEnd + flanks - 1 : dna.length();
+            //make sure we don't overlap end with next exon region
+            if (i < exons.size() -1){
+                subsEnd = subsEnd < exons.get(i + 1).getStartPos() - offset ? 
+                        subsEnd : exons.get(i + 1).getStartPos() - offset;
+            }
+            //make sure we don't overlap current flanks with previous flanks
+            if (prevEnd > 0){
+                if (prevEnd > subsStart){
+                    subsStart = prevEnd;
+                }
+            }
+            prevEnd = subsEnd;
+            dnaTarget.append(
+                    dna.substring(subsStart, tStart).toLowerCase());
+            dnaTarget.append(dna.substring(tStart, tEnd-1)
+                    .toUpperCase());
+            dnaTarget.append(dna.substring(tEnd -1, subsEnd)
+                    .toLowerCase());
         }
         for (String d: ids2){
             List<String> split = Arrays.asList(d.split("_ex"));
@@ -2720,7 +2774,7 @@ public class AutoPrimer3 extends Application implements Initializable{
             }
             
             p3_job.append("=");
-            //System.out.println(p3_job.toString());//debug only
+            System.out.println(p3_job.toString());//debug only
             ArrayList<String> command = new ArrayList<>();
             command.add(primer3ex.getAbsolutePath());
             command.add("-format_output");
