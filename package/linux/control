@@ -1,9 +1,9 @@
 Package: autoprimer3
-Version: 3.0.3
+Version: 3.1
 Section: Science
 Maintainer: David A. Parry <david.parry@igmm.ed.ac.uk>
 Priority: optional
 Architecture: amd64
 Provides: AutoPrimer3
 Description: AutoPrimer3
-Installed-Size: 212272
+Installed-Size: 185712
