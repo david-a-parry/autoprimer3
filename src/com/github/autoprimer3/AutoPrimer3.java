@@ -218,7 +218,8 @@ public class AutoPrimer3 extends Application implements Initializable{
     String defaultSizeRange = "150-250 100-300 301-400 401-500 501-600 "
                 + "601-700 701-850 851-1000 1000-2000";
     HashMap<TextField, String> defaultPrimer3Values = new HashMap<>();
-    String serverUrl = "http://genome-euro.ucsc.edu"; 
+    String serverUrl = "http://genome.ucsc.edu"; 
+    //String serverUrl = "http://genome-euro.ucsc.edu"; 
     
     File configDirectory;
     AutoPrimer3Config ap3Config;
