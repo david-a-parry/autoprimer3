@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.input.*?>
 <?import javafx.scene.text.*?>
 <?import java.lang.*?>
@@ -44,19 +45,28 @@
                            <children>
                               <VBox layoutX="14.0" layoutY="59.0" spacing="10.0">
                                  <children>
-                          <Label alignment="CENTER" layoutX="15.0" layoutY="59.0" prefHeight="15.0" prefWidth="126.0" text="Min Distance (bp)" />
+                          <Label alignment="CENTER" layoutX="15.0" layoutY="59.0" prefHeight="15.0" prefWidth="126.0" text="Min Distance (bp)">
+                                       <font>
+                                          <Font name="Verdana" size="12.0" />
+                                       </font></Label>
                           <TextField fx:id="minDistanceTextField" alignment="CENTER" layoutX="14.0" layoutY="83.0" prefHeight="27.0" prefWidth="119.0" promptText="Min distance between primer and target" text="50" HBox.hgrow="NEVER" />
                                  </children>
                               </VBox>
                               <VBox layoutX="148.0" layoutY="59.0" spacing="10.0">
                                  <children>
-                          <Label alignment="CENTER" layoutX="156.0" layoutY="59.0" prefHeight="15.0" prefWidth="143.0" text="Flanking Region (bp)" />
+                          <Label alignment="CENTER" layoutX="156.0" layoutY="59.0" prefHeight="15.0" prefWidth="143.0" text="Flanking Region (bp)">
+                                       <font>
+                                          <Font name="Verdana" size="12.0" />
+                                       </font></Label>
                           <TextField fx:id="flankingRegionsTextField" alignment="CENTER" layoutX="148.0" layoutY="83.0" prefHeight="27.0" prefWidth="147.0" promptText="Distance from exon to design to" text="500" HBox.hgrow="NEVER" />
                                  </children>
                               </VBox>
                               <VBox layoutX="310.0" layoutY="59.0" spacing="10.0">
                                  <children>
-                          <Label alignment="CENTER" layoutX="314.0" layoutY="59.0" prefHeight="16.0" prefWidth="326.0" text="Gene(s)" />
+                          <Label alignment="CENTER" layoutX="314.0" layoutY="59.0" prefHeight="16.0" prefWidth="326.0" text="Gene(s)">
+                                       <font>
+                                          <Font name="Verdana" size="12.0" />
+                                       </font></Label>
                           <TextField fx:id="genesTextField" layoutX="310.0" layoutY="83.0" prefHeight="27.0" prefWidth="326.0" promptText="Gene symbols/Gene IDs separated with spaces" HBox.hgrow="NEVER" />
                                  </children>
                               </VBox>
@@ -66,7 +76,10 @@
                            <children>
                               <VBox alignment="TOP_CENTER" layoutX="14.0" layoutY="6.0" spacing="10.0">
                                  <children>
-                          <Label alignment="CENTER" layoutX="14.0" layoutY="6.0" prefWidth="112.0" text="Genome" />
+                          <Label alignment="CENTER" layoutX="14.0" layoutY="6.0" prefWidth="112.0" text="Genome">
+                                       <font>
+                                          <Font name="Verdana" size="12.0" />
+                                       </font></Label>
                           <ChoiceBox fx:id="genomeChoiceBox" layoutX="14.0" layoutY="27.0" prefWidth="117.0" HBox.hgrow="ALWAYS">
                             <items>
                               <FXCollections fx:factory="observableArrayList">
@@ -78,7 +91,10 @@
                               </VBox>
                               <VBox alignment="TOP_CENTER" layoutX="151.0" layoutY="6.0" spacing="10.0">
                                  <children>
-                          <Label alignment="CENTER" layoutX="151.0" layoutY="6.0" prefWidth="112.0" text="Database" />
+                          <Label alignment="CENTER" layoutX="151.0" layoutY="6.0" prefWidth="112.0" text="Database">
+                                       <font>
+                                          <Font name="Verdana" size="12.0" />
+                                       </font></Label>
                           <ChoiceBox fx:id="databaseChoiceBox" layoutX="156.0" layoutY="27.0" prefWidth="117.0" HBox.hgrow="ALWAYS">
                             <items>
                               <FXCollections fx:factory="observableArrayList">
@@ -90,7 +106,10 @@
                               </VBox>
                               <VBox alignment="TOP_CENTER" layoutX="288.0" layoutY="6.0" spacing="10.0">
                                  <children>
-                          <Label alignment="CENTER" layoutX="288.0" layoutY="6.0" prefWidth="131.0" text="Avoid SNPs?" />
+                          <Label alignment="CENTER" layoutX="288.0" layoutY="6.0" prefWidth="131.0" text="Avoid SNPs?">
+                                       <font>
+                                          <Font name="Verdana" size="12.0" />
+                                       </font></Label>
                           <ChoiceBox fx:id="snpsChoiceBox" layoutX="298.0" layoutY="27.0" prefHeight="27.0" prefWidth="176.0" HBox.hgrow="ALWAYS">
                             <items>
                               <FXCollections fx:factory="observableArrayList">
@@ -102,7 +121,10 @@
                               </VBox>
                               <VBox alignment="TOP_CENTER" layoutX="444.0" layoutY="6.0" spacing="10.0">
                                  <children>
-                          <Label alignment="CENTER" layoutX="444.0" layoutY="6.0" prefWidth="107.0" text="Design to..." />
+                          <Label alignment="CENTER" layoutX="444.0" layoutY="6.0" prefWidth="107.0" text="Design to...">
+                                       <font>
+                                          <Font name="Verdana" size="12.0" />
+                                       </font></Label>
                           <ChoiceBox fx:id="designToChoiceBox" layoutX="462.0" layoutY="27.0" prefHeight="27.0" prefWidth="180.0" HBox.hgrow="ALWAYS">
                             <items>
                               <FXCollections fx:factory="observableArrayList">
@@ -133,25 +155,52 @@
             <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
                         <TextArea fx:id="regionsTextArea" layoutX="14.0" layoutY="38.0" prefHeight="101.0" prefWidth="277.0" />
-                        <Label layoutX="90.0" layoutY="14.0" text="Regions/Coordinates" />
+                        <Label layoutX="90.0" layoutY="14.0" text="Regions/Coordinates">
+                           <font>
+                              <Font name="Verdana" size="12.0" />
+                           </font></Label>
                         <HBox alignment="CENTER_LEFT" layoutX="14.0" layoutY="156.0" prefHeight="47.0" prefWidth="613.0" spacing="10.0">
                            <children>
                               <ProgressIndicator fx:id="progressIndicator2" disable="false" opacity="1.0" prefHeight="47.0" prefWidth="52.0" progress="0.0" style="-fx-fill: null" visible="true" />
                               <Label fx:id="progressLabel2" prefHeight="41.0" prefWidth="249.0" text="AutoPrimer3" />
-                              <Button fx:id="clearButton" layoutX="315.0" layoutY="166.0" mnemonicParsing="false" onAction="#clearRegions" text="Clear" />
-                              <Button fx:id="loadFileButton" layoutX="407.0" layoutY="166.0" mnemonicParsing="false" onAction="#loadRegionsFile" text="Load File" />
-                              <Button fx:id="cancelButton2" cancelButton="true" layoutX="487.0" layoutY="166.0" mnemonicParsing="false" text="Cancel" />
-                              <Button fx:id="runButton2" layoutX="561.0" layoutY="166.0" mnemonicParsing="false" onAction="#designPrimersToCoordinates" text="Design" />
+                              <Button fx:id="clearButton" layoutX="315.0" layoutY="166.0" mnemonicParsing="false" onAction="#clearRegions" text="Clear">
+                                 <HBox.margin>
+                                    <Insets left="10.0" top="15.0" />
+                                 </HBox.margin></Button>
+                              <Button fx:id="loadFileButton" layoutX="407.0" layoutY="166.0" mnemonicParsing="false" onAction="#loadRegionsFile" text="Load File">
+                                 <HBox.margin>
+                                    <Insets left="10.0" top="15.0" />
+                                 </HBox.margin></Button>
+                              <Button fx:id="cancelButton2" cancelButton="true" layoutX="487.0" layoutY="166.0" mnemonicParsing="false" text="Cancel">
+                                 <HBox.margin>
+                                    <Insets left="10.0" top="15.0" />
+                                 </HBox.margin></Button>
+                              <Button fx:id="runButton2" layoutX="561.0" layoutY="166.0" mnemonicParsing="false" onAction="#designPrimersToCoordinates" text="Design">
+                                 <HBox.margin>
+                                    <Insets left="10.0" top="15.0" />
+                                 </HBox.margin></Button>
                            </children>
                         </HBox>
                         <ChoiceBox fx:id="genomeChoiceBox2" layoutX="308.0" layoutY="38.0" prefHeight="28.0" prefWidth="145.0" />
-                        <Label layoutX="353.0" layoutY="14.0" text="Genome" />
+                        <Label layoutX="353.0" layoutY="14.0" text="Genome">
+                           <font>
+                              <Font name="Verdana" size="12.0" />
+                           </font></Label>
                         <ChoiceBox fx:id="snpsChoiceBox2" layoutX="479.0" layoutY="38.0" prefHeight="28.0" prefWidth="147.0" />
-                        <Label layoutX="512.0" layoutY="14.0" text="Avoid SNPs?" />
-                        <Label layoutX="328.0" layoutY="79.0" text="Min Distance (bp)" />
+                        <Label layoutX="512.0" layoutY="14.0" text="Avoid SNPs?">
+                           <font>
+                              <Font name="Verdana" size="12.0" />
+                           </font></Label>
+                        <Label layoutX="328.0" layoutY="79.0" text="Min Distance (bp)">
+                           <font>
+                              <Font name="Verdana" size="12.0" />
+                           </font></Label>
                         <TextField fx:id="minDistanceTextField2" alignment="CENTER" layoutX="308.0" layoutY="100.0" prefHeight="28.0" prefWidth="145.0" text="50" />
                         <TextField fx:id="flankingRegionsTextField2" alignment="CENTER" layoutX="479.0" layoutY="100.0" prefHeight="28.0" prefWidth="145.0" text="500" />
-                        <Label layoutX="485.0" layoutY="79.0" text="Flanking Region (bp)" />
+                        <Label layoutX="485.0" layoutY="79.0" text="Flanking Region (bp)">
+                           <font>
+                              <Font name="Verdana" size="12.0" />
+                           </font></Label>
                         <CheckBox fx:id="useRegionNamesCheckBox" layoutX="308.0" layoutY="139.0" mnemonicParsing="false" selected="true" text="Use region names (if found)?" />
                      </children></AnchorPane>
           </content>
@@ -166,7 +215,7 @@
                                  <children>
                                     <Label layoutX="8.0" layoutY="14.0" text="Min Primer Size">
                                        <font>
-                                          <Font size="10.0" />
+                                          <Font name="Verdana" size="10.0" />
                                        </font>
                                     </Label>
                                     <TextField fx:id="minSizeTextField" alignment="CENTER" layoutX="6.0" layoutY="44.0" prefHeight="27.0" prefWidth="88.0" text="18">
@@ -180,7 +229,7 @@
                                  <children>
                                     <Label alignment="TOP_CENTER" layoutX="159.0" layoutY="14.0" text="Opt Primer Size">
                                        <font>
-                                          <Font size="10.0" />
+                                          <Font name="Verdana" size="10.0" />
                                        </font>
                                     </Label>
                                     <TextField fx:id="optSizeTextField" alignment="CENTER" layoutX="148.0" layoutY="44.0" prefHeight="27.0" prefWidth="97.0" text="20">
@@ -194,7 +243,7 @@
                                  <children>
                                     <Label layoutX="301.0" layoutY="14.0" text="Max Primer Size">
                                        <font>
-                                          <Font size="10.0" />
+                                          <Font name="Verdana" size="10.0" />
                                        </font>
                                     </Label>
                                     <TextField fx:id="maxSizeTextField" alignment="CENTER" layoutX="289.0" layoutY="44.0" prefHeight="27.0" prefWidth="130.0" text="27">
@@ -208,7 +257,7 @@
                                  <children>
                                     <Label layoutX="458.0" layoutY="14.0" text="Max Diff TM">
                                        <font>
-                                          <Font size="10.0" />
+                                          <Font name="Verdana" size="10.0" />
                                        </font>
                                     </Label>
                                     <TextField fx:id="maxDiffTextField" alignment="CENTER" layoutX="433.0" layoutY="44.0" prefHeight="27.0" prefWidth="126.0" text="10">
@@ -224,7 +273,7 @@
                                        <children>
                                           <Label layoutX="458.0" layoutY="14.0" text="Min TM">
                                              <font>
-                                                <Font size="10.0" />
+                                                <Font name="Verdana" size="10.0" />
                                              </font>
                                           </Label>
                                           <TextField fx:id="minTmTextField" alignment="CENTER" layoutX="433.0" layoutY="44.0" prefHeight="27.0" prefWidth="126.0" text="57.0">
@@ -240,7 +289,7 @@
                                  <children>
                                     <Label layoutX="458.0" layoutY="14.0" text="Opt TM">
                                        <font>
-                                          <Font size="10.0" />
+                                          <Font name="Verdana" size="10.0" />
                                        </font>
                                     </Label>
                                     <TextField fx:id="optTmTextField" alignment="CENTER" layoutX="433.0" layoutY="44.0" prefHeight="27.0" prefWidth="126.0" text="59.0">
@@ -254,7 +303,7 @@
                                  <children>
                                     <Label layoutX="458.0" layoutY="14.0" text="Max TM">
                                        <font>
-                                          <Font size="10.0" />
+                                          <Font name="Verdana" size="10.0" />
                                        </font>
                                     </Label>
                                     <TextField fx:id="maxTmTextField" alignment="CENTER" layoutX="433.0" layoutY="44.0" prefHeight="27.0" prefWidth="126.0" text="62.0">
@@ -266,7 +315,10 @@
                               </VBox>
                            </children>
                         </HBox>
-                        <Label layoutX="302.0" layoutY="77.0" text="Primer Product Size Range" />
+                        <Label layoutX="302.0" layoutY="77.0" text="Primer Product Size Range">
+                           <font>
+                              <Font name="Verdana" size="12.0" />
+                           </font></Label>
                         <TextField fx:id="sizeRangeTextField" alignment="CENTER" layoutX="145.0" layoutY="104.0" prefHeight="27.0" prefWidth="480.0" text="150-250 100-300 301-400 401-500 501-600 601-700 701-850 851-1000 1000-2000" AnchorPane.leftAnchor="145.0" AnchorPane.rightAnchor="27.0">
                            <font>
                               <Font size="12.0" />
@@ -274,7 +326,10 @@
                         </TextField>
                         <VBox alignment="TOP_CENTER" layoutX="30.0" layoutY="77.0" spacing="10.0">
                            <children>
-                              <Label alignment="CENTER" layoutX="278.0" layoutY="144.0" text="Max Mispriming" />
+                              <Label alignment="CENTER" layoutX="278.0" layoutY="144.0" text="Max Mispriming">
+                                 <font>
+                                    <Font name="Verdana" size="12.0" />
+                                 </font></Label>
                               <TextField fx:id="maxMisprimeTextField" alignment="CENTER" layoutX="279.0" layoutY="167.0" prefHeight="27.0" prefWidth="102.0" text="12" />
                            </children>
                         </VBox>
@@ -282,13 +337,19 @@
                            <children>
                               <VBox alignment="TOP_CENTER" layoutX="28.0" layoutY="144.0" spacing="10.0">
                                  <children>
-                                    <Label alignment="TOP_CENTER" layoutX="80.0" layoutY="144.0" text="Mispriming Library" />
+                                    <Label alignment="TOP_CENTER" layoutX="80.0" layoutY="144.0" text="Mispriming Library">
+                                       <font>
+                                          <Font name="Verdana" size="12.0" />
+                                       </font></Label>
                                     <ChoiceBox fx:id="misprimingLibraryChoiceBox" layoutX="28.0" layoutY="167.0" prefHeight="27.0" prefWidth="116.0" />
                                  </children>
                               </VBox>
                               <VBox spacing="10.0">
                                  <children>
-                                    <Label layoutX="285.0" layoutY="144.0" text="Split Targets Larger Than..." />
+                                    <Label layoutX="285.0" layoutY="144.0" text="Split Targets Larger Than...">
+                                       <font>
+                                          <Font name="Verdana" size="12.0" />
+                                       </font></Label>
                                     <TextField fx:id="splitRegionsTextField" alignment="CENTER" layoutX="285.0" layoutY="173.0" prefHeight="27.0" prefWidth="181.0" text="300" />
                                  </children>
                               </VBox>
