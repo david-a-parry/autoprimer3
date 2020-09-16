@@ -161,21 +161,27 @@
                            </font></Label>
                         <HBox alignment="CENTER_LEFT" layoutX="14.0" layoutY="156.0" prefHeight="47.0" prefWidth="613.0" spacing="10.0">
                            <children>
-                              <ProgressIndicator fx:id="progressIndicator2" disable="false" opacity="1.0" prefHeight="47.0" prefWidth="52.0" progress="0.0" style="-fx-fill: null" visible="true" />
-                              <Label fx:id="progressLabel2" prefHeight="41.0" prefWidth="249.0" text="AutoPrimer3" />
-                              <Button fx:id="clearButton" layoutX="315.0" layoutY="166.0" mnemonicParsing="false" onAction="#clearRegions" text="Clear">
+                              <ProgressIndicator fx:id="progressIndicator2" disable="false" opacity="1.0" prefHeight="47.0" prefWidth="60.0" progress="0.0" style="-fx-fill: null" visible="true" />
+                              <Label fx:id="progressLabel2" alignment="TOP_LEFT" prefHeight="39.0" prefWidth="171.0" text="AutoPrimer3" wrapText="true">
+                                 <font>
+                                    <Font size="12.0" />
+                                 </font></Label>
+                              <Button fx:id="clearButton" layoutX="315.0" layoutY="166.0" mnemonicParsing="false" onAction="#clearRegions" prefHeight="23.0" prefWidth="94.0" text="Clear">
+                                 <HBox.margin>
+                                    <Insets left="10.0" top="15.0" />
+                                 </HBox.margin>
+                                 <font>
+                                    <Font size="12.0" />
+                                 </font></Button>
+                              <Button fx:id="loadFileButton" layoutX="407.0" layoutY="166.0" mnemonicParsing="false" onAction="#loadRegionsFile" prefHeight="25.0" prefWidth="111.0" text="Load File">
                                  <HBox.margin>
                                     <Insets left="10.0" top="15.0" />
                                  </HBox.margin></Button>
-                              <Button fx:id="loadFileButton" layoutX="407.0" layoutY="166.0" mnemonicParsing="false" onAction="#loadRegionsFile" text="Load File">
+                              <Button fx:id="cancelButton2" cancelButton="true" layoutX="487.0" layoutY="166.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="103.0" text="Cancel">
                                  <HBox.margin>
                                     <Insets left="10.0" top="15.0" />
                                  </HBox.margin></Button>
-                              <Button fx:id="cancelButton2" cancelButton="true" layoutX="487.0" layoutY="166.0" mnemonicParsing="false" text="Cancel">
-                                 <HBox.margin>
-                                    <Insets left="10.0" top="15.0" />
-                                 </HBox.margin></Button>
-                              <Button fx:id="runButton2" layoutX="561.0" layoutY="166.0" mnemonicParsing="false" onAction="#designPrimersToCoordinates" text="Design">
+                              <Button fx:id="runButton2" layoutX="561.0" layoutY="166.0" mnemonicParsing="false" onAction="#designPrimersToCoordinates" prefHeight="25.0" prefWidth="98.0" text="Design">
                                  <HBox.margin>
                                     <Insets left="10.0" top="15.0" />
                                  </HBox.margin></Button>
