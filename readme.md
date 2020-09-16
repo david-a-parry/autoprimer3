@@ -1,10 +1,10 @@
-__CURRENT RELEASE__
+ ## CURRENT RELEASE
 
 The [latest version of AutoPrimer3](https://github.com/david-a-parry/autoprimer3/releases/latest) fixes issues arising from UCSC's recent update to their genome metadata that stopped previous versions from working. It also gives the option to specify names for targets when designing to regions/coordinates. 
 
 ---
 
-__AutoPrimer3__
+# AutoPrimer3
 
 AutoPrimer3 retrieves gene information, DNA sequences and SNP information from the [UCSC genome browser](http://genome.ucsc.edu/) and uses [primer3](http://primer3.sourceforge.net/) to automatically design primers to genes or genomic coordinate targets. 
 
