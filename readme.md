@@ -14,15 +14,15 @@ An instructions PDF can be viewed by selecting the 'Help' menu item from the app
 
 Get the latest release [here](https://github.com/gantzgraf/autoprimer3/releases/latest).
 
-__CREDIT__
+### CREDIT
 
 AutoPrimer3 was written by David A. Parry (david.parry@igmm.ed.ac.uk)
 
-If you use this program to generate primers used in a publication, please cite the URL 'https://github.com/gantzgraf/autoprimer3'.
+If you use this program to generate primers used in a publication, please cite the URL 'https://github.com/david-a-parry/autoprimer3'.
 
 More information about Primer3, the primer design tool employed by AutoPrimer3, is available at http://primer3.sourceforge.net.
 
-__LICENSE__
+### LICENSE
 
 AutoPrimer3 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
